@@ -7,16 +7,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geographic Information System</title>
+    <!-- Leaflet CSS and JS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <!-- Your JavaScript Files -->
     <script src="../modules/geographic_information_system/js/map/gis_map.js"></script>
+    <script src="../modules/geographic_information_system/js/dropdown_functions.js"></script>
     <script src="../modules/geographic_information_system/js/map/map_functions.js"></script>
-    <!-- <script src="../modules/geographic_information_system/chart_functions.js"></script> -->
-    <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
     <script src="../modules/geographic_information_system/js/charts/total_transactions_line_graph.js"></script>
-
+    <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
 
     <!-- Additional styling -->
     <style>
@@ -78,7 +81,15 @@
     </div>
     <div class="col-md-6 col-12">
       <div class="p-3">
-        <canvas id="transactionsChart" height="270px"></canvas> <!-- Right side: Transactions Chart -->
+        <div>
+          <div class="dropdown-container">
+            <label for="year">Select Year:</label>
+            <select id="year" class="form-control">
+                <option value="">--Select Year--</option>
+            </select>
+          </div>
+        </div>
+        <div> <canvas id="transactionsChart" height="270px"></canvas> </div>
       </div>
     </div>
 
@@ -91,6 +102,54 @@
 
   </div>
 </div>
+
+<script>
+  // Call the function to populate years when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      const yearDropdown = document.getElementById('year'); // Assuming you have an element with id='year'
+      fetchAndPopulateYears(yearDropdown); // Pass the dropdown element to the function
+  });
+
+  // Function to reset all dropdowns to default
+  function resetDropdowns() {
+      document.getElementById('year').selectedIndex = 0; // Reset year dropdown
+      document.getElementById('province').selectedIndex = 0; // Reset province dropdown
+      document.getElementById('city').selectedIndex = 0; // Reset city dropdown
+      renderTotalTransactionsLineGraph(null); // Reset chart
+  }
+
+  document.getElementById('year').addEventListener('change', function () {
+      const selectedYear = this.value; // Get the selected year
+      console.log('Selected Year:', selectedYear); // Log the selected year
+      
+      // Reset all dropdowns if the default option is selected
+      if (selectedYear === '') { // Assuming empty string is the default
+          resetDropdowns();
+          return;
+      }
+
+      renderTotalTransactionsLineGraph(selectedYear); // Call your graph rendering function
+  });
+
+  document.getElementById('province').addEventListener('change', function () {
+      const selectedProvince = this.value; // Get the selected province
+      
+      // Reset year dropdown to default option whenever a province is selected
+      document.getElementById('year').selectedIndex = 0; // Reset year dropdown
+
+      // Reset all dropdowns if the default option is selected
+      if (selectedProvince === '') { // Assuming empty string is the default
+          resetDropdowns();
+          return;
+      }
+
+      const selectedYear = document.getElementById('year').value; // Get the selected year
+      renderTotalTransactionsLineGraph(selectedYear); // Update chart based on new province selection
+  });
+
+  // You can add a similar event listener for the city dropdown if necessary
+</script>
+
 
 </body>
 </html>
