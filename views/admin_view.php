@@ -20,15 +20,17 @@ include("../config/database.php");
 <body>
   
   <?php include("../includes/admin/header.php"); ?>
-  <br><br><br>
-  <br><br><br><br><br><br><br><br><br>
+  <br><br>
+
+  <?php include("../modules/geographic_information_system/dashboard.php"); ?>
+ 
   <!-- <h1>Content</h1>
   <a href=""><button>Go to</button></a>
   <a href=""><button>Go to</button></a>
   <a href=""><button>Go to</button></a>
   <a href=""><button>Go to</button></a> -->
 
-  <br><br><br>
+  <br><br>
   
   <?php include("../includes/admin/footer.php"); ?>
 

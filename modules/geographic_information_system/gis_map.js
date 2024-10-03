@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
   map.setMaxBounds(bounds);
 
   // Fetch location data for dropdowns
-  fetch('../../includes/get_location_data.php')
+  fetch('../includes/get_location_data.php')  // Corrected path
       .then(response => response.json())
       .then(data => {
           // Populate the Province dropdown

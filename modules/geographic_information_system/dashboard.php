@@ -11,36 +11,81 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script src="../modules/geographic_information_system/gis_map.js"></script>
+    <script src="../modules/geographic_information_system/map_functions.js"></script>
+    <script src="../modules/geographic_information_system/chart_functions.js"></script>
 
-    <script src="gis_map.js"></script>
-    <script src="map_functions.js"></script>
-    <script src="chart_functions.js"></script>
-
+    <!-- Additional styling -->
+    <style>
+        body {
+            color: white;
+        }
+        .p-3 {
+            padding: 1rem;
+        }
+        #map {
+            width: 100%;
+            height: 400px; /* Adjust height as necessary */
+        }
+        .col-6, .col-12 {
+            border: solid white;
+        }
+        .dropdown-container {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Geographic Information System Dashboard</h1>
-    
-    <div>
-        <label for="province">Select Province:</label>
-        <select id="province">
-            <option value="">--Select Province--</option>
-        </select>
 
-        <label for="city">Select City:</label>
-        <select id="city">
-            <option value="">--Select City--</option>
-        </select>
+<div class="container text-center">
+  
+  <div class="row g-2">
+    
+    <!-- Two columns at the top -->
+    <div class="col-md-6 col-12">
+      <div class="p-3"></div> <!-- Left side: blank -->
     </div>
-<center>
-    <div id="map" style="width: 800px; height: 600px;" ></div>
+    <div class="col-md-6 col-12">
+      <div class="p-3">
+        <canvas id="allTransactionsChart" width="400px" height="200px"></canvas> <!-- Right side: All Transactions Chart -->
+      </div>
+    </div>
 
-    <canvas id="allTransactionsChart" width="400px" height="200px"></canvas>
-    <canvas id="transactionsChart" width="400px" height="200px"></canvas>
+    <!-- Two columns in the middle -->
+    <div class="col-md-6 col-12">
+      <div class="p-3">
+        <!-- Map container with two rows -->
+        <div>
+          <!-- Dropdowns for Province and City -->
+          <div class="dropdown-container">
+            <label for="province">Select Province:</label>
+            <select id="province" class="form-control">
+              <option value="">--Select Province--</option>
+            </select>
+          </div>
+          <div class="dropdown-container">
+            <label for="city">Select City:</label>
+            <select id="city" class="form-control">
+              <option value="">--Select City--</option>
+            </select>
+          </div>
+        </div>
+        <div id="map" style="height: 400px;"></div> <!-- Map -->
+      </div>
+    </div>
+    <div class="col-md-6 col-12">
+      <div class="p-3">
+        <canvas id="transactionsChart" width="400px" height="200px"></canvas> <!-- Right side: Transactions Chart -->
+      </div>
+    </div>
 
-</center>
+    <!-- One column at the bottom -->
+    <div class="col-12">
+      <div class="p-3"></div> <!-- Bottom: blank -->
+    </div>
 
+  </div>
+</div>
 
-    
 </body>
 </html>
