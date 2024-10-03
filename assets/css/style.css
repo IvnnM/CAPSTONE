@@ -1,0 +1,24 @@
+body {
+  overflow: hidden;
+  overflow: auto;
+  background-color: #011222;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+
+.custom-title {
+  font-size: 36px; /* Larger font size for larger screens */
+}
+
+@media (max-width: 768px) {
+  .custom-title {
+      font-size: 30px; /* Adjust for medium screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .custom-title {
+      font-size: 26px; /* Adjust for small screens */
+  }
+}
