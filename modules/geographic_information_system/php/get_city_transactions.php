@@ -1,6 +1,6 @@
 <?php
 // /modules/geographic_information_system/gis_city_transactions.php
-include("../../config/database.php"); // Ensure this path is correct
+include("../../../config/database.php"); // Ensure this path is correct
 
 header('Content-Type: application/json');
 

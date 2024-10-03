@@ -1,5 +1,5 @@
 <?php
-include '../../config/database.php'; // Path updated correctly
+include '../../../config/database.php'; // Path updated correctly
 
 header('Content-Type: application/json');
 

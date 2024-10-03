@@ -64,7 +64,7 @@ function createPopupContent(city) {
 }
 
 function fetchCityTransactionData(city, marker) {
-    const fetchUrl = `../modules/geographic_information_system/gis_data.php?city=${encodeURIComponent(city)}`;  // Updated path
+    const fetchUrl = `../modules/geographic_information_system/php/gis_data.php?city=${encodeURIComponent(city)}`;  // Updated path
     console.log(`Fetching data for city: ${city}`);
     console.log(`Fetch URL: ${fetchUrl}`);
 

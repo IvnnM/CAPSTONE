@@ -37,8 +37,9 @@ foreach ($transactions as $transac) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Transactions: <?php echo htmlspecialchars($city); ?></title>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="chart_functions.js"></script> <!-- Include the chart functions -->
+    <script src="./js/charts/city_transactions_line_graph.js"></script>
     <style>
         /* Optional: Style the chart container */
         #cityTransactionsChart {
@@ -81,13 +82,14 @@ foreach ($transactions as $transac) {
         <canvas id="cityTransactionsChart" width="400" height="200"></canvas>
     </div>
     <a href="../../views/admin_view.php" class="btn btn-secondary">Back to Dashboard</a>
+    
     <script>
         // Prepare the data for the chart
         const labels = <?php echo json_encode($transactionDates); ?>; // Transaction dates
         const data = <?php echo json_encode($totalAmounts); ?>; // Total amounts
 
-        // Call the renderCityTransactionsChart function from chart_functions.js
-        renderCityTransactionsChart(labels, data, '<?php echo htmlspecialchars($city); ?>');
+        // Call the renderCityTransactionsLineGraph function
+        renderCityTransactionsLineGraph(labels, data, '<?php echo htmlspecialchars($city); ?>');
     </script>
 </body>
 </html>

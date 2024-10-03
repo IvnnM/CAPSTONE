@@ -11,9 +11,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="../modules/geographic_information_system/gis_map.js"></script>
-    <script src="../modules/geographic_information_system/map_functions.js"></script>
-    <script src="../modules/geographic_information_system/chart_functions.js"></script>
+    <script src="../modules/geographic_information_system/js/map/gis_map.js"></script>
+    <script src="../modules/geographic_information_system/js/map/map_functions.js"></script>
+    <!-- <script src="../modules/geographic_information_system/chart_functions.js"></script> -->
+    <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
+    <script src="../modules/geographic_information_system/js/charts/total_transactions_line_graph.js"></script>
+
 
     <!-- Additional styling -->
     <style>
@@ -75,13 +78,15 @@
     </div>
     <div class="col-md-6 col-12">
       <div class="p-3">
-        <canvas id="transactionsChart" width="400px" height="200px"></canvas> <!-- Right side: Transactions Chart -->
+        <canvas id="transactionsChart" height="270px"></canvas> <!-- Right side: Transactions Chart -->
       </div>
     </div>
 
     <!-- One column at the bottom -->
     <div class="col-12">
-      <div class="p-3"></div> <!-- Bottom: blank -->
+      <div class="p-3">
+          
+      </div> 
     </div>
 
   </div>

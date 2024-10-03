@@ -1,6 +1,6 @@
 <?php
 // /modules/geographic_information_system/get_province_transactions.php
-include '../../config/database.php'; // Correct path to the database
+include '../../../config/database.php'; // Correct path to the database
 
 header('Content-Type: application/json');
 
