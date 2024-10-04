@@ -25,6 +25,7 @@ include("../config/database.php");
 <body>
 
   <?php include("../includes/customer/header.php"); ?>
+
   <div class="page p-3 mt-3 mb-3" id="Overview">
       <h1>All Products Available</h1>
       <?php include("../modules/sales_management_system/transaction/available_product.php"); ?>
@@ -69,7 +70,7 @@ include("../config/database.php");
   </div>
 
 
-  <br><br>
+  <br><br><br>
   <script src="../assets/js/navbar.js"></script>
   <?php include("../includes/customer/footer.php"); ?>
 

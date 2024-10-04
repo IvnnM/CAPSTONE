@@ -3,7 +3,7 @@
     <!-- Logo and Title -->
     <a class="navbar-brand d-flex align-items-center" href="#">
       <img src="../assets/images/logo.png" alt="Logo" width="74" height="74" class="d-inline-block align-text-mid">
-      <strong class="ms-2 custom-title">Title</strong>
+      <strong class="ms-2 custom-title">DKAT Store</strong>
     </a>
 
     <!-- Toggle button for mobile view -->

@@ -97,9 +97,9 @@ function renderTotalTransactionsLineGraph(year) {
 
                 // Update chart title dynamically only if a year is selected
                 if (year) {
-                    transactionsChart.options.plugins.title.text = `Annual income for ${selectedProvince} in ${year}`;
+                    transactionsChart.options.plugins.title.text = `Total Revenue for ${selectedProvince} in ${year}`;
                 } else {
-                    transactionsChart.options.plugins.title.text = ` Total Revenue Over Time`; // Without year
+                    transactionsChart.options.plugins.title.text = `Overall Revenue`; // Without year
                 }
 
                 transactionsChart.update();

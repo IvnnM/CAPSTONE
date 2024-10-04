@@ -26,7 +26,7 @@
         body {
             color: white;
         }
-        .p-3 {
+        .p-2 {
             padding: 1rem;
         }
         #map {
@@ -35,6 +35,7 @@
         }
         .col-6, .col-12 {
             border: solid white;
+            border-radius: 14px;
         }
         .dropdown-container {
             margin-bottom: 10px;
@@ -43,24 +44,27 @@
 </head>
 <body>
 
-<div class="container-fluid text-center">
+<div class="container-fluid text-center p-0">
   
   <div class="row g-2">
     
     <!-- Two columns at the top -->
-    <div class="col-md-6 col-12">
-      <div class="p-3"></div> <!-- Left side: blank -->
+    <div class="col-md-5 col-12">
+      <div class="p-2"></div> <!-- Left side: blank -->
     </div>
-    <div class="col-md-6 col-12">
-      <div class="p-3">
+    <div class="col-md-7 col-12">
+      <div class="p-2">
         <canvas id="allTransactionsChart" width="400px" height="200px"></canvas> <!-- Right side: All Transactions Chart -->
       </div>
     </div>
 
     <!-- Two columns in the middle -->
     <div class="col-md-7 col-12">
-      <div class="p-3">
+      <div class="p-2">
         <!-- Map container with two rows -->
+        <label>CALABARZON</label>
+        <div id="map" style="height: 450px; border-radius: 12px;"></div> <!-- Map -->
+
         <div>
           <!-- Dropdowns for Province and City -->
           <div class="dropdown-container">
@@ -76,11 +80,11 @@
             </select>
           </div>
         </div>
-        <div id="map" style="height: 400px;"></div> <!-- Map -->
+
       </div>
     </div>
     <div class="col-md-5 col-12">
-      <div class="p-3">
+      <div class="p-2">
         <div>
           <div class="dropdown-container">
             <label for="year">Select Year:</label>
@@ -96,7 +100,7 @@
 
     <!-- One column at the bottom -->
     <div class="col-12">
-      <div class="p-3">
+      <div class="p-2">
           
       </div> 
     </div>

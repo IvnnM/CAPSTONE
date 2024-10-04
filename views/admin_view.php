@@ -25,7 +25,6 @@ if (isset($_SESSION['AdminID'])) {
 <body>
 
   <?php include("../includes/admin/header.php"); ?>
-  <br><br>
 
   <div class="page p-3 mt-3 mb-3" id="Overview">
       <h1>Dashboard</h1>
@@ -177,17 +176,17 @@ if (isset($_SESSION['AdminID'])) {
         <div class="row">
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/admin/admin_update.php" class="text-decoration-none">
-                <div class="card p-4 d-flex flex-row align-items-start" style="max-width: 700px;">
-    <div class="me-3">
-        <!-- Icon for User Image -->
-        <i class="bi bi-person-circle" style="font-size: 80px; color: #007bff;"></i>
-    </div>
-    <div>
-        <h4 class="card-title mb-3" style="margin: 0; text-align: left;"><strong><?php echo htmlspecialchars($_SESSION['AdminRole']); ?></strong>
-        </h4>
-        <p class="mb-1" style="margin: 0;"><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['AdminName']); ?></p>
-    </div>
-</div>
+                <div class="card p-4 d-flex flex-row align-items-start" style="width: 300px;">
+                    <div class="me-3">
+                        <!-- Icon for User Image -->
+                        <i class="bi bi-person-circle" style="font-size: 80px;"></i>
+                    </div>
+                    <div>
+                        <h4 class="card-title mb-3" style="margin: 0; text-align: left;"><strong><?php echo htmlspecialchars($_SESSION['AdminRole']); ?></strong>
+                        </h4>
+                        <p class="mb-1" style="margin: 0;"><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['AdminName']); ?></p>
+                    </div>
+                </div>
 
                 </a>
             </div>
@@ -195,7 +194,7 @@ if (isset($_SESSION['AdminID'])) {
       </div>
   </div>
 
-  <br><br>
+  <br><br><br>
   <script src="../assets/js/navbar.js"></script>
   <?php include("../includes/admin/footer.php"); ?>
 
