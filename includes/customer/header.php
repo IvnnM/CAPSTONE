@@ -15,7 +15,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" href="#Overview">Products</a>
+          <a class="nav-link active" href="#Overview">Products</a> <!-- Add active class here -->
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#Orders">Orders</a>

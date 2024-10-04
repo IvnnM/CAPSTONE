@@ -135,7 +135,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/employee/employee_create.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-clock icon"></i>
+                        <i class="bi bi-person-plus icon"></i>
                         <h5 class="card-title">Add New Employee</h5>
                         <p class="card-text">Create Account</p>
                     </div>
@@ -144,7 +144,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/employee/employee_read.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-check-circle icon"></i>
+                        <i class="bi bi-person-dash icon"></i>
                         <h5 class="card-title">Employee Account</h5>
                         <p class="card-text">Manage Account</p>
                     </div>
@@ -161,25 +161,38 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/store/store_create.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-clock icon"></i>
+                        <i class="bi bi-shop icon"></i>
                         <h5 class="card-title">Store Information</h5>
                         <p class="card-text">Manage Information</p>
                     </div>
                 </a>
             </div>
         </div>
-    </div>
+      </div>
   </div>
 
   <div class="page p-3 mt-3 mb-3" id="Profile" style="display: none;">
       <h1>Profile</h1>
-      <h2>Session Information</h2>
-      <ul>
-          <li>User ID: <?php echo htmlspecialchars($_SESSION['AdminID']); ?></li>
-          <li>User Name: <?php echo htmlspecialchars($_SESSION['AdminName']); ?></li>
-          <li>Role: <?php echo htmlspecialchars($_SESSION['AdminRole']); ?></li>
-      </ul>
-      <?php include("../modules/inventory_management_system/user_management/admin/admin_update.php"); ?>
+      <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/user_management/admin/admin_update.php" class="text-decoration-none">
+                <div class="card p-4 d-flex flex-row align-items-start" style="max-width: 700px;">
+    <div class="me-3">
+        <!-- Icon for User Image -->
+        <i class="bi bi-person-circle" style="font-size: 80px; color: #007bff;"></i>
+    </div>
+    <div>
+        <h4 class="card-title mb-3" style="margin: 0; text-align: left;"><strong><?php echo htmlspecialchars($_SESSION['AdminRole']); ?></strong>
+        </h4>
+        <p class="mb-1" style="margin: 0;"><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['AdminName']); ?></p>
+    </div>
+</div>
+
+                </a>
+            </div>
+        </div>
+      </div>
   </div>
 
   <br><br>

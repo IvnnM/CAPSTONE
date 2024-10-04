@@ -43,3 +43,12 @@ body::-webkit-scrollbar {
 h1 {
   color: white !important;
 }
+
+.navbar-nav .nav-link.active {
+  color: green; 
+  font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+  color: rgb(1, 48, 1);
+}

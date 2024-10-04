@@ -1,6 +1,6 @@
 <?php
-// session_start();
-// include("../../../../config/database.php");
+session_start();
+include("../../../../config/database.php");
 
 // Check if the admin is logged in and has an admin ID in the session
 if (!isset($_SESSION['AdminID'])) {
