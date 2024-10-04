@@ -166,6 +166,15 @@ include("../config/database.php");
                     </div>
                 </a>
             </div>
+            <div class="col-md-3 mb-3">
+                <a href="../modules/geographic_information_system/site_selection_report.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-bar-chart icon"></i>
+                        <h5 class="card-title">Site Selection Report</h5>
+                        <p class="card-text">Print Report</p>
+                    </div>
+                </a>
+            </div>
         </div>
       </div>
   </div>

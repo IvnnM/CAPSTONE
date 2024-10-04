@@ -41,6 +41,17 @@
         .dropdown-container {
             margin-bottom: 10px;
         }
+
+        /* Custom styles to ensure responsive height */
+        #forecastChart {
+            height: 300px; /* Default height for smaller screens */
+        }
+
+        @media (min-width: 768px) {
+            #forecastChart {
+                max-height: 400px; /* Height for larger screens */
+            }
+        }
     </style>
 </head>
 <body>
@@ -110,18 +121,7 @@
       </div> 
     </div>
 
-    <style>
-    /* Custom styles to ensure responsive height */
-    #forecastChart {
-        height: 300px; /* Default height for smaller screens */
-    }
 
-    @media (min-width: 768px) {
-        #forecastChart {
-            height: 400px; /* Height for larger screens */
-        }
-    }
-    </style>
 
 
   </div>
