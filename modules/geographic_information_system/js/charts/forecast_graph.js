@@ -1,7 +1,4 @@
 // File: /modules/geographic_information_system/js/charts/forecast_graph.js
-
-console.log("Forecast graph script loaded");
-
 let forecastChart;
 
 function formatCurrency(amount) {
@@ -21,7 +18,6 @@ function renderForecastChart() {
             return response.json();
         })
         .then(data => {
-            console.log('Data fetched:', data); // Log the fetched data
 
             if (!data.data || data.data.length === 0) {
                 console.error('No data available for forecasting');

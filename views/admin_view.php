@@ -4,14 +4,14 @@ include("../includes/cdn.php");
 include("../config/database.php");
 
 // Check if the user is logged in as admin or employee
-if (isset($_SESSION['AdminID'])) {
-    $_SESSION['AdminRole'] = 'Admin';
-} elseif (isset($_SESSION['EmpID'])) {
-    $_SESSION['AdminRole'] = 'Employee';
-} else {
-    header("Location: ../index.php");
-    exit();
-}
+// if (isset($_SESSION['AdminID'])) {
+//     $_SESSION['AdminRole'] = 'Admin';
+// } elseif (isset($_SESSION['EmpID'])) {
+//     $_SESSION['AdminRole'] = 'Employee';
+// } else {
+//     header("Location: ../index.php");
+//     exit();
+// }
 
 ?>
 <!DOCTYPE html>
@@ -194,7 +194,7 @@ if (isset($_SESSION['AdminID'])) {
       </div>
   </div>
 
-  <br><br><br>
+  <br><br>
   <script src="../assets/js/navbar.js"></script>
   <?php include("../includes/admin/footer.php"); ?>
 

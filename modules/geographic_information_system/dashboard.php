@@ -95,17 +95,34 @@
           </div>
         </div>
         <br><br>
-        <div> <canvas id="transactionsChart" height="270px"></canvas> </div>
+        <div> <canvas id="transactionsChart" height="300px"></canvas></div>
       </div>
     </div>
-
     <!-- One column at the bottom -->
     <div class="col-12">
       <div class="p-2">
         <label>Sales Forecast</label>
-        <canvas id="forecastChart" width="400px" height="200px"></canvas>
+        <div class="row">
+          <div class="col-md-8 offset-md-2"> <!-- Center the chart on larger screens -->
+            <canvas id="forecastChart" class="w-100" style="height: 400px;"></canvas> <!-- Full width and responsive height -->
+          </div>
+        </div>
       </div> 
     </div>
+
+    <style>
+    /* Custom styles to ensure responsive height */
+    #forecastChart {
+        height: 300px; /* Default height for smaller screens */
+    }
+
+    @media (min-width: 768px) {
+        #forecastChart {
+            height: 400px; /* Height for larger screens */
+        }
+    }
+    </style>
+
 
   </div>
 </div>
