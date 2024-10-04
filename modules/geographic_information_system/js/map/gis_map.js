@@ -1,23 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
     const provinceDropdown = document.getElementById('province');
     const cityDropdown = document.getElementById('city');
-    const map = L.map('map').setView([13.7500, 121.0500], 8);
+    const map = L.map('map').setView([15.0, 121.0], 7); // Updated to focus on Luzon with a zoom level of 7
     let markers = [];
     let citiesData = [];
 
     // Initialize the map layer
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-    // Define bounds for the Philippines
-    const southWest = L.latLng(4.1235, 116.8469);
-    const northEast = L.latLng(21.1910, 126.6042); 
+    // Define bounds for Luzon
+    const southWest = L.latLng(12.0, 119.0); // Southernmost part of Luzon
+    const northEast = L.latLng(19.0, 126.0); // Northernmost part of Luzon
     const bounds = L.latLngBounds(southWest, northEast);
 
-    // Set max bounds for the map
+    // Set max bounds for the map to only show Luzon
     map.setMaxBounds(bounds);
+    map.fitBounds(bounds); // Ensure the map is centered and fits within Luzon bounds
 
     // Fetch location data for dropdowns
-    fetch('../includes/get_location_data.php')  // Corrected path
+    fetch('../includes/get_location_data.php')
         .then(response => response.json())
         .then(data => {
             // Populate the Province dropdown

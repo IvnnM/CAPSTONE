@@ -1,7 +1,7 @@
 <?php
-session_start();
-include("../../../../config/database.php");
-// $_SESSION['AdminID'] = 1;
+// session_start();
+// include("../../../../config/database.php");
+
 // Check if the admin is logged in and has an admin ID in the session
 if (!isset($_SESSION['AdminID'])) {
     echo "<script>alert('You must be logged in as admin to access this page.'); 

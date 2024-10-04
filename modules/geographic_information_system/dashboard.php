@@ -43,7 +43,7 @@
 </head>
 <body>
 
-<div class="container text-center">
+<div class="container-fluid text-center">
   
   <div class="row g-2">
     
@@ -58,7 +58,7 @@
     </div>
 
     <!-- Two columns in the middle -->
-    <div class="col-md-6 col-12">
+    <div class="col-md-7 col-12">
       <div class="p-3">
         <!-- Map container with two rows -->
         <div>
@@ -79,7 +79,7 @@
         <div id="map" style="height: 400px;"></div> <!-- Map -->
       </div>
     </div>
-    <div class="col-md-6 col-12">
+    <div class="col-md-5 col-12">
       <div class="p-3">
         <div>
           <div class="dropdown-container">
@@ -89,6 +89,7 @@
             </select>
           </div>
         </div>
+        <br><br>
         <div> <canvas id="transactionsChart" height="270px"></canvas> </div>
       </div>
     </div>

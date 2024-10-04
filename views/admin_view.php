@@ -3,11 +3,16 @@ session_start();
 include("../includes/cdn.php"); 
 include("../config/database.php");
 
-// Check if the admin session variable is set
-// if (!isset($_SESSION['AdminID'])) {
-//     header("Location: ../index.php");
-//     exit();
-// }
+// Check if the user is logged in as admin or employee
+if (isset($_SESSION['AdminID'])) {
+    $_SESSION['AdminRole'] = 'Admin';
+} elseif (isset($_SESSION['EmpID'])) {
+    $_SESSION['AdminRole'] = 'Employee';
+} else {
+    header("Location: ../index.php");
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,37 +34,158 @@ include("../config/database.php");
 
   <div class="page p-3 mt-3 mb-3" id="Products" style="display: none;">
       <h1>Products</h1>
-      <!-- Include relevant product-related modules here -->
+      <div class="container-fluid mt-5">
+        <div class="row">
+            <!-- Button 1 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/product/category/category_read.php" class="text-decoration-none"> 
+                    <div class="card p-4">
+                        <i class="bi bi-grid icon"></i>
+                        <h5 class="card-title">Category</h5>
+                        <p class="card-text">Product Category</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 2 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/product/product_read.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-box icon"></i>
+                        <h5 class="card-title">Product</h5>
+                        <p class="card-text">Manage Product</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 3 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/inventory/inventory_read.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-house-door icon"></i>
+                        <h5 class="card-title">Inventory</h5>
+                        <p class="card-text">Manage Inventory</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 4 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/onhand/onhand_read.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-box-seam icon"></i>
+                        <h5 class="card-title">Onhand</h5>
+                        <p class="card-text">Manage Onhand Product</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
   </div>
 
   <div class="page p-3 mt-3 mb-3" id="Transaction" style="display: none;">
       <h1>Transaction</h1>
-      <!-- Include relevant transaction-related modules here -->
+      <div class="container-fluid mt-5">
+        <div class="row">
+            <!-- Button 1 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/transaction/personnel/transac_read_pending.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-clock icon"></i>
+                        <h5 class="card-title">Pending Transactions</h5>
+                        <p class="card-text">Accept Orders</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 2 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/transaction/personnel/transac_read_approved.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-check-circle icon"></i>
+                        <h5 class="card-title">Approved Transactions</h5>
+                        <p class="card-text">Deliver Orders</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 3 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/transaction/personnel/transac_read_delivered.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-check2-circle icon"></i>
+                        <h5 class="card-title">Complete Transactions</h5>
+                        <p class="card-text">Delivered Orders</p>
+                    </div>
+                </a>
+            </div>
+            <!-- Button 4 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-file-earmark-text icon"></i>
+                        <h5 class="card-title">Sales Report</h5>
+                        <p class="card-text">Print Report</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
   </div>
 
   <div class="page p-3 mt-3 mb-3" id="Employee" style="display: none;">
       <h1>Employee</h1>
-      <!-- Include relevant employee-related modules here -->
+      <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/user_management/employee/employee_create.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-clock icon"></i>
+                        <h5 class="card-title">Add New Employee</h5>
+                        <p class="card-text">Create Account</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3 mb-3">
+                <a href="../modules/inventory_management_system/user_management/employee/employee_read.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-check-circle icon"></i>
+                        <h5 class="card-title">Employee Account</h5>
+                        <p class="card-text">Manage Account</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
   </div>
 
   <div class="page p-3 mt-3 mb-3" id="Store" style="display: none;">
       <h1>Store</h1>
-      <!-- Include relevant store-related modules here -->
+      <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <a href="../modules/sales_management_system/store/store_create.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-clock icon"></i>
+                        <h5 class="card-title">Store Information</h5>
+                        <p class="card-text">Manage Information</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
   </div>
 
   <div class="page p-3 mt-3 mb-3" id="Profile" style="display: none;">
       <h1>Profile</h1>
       <h2>Session Information</h2>
       <ul>
-          <li>User ID: <?php echo htmlspecialchars($_SESSION['userId']); ?></li>
-          <li>User Name: <?php echo htmlspecialchars($_SESSION['userName']); ?></li>
-          <li>Role: <?php echo htmlspecialchars($_SESSION['role']); ?></li>
+          <li>User ID: <?php echo htmlspecialchars($_SESSION['AdminID']); ?></li>
+          <li>User Name: <?php echo htmlspecialchars($_SESSION['AdminName']); ?></li>
+          <li>Role: <?php echo htmlspecialchars($_SESSION['AdminRole']); ?></li>
       </ul>
+      <?php include("../modules/inventory_management_system/user_management/admin/admin_update.php"); ?>
   </div>
 
   <br><br>
-  <?php include("../includes/admin/footer.php"); ?>
   <script src="../assets/js/navbar.js"></script>
+  <?php include("../includes/admin/footer.php"); ?>
+
 
 </body>
 

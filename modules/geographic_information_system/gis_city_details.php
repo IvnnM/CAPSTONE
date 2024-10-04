@@ -164,7 +164,7 @@ foreach ($transactions as $transac) {
         <h2>Total Transactions Over Time</h2>
         <canvas id="cityTransactionsChart" width="400" height="200"></canvas>
     </div>
-    <a href="../../../views/admin_view.php" class="btn">Back to Dashboard</a>
+    <a href="./../../views/admin_view.php" class="btn">Back to Dashboard</a>
     
     <script>
         // Initialize DataTables

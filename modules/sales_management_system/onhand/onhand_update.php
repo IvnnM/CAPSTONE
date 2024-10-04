@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="text" id="inventory_qty" value="<?= htmlspecialchars($onhand['InventoryQty']) ?>" readonly><br>
 
         <label for="onhand_qty">Onhand Quantity:</label>
-        <input type="number" id="onhand_qty" name="onhand_qty" min="1" max="<?= htmlspecialchars($onhand['InventoryQty'] + $onhand['OnhandQty']) ?>" value="<?= htmlspecialchars($onhand['OnhandQty']) ?>" required oninput="validateQuantity()"><br>
+        <input type="number" id="onhand_qty" name="onhand_qty" min="0" max="<?= htmlspecialchars($onhand['InventoryQty'] + $onhand['OnhandQty']) ?>" value="<?= htmlspecialchars($onhand['OnhandQty']) ?>" required oninput="validateQuantity()"><br>
 
         <label for="retail_price">Retail Price:</label>
         <input type="text" name="retail_price" value="<?= htmlspecialchars($onhand['RetailPrice']) ?>" required><br>

@@ -1,4 +1,3 @@
-<script src="../../assets/js/navbar.js"></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid ps-lg-4 pe-lg-4">
     <!-- Logo and Title -->

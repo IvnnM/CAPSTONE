@@ -60,7 +60,7 @@ if (!empty($search_value)) {
             </div>
             <button type="submit" class="btn btn-primary mt-2">Search</button>
         </form>
-        <a href="available_product.php"> Go to Available Product</a> |
+        <a href="../../../../views/customer_view.php#Orders"> Go to Available Product</a> |
         <a href="transac_read_approved.php">Go to Approved Transactions</a> |
         <a href="transac_read_pending.php">Go to Pending Transactions</a> |
         <?php if (!empty($transactions)): ?>
