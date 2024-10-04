@@ -20,6 +20,7 @@
     <script src="../modules/geographic_information_system/js/map/map_functions.js"></script>
     <script src="../modules/geographic_information_system/js/charts/total_transactions_line_graph.js"></script>
     <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
+    <script src="../modules/geographic_information_system/js/charts/forecast_graph.js"></script>
 
     <!-- Additional styling -->
     <style>
@@ -101,7 +102,8 @@
     <!-- One column at the bottom -->
     <div class="col-12">
       <div class="p-2">
-          
+        <label>Sales Forecast</label>
+        <canvas id="forecastChart" width="400px" height="200px"></canvas>
       </div> 
     </div>
 
@@ -152,7 +154,6 @@
       renderTotalTransactionsLineGraph(selectedYear); // Update chart based on new province selection
   });
 
-  // You can add a similar event listener for the city dropdown if necessary
 </script>
 
 
