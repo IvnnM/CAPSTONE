@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($insert_stmt->execute()) {
             // Get the last inserted transaction ID
             $transaction_id = $conn->lastInsertId(); 
-            echo "<script>alert('Transaction created successfully!'); window.location.href='./../store/store_read.php?transaction_id={$transaction_id}';</script>";
+            echo "<script>alert('Transaction created successfully!'); window.location.href='transac_payment.php?transaction_id={$transaction_id}';</script>";
         } else {
             echo "<script>alert('Error: Could not create transaction.');</script>";
         }
@@ -228,6 +228,6 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
         <button type="submit">Create Transaction</button>
     </form>
     <br>
-    <a href="available_product.php">Go to Available Product</a>
+    <a href="./../../../views/customer_view.php">Go to Available Product</a>
 </body>
 </html>

@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="hidden" name="product_id" value="<?= htmlspecialchars($inventory['ProductID']) ?>">
 
         <label for="inventory_qty">Quantity:</label>
-        <input type="number" name="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" min="1" required><br>
+        <input type="number" name="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" min="0" required><br>
 
         <button type="submit">Update</button>
     </form>

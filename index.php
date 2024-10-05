@@ -7,8 +7,8 @@
 </head>
 <body>
 
-  <a href="./views/customer_view.php"><button>Go to Customer View</button></a>
-  <a href="login.php"><button>Get started.</button></a>
+  <a href="login.php"><button>Personnel?</button></a>
+  <a href="./views/customer_view.php"><button>Get started.</button></a>
 
 </body>
 </html>

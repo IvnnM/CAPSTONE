@@ -1,6 +1,6 @@
 <?php
 // /modules/geographic_information_system/gis_data.php
-include("../../config/database.php");
+include("../../../config/database.php");
 
 header('Content-Type: application/json');
 

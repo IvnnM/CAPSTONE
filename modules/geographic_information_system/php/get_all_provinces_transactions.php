@@ -1,5 +1,5 @@
 <?php
-include '../../config/database.php';
+include '../../../config/database.php'; // Path updated correctly
 
 header('Content-Type: application/json');
 
@@ -22,4 +22,3 @@ try {
 } catch (PDOException $e) {
     echo json_encode(['error' => $e->getMessage()]);
 }
-?>
