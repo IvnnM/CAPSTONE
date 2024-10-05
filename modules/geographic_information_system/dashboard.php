@@ -21,6 +21,7 @@
     <script src="../modules/geographic_information_system/js/charts/total_transactions_line_graph.js"></script>
     <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
     <script src="../modules/geographic_information_system/js/charts/forecast_graph.js"></script>
+    <script src="../modules/geographic_information_system/js/charts/product_demand_graph.js"></script>
 
     <!-- Additional styling -->
     <style>
@@ -62,11 +63,12 @@
     
     <!-- Two columns at the top -->
     <div class="col-md-5 col-12">
-      <div class="p-2"></div> <!-- Left side: blank -->
+      <div class="p-2">
+      </div> <!-- Left side: blank -->
     </div>
     <div class="col-md-7 col-12">
       <div class="p-2">
-        <canvas id="allTransactionsChart" width="400px" height="200px"></canvas> <!-- Right side: All Transactions Chart -->
+        <canvas id="allTransactionsChart" width="400px" height="200px"></canvas>
       </div>
     </div>
 
@@ -105,8 +107,10 @@
             </select>
           </div>
         </div>
-        <br><br>
-        <div> <canvas id="transactionsChart" height="300px"></canvas></div>
+        <hr style="border-top: 1px solid white;">
+        <div><canvas id="productDemandChart" width="400" height="250"></canvas></div>
+        <hr style="border-top: 1px solid white;">
+        <div> <canvas id="transactionsChart" width="400" height="250"></canvas></div>
       </div>
     </div>
     <!-- One column at the bottom -->

@@ -113,16 +113,6 @@ include("../config/database.php");
                     </div>
                 </a>
             </div>
-            <!-- Button 4 -->
-            <div class="col-md-3 mb-3">
-                <a href="../modules/sales_management_system/" class="text-decoration-none">
-                    <div class="card p-4">
-                        <i class="bi bi-file-earmark-text icon"></i>
-                        <h5 class="card-title">Sales Report</h5>
-                        <p class="card-text">Print Report</p>
-                    </div>
-                </a>
-            </div>
         </div>
     </div>
   </div>
@@ -169,7 +159,7 @@ include("../config/database.php");
             <div class="col-md-3 mb-3">
                 <a href="../modules/geographic_information_system/site_selection_report.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-bar-chart icon"></i>
+                        <i class="bi bi-printer icon"></i>
                         <h5 class="card-title">Site Selection Report</h5>
                         <p class="card-text">Print Report</p>
                     </div>
