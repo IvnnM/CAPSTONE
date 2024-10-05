@@ -57,8 +57,7 @@ function renderForecastChart() {
                     // Basic moving average
                     const average = salesData.slice(i - numPeriods + 1, i + 1).reduce((a, b) => a + b, 0) / numPeriods;
                     const month = labels[i].split('/')[0]; // Extract month from label
-                    const adjustedForecast = average * (seasonalIndex[month] || 1); // Adjust by seasonal index
-                    forecastedSales.push(adjustedForecast);
+                    forecastedSales.push(average); // No excessive seasonality adjustment here
                 } else {
                     forecastedSales.push(null); // Not enough data points for the average
                 }
@@ -81,7 +80,8 @@ function renderForecastChart() {
 
                 // Apply the seasonal index for the forecasted months
                 const seasonalMultiplier = seasonalIndex[forecastMonth] || 1;
-                const forecastValue = forecastedSales[forecastedSales.length - 1] * seasonalMultiplier;
+                const averageLast = forecastedSales[forecastedSales.length - 1] || salesData[salesData.length - 1];
+                const forecastValue = averageLast * seasonalMultiplier; // Multiply only by the seasonal multiplier
                 nextSalesData.push(forecastValue);
             }
 
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', function () {
             renderForecastChart(); // Call the function to render the chart when the province changes
         });
     }
-    
+
     // Call to render the chart on page load
     renderForecastChart(); // Ensure the chart is rendered when the page loads
 });
