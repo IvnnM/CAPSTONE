@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
   <div class="container-fluid ps-lg-4 pe-lg-4">
     <!-- Logo and Title -->
     <a class="navbar-brand d-flex align-items-center" href="#">

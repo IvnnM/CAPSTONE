@@ -37,75 +37,11 @@ foreach ($transactions as $transac) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>City Transactions: <?php echo htmlspecialchars($city); ?></title>
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="./js/charts/city_transactions_line_graph.js"></script>
+    <link rel="stylesheet" href="../../assets/css/form.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        label {
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        #year {
-            margin-bottom: 20px;
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            color: #333;
-        }
-
-        tr:hover {
-            background-color: #f9f9f9;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 10px 15px;
-            margin-top: 20px;
-            background-color: #007BFF;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
         #cityTransactionsChart {
             max-width: 600px;
             margin: 20px auto;
@@ -113,63 +49,81 @@ foreach ($transactions as $transac) {
     </style>
 </head>
 <body>
-    <h1>Transactions in <?php echo htmlspecialchars($city); ?></h1>
-
-    <!-- Year Dropdown -->
-    <label for="year">Select Year:</label>
-    <select id="year" onchange="filterByYear()">
-        <option value="">All Years</option>
-        <?php 
-        // Generate year options based on transaction dates
-        $years = array_unique(array_map(function($date) {
-            return date('Y', strtotime($date));
-        }, $transactionDates));
-        
-        sort($years);
-        
-        foreach ($years as $year): ?>
-            <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <table id="transactionsTable" class="display">
-        <thead>
-            <tr>
-                <th>Transaction ID</th>
-                <th>Customer Name</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Total Price</th>
-                <th>Date</th>
-                <th>Year</th> <!-- New Year Column -->
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($transactions as $transac): ?>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Transactions in <?php echo htmlspecialchars($city); ?></h1>
+            <!-- Year Dropdown aligned to the right -->
+            <div>
+                <label for="year">Select Year:</label>
+                <select id="year" onchange="filterByYear()">
+                    <option value="">All Years</option>
+                    <?php 
+                    // Generate year options based on transaction dates
+                    $years = array_unique(array_map(function($date) {
+                        return date('Y', strtotime($date));
+                    }, $transactionDates));
+                    
+                    sort($years);
+                    
+                    foreach ($years as $year): ?>
+                        <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="./../../views/admin_view.php#Overview">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Transaction List</li>
+            </ol>
+        </nav>
+        <table id="transactionsTable" class="display">
+            <thead>
                 <tr>
-                    <td><?php echo htmlspecialchars($transac['TransacID']); ?></td>
-                    <td><?php echo htmlspecialchars($transac['CustName']); ?></td>
-                    <td><?php echo htmlspecialchars($transac['ProductName']); ?></td>
-                    <td><?php echo htmlspecialchars($transac['Quantity']); ?></td>
-                    <td><?php echo htmlspecialchars($transac['TotalPrice']); ?></td>
-                    <td><?php echo htmlspecialchars($transac['TransactionDate']); ?></td>
-                    <td><?php echo date('Y', strtotime($transac['TransactionDate'])); ?></td> <!-- Display Year -->
+                    <th>Transaction ID</th>
+                    <th>Customer Name</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Total Price</th>
+                    <th>Date</th>
+                    <th>Year</th> <!-- New Year Column -->
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($transactions as $transac): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($transac['TransacID']); ?></td>
+                        <td><?php echo htmlspecialchars($transac['CustName']); ?></td>
+                        <td><?php echo htmlspecialchars($transac['ProductName']); ?></td>
+                        <td><?php echo htmlspecialchars($transac['Quantity']); ?></td>
+                        <td><?php echo htmlspecialchars($transac['TotalPrice']); ?></td>
+                        <td><?php echo htmlspecialchars($transac['TransactionDate']); ?></td>
+                        <td><?php echo date('Y', strtotime($transac['TransactionDate'])); ?></td> <!-- Display Year -->
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
 
-    <!-- Add a canvas for the chart -->
-    <div>
-        <h2>Total Transactions Over Time</h2>
-        <canvas id="cityTransactionsChart" width="400" height="200"></canvas>
+        <!-- Add a canvas for the chart -->
+        <div>
+            <h2>Total Transactions Over Time</h2>
+            <canvas id="cityTransactionsChart" width="400" height="200"></canvas>
+        </div>
     </div>
-    <a href="./../../views/admin_view.php" class="btn">Back to Dashboard</a>
-    
     <script>
-        // Initialize DataTables
+        // Initialize DataTables with additional features
         $(document).ready(function() {
-            $('#transactionsTable').DataTable();
+            $('#transactionsTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 10, // Show 10 entries by default
+                "order": [[5, "desc"]] // Sort by Transaction Date by default (assuming it's the 6th column)
+            });
         });
 
         // Prepare the data for the chart

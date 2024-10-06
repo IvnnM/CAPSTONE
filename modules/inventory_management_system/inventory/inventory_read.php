@@ -18,7 +18,7 @@ if (isset($_GET['search_value']) && !empty($_GET['search_value'])) {
 
 // Fetch inventory records along with product details based on search value
 $inventory_query = "
-    SELECT i.InventoryID, p.ProductID, p.ProductName, p.ProductDesc, i.InventoryQty, c.CategoryName 
+    SELECT i.InventoryID, p.ProductID, p.ProductName, p.ProductDesc, i.InventoryQty, c.CategoryName, i.ReorderLevel, i.MaxStockLevel
     FROM InventoryTb i 
     JOIN ProductTb p ON i.ProductID = p.ProductID 
     JOIN ProductCategoryTb c ON p.CategoryID = c.CategoryID
@@ -37,75 +37,125 @@ if (!empty($search_value)) {
 
 $inventory_stmt->execute();
 $inventory_records = $inventory_stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
 
+// Check if the user wants to update levels
+if (isset($_POST['update_levels'])) {
+    // Include the inventory update levels script
+    include("./inventory_update_levels.php");
+}
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory List</title>
-    <link rel="stylesheet" href="path-to-bootstrap.css"> <!-- Add bootstrap link if needed -->
+    
+    <link rel="stylesheet" href="./../../../assets/css/form.css">
     <style>
-        .container {
-            margin-top: 30px;
-        }
-        .table {
-            margin-top: 20px;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h3>Inventory List</h3>
-        <form method="GET" action="">
-            <div class="form-group">
-                <label for="search_value">Search by Product Name or Description:</label>
-                <input type="text" name="search_value" id="search_value" class="form-control" 
-                       value="<?= htmlspecialchars($search_value) ?>">
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Search</button>
-        </form>
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../../../views/admin_view.php#Products">Home</a></li>
+                <li class="breadcrumb-item"><a href="../product/product_read.php">Add New Inventory</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Inventory List</li>
+                <li class="breadcrumb-item"><a href="../../sales_management_system/onhand/onhand_read.php">Go to Onhand List</a></li>
+            </ol>
+        </nav>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Inventory ID</th>
-                    <th>Product ID</th>
-                    <th>Product Name</th>
-                    <th>Product Description</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($inventory_records) > 0): ?>
-                    <?php foreach ($inventory_records as $record): ?>
+        <form method="POST" action="">
+            <button type="submit" name="update_levels" class="btn btn-warning mt-2">Update Reorder and Max Stock Levels</button>
+        </form>
+        <h4 class="mt-4">Inventory Records</h4>
+        <div class="container">
+            <div class="table-responsive">
+                <table id="inventoryTable" class="display table table-bordered table-striped table-hover fixed-table">
+                    <thead>
                         <tr>
-                            <td><?= htmlspecialchars($record['InventoryID']) ?></td>
-                            <td><?= htmlspecialchars($record['ProductID']) ?></td>
-                            <td><?= htmlspecialchars($record['ProductName']) ?></td>
-                            <td><?= htmlspecialchars($record['ProductDesc']) ?></td>
-                            <td><?= htmlspecialchars($record['CategoryName']) ?></td>
-                            <td><?= htmlspecialchars($record['InventoryQty']) ?></td>
-                            <td>
-                                <a href="inventory_update.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" class="btn btn-warning btn-sm">Update</a> | 
-                                <a href="inventory_delete.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this inventory?');">Delete</a> |
-                                <a href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>" class="btn btn-info btn-sm">Add Stocks</a> |
-                                <a href="../../sales_management_system/onhand/onhand_create.php?inventory_id=<?= htmlspecialchars($record['InventoryID']) ?>" class="btn btn-success btn-sm">Add to Onhand</a>
-                            </td>
+                            <th>Inventory ID</th>
+                            <th>Product ID</th>
+                            <th>Product Name</th>
+                            <th>Product Description</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Reorder Level</th>
+                            <th>Max Stock Level</th>
+                            <th>Actions</th>
                         </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="7">No inventory records found.</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <br>
-        <a href="inventory_create.php" class="btn btn-success">Add New Inventory</a>
-        <br><br>
-        <a href="../../sales_management_system/onhand/onhand_read.php" class="btn btn-secondary">Go to Onhand List</a>
+                    </thead>
+                    <tbody>
+                        <?php if (count($inventory_records) > 0): ?>
+                            <?php foreach ($inventory_records as $record): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($record['InventoryID']) ?></td>
+                                    <td><?= htmlspecialchars($record['ProductID']) ?></td>
+                                    <td><?= htmlspecialchars($record['ProductName']) ?></td>
+                                    <td><?= htmlspecialchars($record['ProductDesc']) ?></td>
+                                    <td><?= htmlspecialchars($record['CategoryName']) ?></td>
+                                    <td><?= htmlspecialchars($record['InventoryQty']) ?></td>
+                                    <td><?= htmlspecialchars($record['ReorderLevel']) ?></td>
+                                    <td><?= htmlspecialchars($record['MaxStockLevel']) ?></td>
+                                    <td>
+                                        <div class="text-center">
+                                            <button class="btn btn-secondary" type="button" id="actionMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="actionMenu">
+                                                <li>
+                                                    <a class="dropdown-item" href="inventory_update.php?id=<?= htmlspecialchars($record['InventoryID']) ?>">
+                                                        <i class="bi bi-pencil"></i> Update
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="inventory_delete.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" onclick="return confirm('Are you sure you want to delete this inventory?');">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>">
+                                                        <i class="bi bi-plus-circle"></i> Add Stocks
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="../../sales_management_system/onhand/onhand_create.php?inventory_id=<?= htmlspecialchars($record['InventoryID']) ?>">
+                                                        <i class="bi bi-box"></i> Add to Onhand
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="9">No inventory records found.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
+
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#inventoryTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 10
+            });
+        });
+    </script>
 </body>
 </html>

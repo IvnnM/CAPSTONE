@@ -36,6 +36,7 @@ if (isset($_POST['approve_transaction'])) {
     
     if ($update_stmt->execute()) {
         echo "<script>alert('Transaction approved successfully!');</script>";
+        echo"<script>window.history.back();</script>";
     } else {
         echo "<script>alert('Error: Could not approve transaction.');</script>";
     }
@@ -48,69 +49,92 @@ if (isset($_POST['approve_transaction'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Transactions</title>
-    <link rel="stylesheet" href="path-to-bootstrap.css"> <!-- Add bootstrap link if needed -->
+    <link rel="stylesheet" href="../../../../assets/css/form.css">
     <style>
-        /* Add some basic styling */
-        .container {
-            margin-top: 30px;
-        }
-        .table {
-            margin-top: 20px;
-        }
+
     </style>
 </head>
 <body>
     <div class="container">
         <h3>Pending Transactions</h3>
-        <a href="available_product.php"> Go to Available Product</a> |
-        <a href="transac_read_approved.php">Go to Approved Transactions</a> |
-        <a href="transac_read_delivered.php">Go to Delivered Transactions</a> 
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Transaction">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Pending Transactions</li>
+                <li class="breadcrumb-item"><a href="transac_read_approved.php">Approved Transactions</a></li>
+                <li class="breadcrumb-item"><a href="transac_read_delivered.php">Delivered Transactions</a></li>
+            </ol>
+        </nav>
         <?php if (!empty($transactions)): ?>
             <h4 class="mt-4">Pending Transaction Records</h4>
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>Transaction ID</th>
-                        <th>Customer Name</th>
-                        <th>Customer Number</th>
-                        <th>Customer Email</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total Price</th>
-                        <th>Status</th>
-                        <th>Transaction Date</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($transactions as $transaction): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
-                            <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Price']) ?></td>
-                            <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Status']) ?></td>
-                            <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                            <td>
-                                <form method="POST" action="">
-                                    <a href="../transac_update.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>&action=approve" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to mark this transaction as approved?');">Approve</a>
+            <div class="container">
+                <div class="table-responsive">
+                    <table id="transactionsTable" class="display table table-bordered table-striped table-hover fixed-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer Name</th>
+                                <th>Customer Number</th>
+                                <th>Customer Email</th>
+                                <th>Product Name</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Total Price</th>
+                                <th>Status</th>
+                                <th>Transaction Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($transactions as $transaction): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['CustName']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['Price']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['Status']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                                    <td>
+                                        <form method="POST" action="" class="d-flex align-items-center">
+                                            <input type="hidden" name="transac_id" value="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                            <button type="submit" name="approve_transaction" class="btn btn-success btn-sm me-2" onclick="return confirm('Are you sure you want to mark this transaction as approved?');">
+                                                <i class="bi bi-check-lg"></i> <!-- Approve icon -->
+                                            </button>
+                                            <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">
+                                                <i class="bi bi-trash"></i> <!-- Delete icon -->
+                                            </a>
+                                        </form>
 
-                                    <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">Delete</a>
-                                </form>
-                            </td>
-
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         <?php else: ?>
             <p class="mt-4">No pending transactions found.</p>
         <?php endif; ?>
     </div>
+
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#transactionsTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 10
+            });
+        });
+    </script>
 </body>
 </html>

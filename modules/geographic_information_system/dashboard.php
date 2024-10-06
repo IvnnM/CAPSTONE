@@ -78,7 +78,7 @@
         <!-- Map container with two rows -->
         <label>CALABARZON</label>
         <div id="map" style="height: 450px; border-radius: 12px;"></div> <!-- Map -->
-
+        <hr style="border-top: 1px solid white;">
         <div>
           <!-- Dropdowns for Province and City -->
           <div class="dropdown-container">
@@ -94,7 +94,6 @@
             </select>
           </div>
         </div>
-
       </div>
     </div>
     <div class="col-md-5 col-12">
