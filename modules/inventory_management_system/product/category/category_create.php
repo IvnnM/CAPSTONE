@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->execute()) {
             // Success alert
             echo "<script>alert('Product Category Created Successfully');</script>";
+            echo"<script>window.history.back();</script>";
+            exit;
         } else {
             // Error alert
             echo "<script>alert('Error: Could not create product category');</script>";
@@ -35,13 +37,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Create Product Category</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script>
+        function confirmCreation(event) {
+            if (!confirm('Are you sure you want to create this category?')) {
+                event.preventDefault();
+            }
+        }
+    </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Product Category</h3>
+    <h1 class="mb-4">Category Form</h1>
+    <hr style="border-top: 1px solid white;">
+    <h6>Create Product Category</h6>
     <form method="POST" action="">
         <label for="category_name">Category Name:</label>
-        <input type="text" name="category_name" required><br>
-        <button type="submit">Create</button>
+        <input type="text" class="form-control" name="category_name" required><br>
+        <button class="btn btn-success" type="submit">Create</button>
     </form>
     <br>
     <a href="category_read.php">Back to Category List</a>

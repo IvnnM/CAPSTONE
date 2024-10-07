@@ -79,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <title>Update Employee</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -166,41 +167,75 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Update Your Employee Account</h3>
+    <h3 class="mb-4">Update Your Employee Account</h3>
+    <hr style="border-top: 1px solid white;">
     <form method="POST" action="" onsubmit="confirmUpdate(event)">
-        <label for="old_password">Old Password:</label>
-        <input type="password" name="old_password" id="old_password" required><br>
+        <!-- Identification Section -->
+        <h6>Identification</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="emp_name">Employee Name:</label>
+                <input type="text" name="emp_name" id="emp_name" class="form-control" value="<?= htmlspecialchars($employee['EmpName']) ?>" required>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        
+        <!-- Account Information Section -->
+        <h6>Account Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="emp_email">Employee Email:</label>
+                <input type="email" name="emp_email" id="emp_email" class="form-control" value="<?= htmlspecialchars($employee['EmpEmail']) ?>" required>
+            </div>
+            <div class="col-md-6">
+                <label for="old_password">Old Password:</label>
+                <input type="password" name="old_password" id="old_password" class="form-control" required>
+            </div>
+        </div>
 
-        <label for="emp_name">Employee Name:</label>
-        <input type="text" name="emp_name" id="emp_name" value="<?= htmlspecialchars($employee['EmpName']) ?>" required><br>
-
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
-
-        <!-- Hidden field to store the selected LocationID -->
+        <!-- Location Information Section -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="province">Province:</label>
+                <select id="province" name="province" class="form-control" required>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city">City:</label>
+                <select id="city" name="city" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
+        
         <input type="hidden" name="location_id" id="location_id" value="<?= htmlspecialchars($employee['LocationID']) ?>" required>
-
-        <label for="emp_email">Employee Email:</label>
-        <input type="email" name="emp_email" id="emp_email" value="<?= htmlspecialchars($employee['EmpEmail']) ?>" required><br>
-
-        <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" id="new_password"><br>
-
-        <label for="confirm_password">Confirm New Password:</label>
-        <input type="password" name="confirm_password" id="confirm_password"><br>
-
-        <button type="submit">Update</button>
+        
+        <hr style="border-top: 1px solid white;">
+        
+        <!-- Password Update Section -->
+        <h6>Set New Password <span><label>Note: Leave blank to keep your old password.</label></span></h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="new_password">New Password:</label>
+                <input type="password" name="new_password" id="new_password" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label for="confirm_password">Confirm New Password:</label>
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control">
+            </div>
+        </div>
+        
+        <button class="btn btn-success" type="submit">Update</button>
     </form>
-    <br>
-    <a href="">Go to your Profile</a>
+
+    <a href="../../../../views/employee_view.php">Go to Dashboard</a>
 </body>
 </html>

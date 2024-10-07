@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <title>Update Store Information</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -151,31 +152,52 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </head>
 <body>
-    <h3>Update Store Information</h3>
+    <h1 class="mb-4">Store Form</h1>
+    <hr style="border-top: 1px solid white;">
     <form method="POST" action="" enctype="multipart/form-data" onsubmit="confirmUpdate(event)">
-        <label for="store_gcash_num">Store GCash Number:</label>
-        <input type="text" name="store_gcash_num" id="store_gcash_num" value="<?= htmlspecialchars($store['StoreGcashNum']) ?>" required><br>
-
-        <label for="store_delivery_fee">Store Delivery Fee per Km:</label>
-        <input type="text" name="store_delivery_fee" id="store_delivery_fee" value="<?= htmlspecialchars($store['StoreDeliveryFee']) ?>" required><br> <!-- New field for delivery fee -->
-
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
+        <h6>Set Payment Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="store_gcash_num">Store GCash Number:</label>
+                <input type="text" name="store_gcash_num" id="store_gcash_num" class="form-control" value="<?= htmlspecialchars($store['StoreGcashNum']) ?>" required>
+            </div>
+            <div class="col-md-6">
+                <label for="store_delivery_fee">Store Delivery Fee per Km:</label>
+                <input type="text" name="store_delivery_fee" id="store_delivery_fee" class="form-control" value="<?= htmlspecialchars($store['StoreDeliveryFee']) ?>" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="store_gcash_qr">Store GCash QR Code (Image):</label>
+                <input type="file" name="store_gcash_qr" id="store_gcash_qr" class="form-control" accept="image/*"> <!-- Made it optional -->
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Store Address</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="province">Province:</label>
+                <select id="province" name="province" class="form-control" required>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city">City:</label>
+                <select id="city" name="city" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
 
         <!-- Hidden field to store the selected LocationID -->
         <input type="hidden" name="location_id" id="location_id" value="<?= htmlspecialchars($store['LocationID']) ?>" required>
 
-        <label for="store_gcash_qr">Store GCash QR Code (Image):</label>
-        <input type="file" name="store_gcash_qr" id="store_gcash_qr" accept="image/*"><br> <!-- Made it optional -->
 
-        <button type="submit">Update</button>
+
+        <button class="btn btn-success" type="submit">Update</button>
     </form>
+
+    <br>
+    <a href="store_read.php">Go to Store Information</a>
 </body>
 </html>

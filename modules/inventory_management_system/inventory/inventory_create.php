@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($insert_stmt->execute()) {
             echo "<script>alert('Inventory added successfully!');</script>";
+            echo"<script>window.history.back();</script>";
         } else {
             echo "<script>alert('Error: Could not add inventory.');</script>";
         }
@@ -74,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Create Inventory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         function confirmCreation(event) {
             if (!confirm('Are you sure you want to create this inventory?')) {
@@ -81,23 +83,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Inventory</h3>
+    <h1 class="mb-4">Inventory Form</h1>
+    <hr style="border-top: 1px solid white;">
+    <h6>Product Information</h6>
     <form method="POST" action="" onsubmit="confirmCreation(event)">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" readonly><br>
-
-        <label for="category_name">Category:</label>
-        <input type="text" name="category_name" value="<?= htmlspecialchars($product['CategoryName']) ?>" readonly><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="category_name">Category:</label>
+                <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($product['CategoryName']) ?>" readonly>
+            </div>
+        </div>
 
         <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['ProductID']) ?>">
         <input type="hidden" name="category_id" value="<?= htmlspecialchars($product['CategoryID']) ?>">
 
-        <label for="inventory_qty">Quantity:</label>
-        <input type="number" name="inventory_qty" min="1" required><br>
-
-        <button type="submit">Create</button>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Quantity to Stock</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="inventory_qty">Quantity:</label>
+                <input type="number" class="form-control" name="inventory_qty" min="1" required>
+            </div>
+        </div>
+        <button class="btn btn-success" type="submit">Create</button>
     </form>
     <br>
     <a href="inventory_read.php">Go to Inventory List</a>

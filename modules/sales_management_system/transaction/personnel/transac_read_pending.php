@@ -37,6 +37,7 @@ if (isset($_POST['approve_transaction'])) {
     if ($update_stmt->execute()) {
         echo "<script>alert('Transaction approved successfully!');</script>";
         echo"<script>window.history.back();</script>";
+        exit;
     } else {
         echo "<script>alert('Error: Could not approve transaction.');</script>";
     }

@@ -26,7 +26,7 @@ $existing_store = $check_store_stmt->fetch(PDO::FETCH_ASSOC);
 
 // If a store already exists, redirect or show an alert
 if ($existing_store) {
-    echo "<script>alert('A store already exists for this location.'); window.location.href = 'store_update.php';</script>";
+    echo "<script>alert('A store already exists for this location.'); window.location.href = 'store_read.php';</script>";
     exit;
 }
 
@@ -68,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <title>Create Store</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -121,10 +122,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Store</h3>
-
+    <h1 class="mb-4">Store Form</h1>
+    <hr style="border-top: 1px solid white;">
     <?php if (isset($errorMessage) && !empty($errorMessage)): ?>
         <div style="color: red;"><?= htmlspecialchars($errorMessage) ?></div>
     <?php endif; ?>
@@ -133,29 +139,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <form method="POST" action="" enctype="multipart/form-data" onsubmit="confirmCreation(event)">
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
-
+        <h6>Set Store Address</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="province">Province:</label>
+                <select id="province" name="province" class="form-control" required>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city">City:</label>
+                <select id="city" name="city" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Payment Information</h6>
         <!-- Hidden field to store the selected LocationID -->
         <input type="hidden" name="location_id" id="location_id" required>
 
-        <label for="store_gcash_num">Store GCash Number:</label>
-        <input type="text" name="store_gcash_num" id="store_gcash_num" required><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="store_gcash_num">Store GCash Number:</label>
+                <input type="text" name="store_gcash_num" id="store_gcash_num" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="store_gcash_qr">Store GCash QR Code (Image):</label>
+                <input type="file" name="store_gcash_qr" id="store_gcash_qr" class="form-control" accept="image/*" required>
+            </div>
+        </div>
 
-        <label for="store_gcash_qr">Store GCash QR Code (Image):</label>
-        <input type="file" name="store_gcash_qr" id="store_gcash_qr" accept="image/*" required><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="store_delivery_fee">Store Delivery Fee per Km:</label>
+                <input type="number" name="store_delivery_fee" id="store_delivery_fee" class="form-control" required step="0.01" min="0">
+            </div>
+        </div>
 
-        <label for="store_delivery_fee">Store Delivery Fee per Km:</label>
-        <input type="number" name="store_delivery_fee" id="store_delivery_fee" required step="0.01" min="0"><br>
-
-        <button type="submit">Create Store</button>
+        <button class="btn btn-success" type="submit">Create Store</button>
     </form>
+    <br>
+    <a href="store_read.php">Go to Store Information</a>
 </body>
 </html>

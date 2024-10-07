@@ -1,5 +1,6 @@
 <?php
 session_start();
+include("../../../../includes/cdn.php");
 include("../../../../config/database.php");
 
 // Check if the admin is logged in and has an admin ID in the session
@@ -75,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Update Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         function confirmUpdate(event) {
             const newPassword = document.getElementById('new_password').value;
@@ -91,26 +93,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Update Admin</h3>
+    <h1 class="mb-4">Admin Form</h1>
+    <hr style="border-top: 1px solid white;">
     <form method="POST" action="" onsubmit="confirmUpdate(event)">
-        <label for="old_password">Old Password:</label>
-        <input type="password" name="old_password" id="old_password" required><br>
+        <h6>Identification</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="admin_name">Admin Name:</label>
+                <input type="text" name="admin_name" id="admin_name" class="form-control" value="<?= htmlspecialchars($admin['AdminName']) ?>" required>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Account Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="admin_email">Admin Email:</label>
+                <input type="email" name="admin_email" id="admin_email" class="form-control" value="<?= htmlspecialchars($admin['AdminEmail']) ?>" required>
+            </div>
 
-        <label for="admin_name">Admin Name:</label>
-        <input type="text" name="admin_name" id="admin_name" value="<?= htmlspecialchars($admin['AdminName']) ?>" required><br>
+            <div class="col-md-6">
+                <label for="old_password">Old Password:</label>
+                <input type="password" name="old_password" id="old_password" class="form-control" required>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set New Password <span><label>Note: Leave blank to keep your old password.</label></span></h6>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="new_password">New Password:</label>
+                <input type="password" name="new_password" id="new_password" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label for="confirm_password">Confirm New Password:</label>
+                <input type="password" name="confirm_password" id="confirm_password" class="form-control">
+            </div>
+        </div>
 
-        <label for="admin_email">Admin Email:</label>
-        <input type="email" name="admin_email" id="admin_email" value="<?= htmlspecialchars($admin['AdminEmail']) ?>" required><br>
-
-        <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" id="new_password"><br>
-
-        <label for="confirm_password">Confirm New Password:</label>
-        <input type="password" name="confirm_password" id="confirm_password"><br>
-
-        <button type="submit">Update</button>
+        <button class="btn btn-success" type="submit">Update</button>
     </form>
+    <br>
+    <a href="../../../../views/admin_view.php#Profile">Go to Dashboard</a>
 </body>
 </html>

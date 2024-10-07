@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <title>Create Employee</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -104,10 +105,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Employee</h3>
-
+    <h1 class="mb-4">Employee Form</h1>
+    <hr style="border-top: 1px solid white;">
     <?php if (isset($errorMessage) && !empty($errorMessage)): ?>
         <div style="color: red;"><?= htmlspecialchars($errorMessage) ?></div>
     <?php endif; ?>
@@ -115,31 +121,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div style="color: green;"><?= htmlspecialchars($successMessage) ?></div>
     <?php endif; ?>
 
+    <h6>Identification</h6>
     <form method="POST" action="" onsubmit="confirmCreation(event)">
-        <label for="emp_name">Employee Name:</label>
-        <input type="text" name="emp_name" required><br>
-
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="emp_name">Employee Name:</label>
+                <input type="text" class="form-control" name="emp_name" required>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Address Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="province">Province:</label>
+                <select id="province" name="province" class="form-control" required>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city">City:</label>
+                <select id="city" name="city" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Account Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="emp_email">Employee Email:</label>
+                <input type="email" class="form-control" name="emp_email" required>
+            </div>
+            <div class="col-md-6">
+                <label for="emp_password">Password:</label>
+                <input type="password" class="form-control" name="emp_password" required>
+            </div>
+        </div>
 
         <!-- Hidden field to store the selected LocationID -->
         <input type="hidden" name="location_id" id="location_id" required>
 
-        <label for="emp_email">Employee Email:</label>
-        <input type="email" name="emp_email" required><br>
-
-        <label for="emp_password">Password:</label>
-        <input type="password" name="emp_password" required><br>
-
-        <button type="submit">Create</button>
+        <button class="btn btn-success" type="submit">Create</button>
     </form>
+
 
     <br>
     <a href="employee_read.php">Go to Employee List</a>

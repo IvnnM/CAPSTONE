@@ -55,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($insert_stmt->execute()) {
             echo "<script>alert('Product created successfully!');</script>";
+            echo"<script>window.history.back();</script>";
+            exit;
         } else {
             echo "<script>alert('Error: Could not create the product.');</script>";
         }
@@ -66,18 +68,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Create Product</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script>
+        function confirmCreation(event) {
+            if (!confirm('Are you sure you want to create this product?')) {
+                event.preventDefault();
+            }
+        }
+    </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Product</h3>
+    <h1 class="mb-4">Product Form</h1>
+    <hr style="border-top: 1px solid white;">
+    <h6>Create New Product</h6>
     <form method="POST" action="" enctype="multipart/form-data">
         <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" required><br>
+        <input type="text" class="form-control" name="product_name" required><br>
 
         <label for="product_desc">Product Description:</label>
-        <input type="text" name="product_desc"><br>
+        <input type="text" class="form-control" name="product_desc"><br>
 
         <label for="category_id">Product Category:</label>
-        <select name="category_id" required>
+        <select name="category_id" class="form-control" required>
             <option value="">Select a category</option>
             <?php foreach ($categories as $category): ?>
                 <option value="<?= htmlspecialchars($category['CategoryID']) ?>"><?= htmlspecialchars($category['CategoryName']) ?></option>
@@ -85,9 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </select><br>
 
         <label for="product_image">Product Image:</label>
-        <input type="file" name="product_image" accept="image/*" required><br>
+        <input type="file" class="form-control" name="product_image" accept="image/*" required><br>
 
-        <button type="submit">Create</button>
+        <button class="btn btn-success" type="submit">Create</button>
     </form>
     <br>
     <a href="product_read.php">Back to Product List</a>

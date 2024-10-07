@@ -54,6 +54,7 @@ if (!$store) {
 </head>
 <body>
     <center>
+    <a href="../../../views/admin_view.php#Store">Go back</a>
         <h3>Store Information</h3>
         <div class="store-info">
             <p><label>Store GCash Number:</label> <?= htmlspecialchars($store['StoreGcashNum']) ?></p>
@@ -68,10 +69,8 @@ if (!$store) {
                 <?php endif; ?>
             </p>
         </div>
+        <a href="store_update.php">Update Information</a><br>
 
-        <div class="back-link">
-            <a href="../transaction/available_product.php">Back to Products</a>
-        </div>
     </center>
 </body>
 </html>

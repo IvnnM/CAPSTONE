@@ -72,6 +72,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $inventory_update_stmt->execute();
 
             echo "<script>alert('Onhand record updated successfully!');</script>";
+            echo"<script>window.history.back();</script>";
+            exit;
         } else {
             echo "<script>alert('Error: Could not update onhand record.');</script>";
         }
@@ -105,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html>
 <head>
     <title>Create Onhand Record</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script>
         function confirmCreation(event) {
             if (!confirm('Are you sure you want to create this onhand record?')) {
@@ -122,35 +125,68 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     </script>
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Onhand Record</h3>
+    <h1 class="mb-4">Onhand Form</h1>
+    <hr style="border-top: 1px solid white;">
+    <h6>Inventory Information</h6>
     <form method="POST" action="" onsubmit="confirmCreation(event)">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" value="<?= htmlspecialchars($inventory['ProductName']) ?>" readonly><br>
-
-        <label for="category_name">Category:</label>
-        <input type="text" name="category_name" value="<?= htmlspecialchars($inventory['CategoryName']) ?>" readonly><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($inventory['ProductName']) ?>" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="category_name">Category:</label>
+                <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($inventory['CategoryName']) ?>" readonly>
+            </div>
+        </div>
 
         <input type="hidden" name="inventory_id" value="<?= htmlspecialchars($inventory['InventoryID']) ?>">
 
-        <label for="inventory_qty">Inventory Quantity:</label>
-        <input type="text" id="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" readonly><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="inventory_qty">Inventory Quantity:</label>
+                <input type="text" class="form-control" id="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" readonly>
+            </div>
 
-        <label for="onhand_qty">Onhand Quantity:</label>
-        <input type="number" id="onhand_qty" name="onhand_qty" min="1" max="<?= htmlspecialchars($inventory['InventoryQty']) ?>" required oninput="validateQuantity()"><br>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Quantity to Sell</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="onhand_qty">Onhand Quantity:</label>
+                <input type="number" class="form-control" id="onhand_qty" name="onhand_qty" min="1" max="<?= htmlspecialchars($inventory['InventoryQty']) ?>" required oninput="validateQuantity()">
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Prices</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="retail_price">Retail Price:</label>
+                <input type="text" class="form-control" name="retail_price" required>
+            </div>
+            <div class="col-md-6">
+                <label for="min_promo_qty">Minimum Promo Quantity:</label>
+                <input type="number" class="form-control" name="min_promo_qty" min="1" required>
+            </div>
+        </div>
 
-        <label for="retail_price">Retail Price:</label>
-        <input type="text" name="retail_price" required><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="promo_price">Promo Price:</label>
+                <input type="text" class="form-control" name="promo_price" required>
+            </div>
+        </div>
 
-        <label for="min_promo_qty">Minimum Promo Quantity:</label>
-        <input type="number" name="min_promo_qty" min="1" required><br>
-
-        <label for="promo_price">Promo Price:</label>
-        <input type="text" name="promo_price" required><br>
-
-        <button type="submit">Create</button>
+        <button class="btn btn-success" type="submit">Create</button>
     </form>
+
     <br>
     <a href="onhand_read.php">Go to Onhand List</a>
     <br><br>

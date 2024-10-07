@@ -190,40 +190,68 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
             });
         });
     </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+        label, .form-control {
+            font-size: small;
+        }
+    </style>
 </head>
 <body>
-    <h3>Create Retail Transaction</h3>
+    <h1 class="mb-4">Create Retail Transaction</h1>
+    <hr style="border-top: 1px solid white;">
     <form method="POST" action="">
-        <label for="cust_name">Customer Name:</label>
-        <input type="text" name="cust_name" required><br>
-
-        <label for="cust_num">Customer Number:</label>
-        <input type="text" name="cust_num" required><br>
-
-        <label for="cust_email">Customer Email:</label>
-        <input type="email" name="cust_email" required><br>
-
-        <label for="cust_note">Customer Note:</label>
-        <textarea name="cust_note" rows="4" cols="50"></textarea><br> <!-- New field for customer note -->
-
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="cust_name">Customer Name:</label>
+                <input type="text" class="form-control" name="cust_name" required>
+            </div>
+            <div class="col-md-6">
+                <label for="cust_num">Customer Number:</label>
+                <input type="text" class="form-control" name="cust_num" required>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Address Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="province">Province:</label>
+                <select id="province" name="province" class="form-control" required>
+                    <option value="">Select Province</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="city">City:</label>
+                <select id="city" name="city" class="form-control" required>
+                    <option value="">Select City</option>
+                </select>
+            </div>
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Transaction Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="cust_email">Customer Email:</label>
+                <input type="email" class="form-control" name="cust_email" required>
+            </div>
+            <div class="col-md-6">
+                <label for="quantity">Quantity:</label>
+                <input type="number" class="form-control" name="quantity" min="1" required>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label for="cust_note">Customer Note:</label>
+                <textarea name="cust_note" class="form-control" rows="4"></textarea>
+            </div>
+        </div>
 
         <!-- Hidden field to store the selected LocationID -->
-        <input type="hidden" name="location_id" id="location_id" required><br>
+        <input type="hidden" name="location_id" id="location_id" required>
 
-        <label for="quantity">Quantity:</label>
-        <input type="number" name="quantity" min="1" required><br>
-
-        <button type="submit">Create Transaction</button>
+        <button class="btn btn-success" type="submit">Create Transaction</button>
     </form>
+
     <br>
     <a href="./../../../views/customer_view.php">Go to Available Product</a>
 </body>
