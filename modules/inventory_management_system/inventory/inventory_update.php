@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
-    <h3>Update Inventory</h3>
+    <h3>Update Stock Quantity</h3>
     <form method="POST" action="">
         <hr style="border-top: 1px solid white;">
         <h6>Update Inventory Information</h6>

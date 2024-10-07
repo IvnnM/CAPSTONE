@@ -15,7 +15,11 @@ if (isset($_GET['product_id'])) {
     $product_id = $_GET['product_id'];
 
     // Fetch product details for display
-    $product_query = "SELECT p.*, c.CategoryName FROM ProductTb p JOIN ProductCategoryTb c ON p.CategoryID = c.CategoryID WHERE p.ProductID = :product_id";
+    $product_query = "SELECT p.*, c.CategoryName, i.InventoryQty 
+                      FROM ProductTb p 
+                      JOIN ProductCategoryTb c ON p.CategoryID = c.CategoryID 
+                      LEFT JOIN InventoryTb i ON p.ProductID = i.ProductID 
+                      WHERE p.ProductID = :product_id";
     $product_stmt = $conn->prepare($product_query);
     $product_stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
     $product_stmt->execute();
@@ -63,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($insert_stmt->execute()) {
             echo "<script>alert('Inventory added successfully!');</script>";
-            echo"<script>window.history.back();</script>";
+            echo "<script>window.history.back();</script>";
         } else {
             echo "<script>alert('Error: Could not add inventory.');</script>";
         }
@@ -82,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <h1 class="mb-4">Inventory Form</h1>
 
-
     <form method="POST" action="">
         <hr style="border-top: 1px solid white;">
         <h6>Product Information</h6>
@@ -100,7 +103,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
 
         <hr style="border-top: 1px solid white;">
-        <h6>Set Quantity to Stock</h6>
+        <h6>Current Inventory Quantity</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="current_inventory_qty">Current Inventory Quantity:</label>
+                <input type="text" class="form-control" id="current_inventory_qty" value="<?= htmlspecialchars($product['InventoryQty'] ?? 0) ?>" readonly>
+            </div>
+        </div>
+
+        <hr style="border-top: 1px solid white;">
+        <h6>Set Quantity</h6>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="inventory_qty">Quantity:</label>

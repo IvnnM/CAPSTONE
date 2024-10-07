@@ -101,7 +101,7 @@ $onhand_records = $onhand_stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <div>
                                             <a href="onhand_update.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>">Update</a> | 
                                             <a href="onhand_delete.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>" onclick="return confirm('Are you sure you want to delete this onhand record?');">Delete</a> |
-                                            <a href="onhand_add_stocks.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>">Add to Store</a>
+                                            <a href="onhand_add_stocks.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>">Get Stocks in Inventory</a>
                                         </div>
                                     </td>
                                 </tr>

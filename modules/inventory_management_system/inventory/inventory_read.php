@@ -104,7 +104,7 @@ if (isset($_POST['update_levels'])) {
                                         <div>
                                             <a href="inventory_update.php?id=<?= htmlspecialchars($record['InventoryID']) ?>">Update</a> | 
                                             <a href="inventory_delete.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" onclick="return confirm('Are you sure you want to delete this inventory?');">Delete</a> | 
-                                            <a href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>">Add to Storage</a> | 
+                                            <a href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>">Add Stocks to Inventory</a> | 
                                             <a href="../../sales_management_system/onhand/onhand_create.php?inventory_id=<?= htmlspecialchars($record['InventoryID']) ?>">Add Inventory to Onhand</a>
                                         </div>
                                     </td>
