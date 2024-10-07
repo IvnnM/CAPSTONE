@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../includes/cdn.php"); 
+include("../includes/cdn.html"); 
 include("../config/database.php");
 
 // Check if the user is logged in as admin or employee
@@ -20,7 +20,6 @@ if (isset($_SESSION['AdminID'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin</title>
-  <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
 
@@ -194,10 +193,11 @@ if (isset($_SESSION['AdminID'])) {
   </div>
 
   <br><br>
-  <script src="../assets/js/navbar.js"></script>
+
   <?php include("../includes/admin/footer.php"); ?>
 
 
 </body>
-
 </html>
+
+<script src="../assets/js/navbar.js"></script>

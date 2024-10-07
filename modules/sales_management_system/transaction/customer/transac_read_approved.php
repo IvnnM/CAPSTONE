@@ -51,6 +51,15 @@ if (!empty($search_value)) {
 <body>
     <div class="container">
         <h3>Search Approved Transactions</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../../../../views/customer_view.php#Orders">Home</a></li>
+                <li class="breadcrumb-item"><a href="transac_read_pending.php">To Pay</a></li>
+                <li class="breadcrumb-item active" aria-current="page">To Receive</li>
+                <li class="breadcrumb-item"><a href="transac_read_delivered.php">Completed</a></li>
+
+            </ol>
+        </nav>
         <form method="GET" action="">
             <div class="form-group">
                 <label for="search_value">Enter Customer Number or Email:</label>
@@ -59,9 +68,6 @@ if (!empty($search_value)) {
             </div>
             <button type="submit" class="btn btn-primary mt-2">Search</button>
         </form>
-        <a href="../../../../views/customer_view.php#Orders"> Go to Available Product</a> |
-        <a href="transac_read_pending.php">Go to Pending Transactions</a> |
-        <a href="transac_read_delivered.php">Go to Delivered Transactions</a> |
         <?php if (!empty($transactions)): ?>
             <h4 class="mt-4">Pending Transaction Records</h4>
             <table class="table table-bordered table-striped">

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -72,28 +72,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Inventory</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script>
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this inventory?')) {
-                event.preventDefault();
-            }
-        }
-    </script>
-    <style>
-        label, .form-control {
-            font-size: small;
-        }
-    </style>
 </head>
 <body>
     <h1 class="mb-4">Inventory Form</h1>
-    <hr style="border-top: 1px solid white;">
-    <h6>Product Information</h6>
-    <form method="POST" action="" onsubmit="confirmCreation(event)">
+
+
+    <form method="POST" action="">
+        <hr style="border-top: 1px solid white;">
+        <h6>Product Information</h6>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="product_name">Product Name:</label>
@@ -103,10 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="category_name">Category:</label>
                 <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($product['CategoryName']) ?>" readonly>
             </div>
+            <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['ProductID']) ?>">
+            <input type="hidden" name="category_id" value="<?= htmlspecialchars($product['CategoryID']) ?>">
         </div>
-
-        <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['ProductID']) ?>">
-        <input type="hidden" name="category_id" value="<?= htmlspecialchars($product['CategoryID']) ?>">
 
         <hr style="border-top: 1px solid white;">
         <h6>Set Quantity to Stock</h6>
@@ -116,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="number" class="form-control" name="inventory_qty" min="1" required>
             </div>
         </div>
+        
         <button class="btn btn-success" type="submit">Create</button>
     </form>
     <br>

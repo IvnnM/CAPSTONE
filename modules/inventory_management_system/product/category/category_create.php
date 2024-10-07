@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -34,32 +34,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product Category</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script>
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this category?')) {
-                event.preventDefault();
-            }
-        }
-    </script>
-    <style>
-        label, .form-control {
-            font-size: small;
-        }
-    </style>
 </head>
 <body>
-    <h1 class="mb-4">Category Form</h1>
-    <hr style="border-top: 1px solid white;">
-    <h6>Create Product Category</h6>
+    <h1 class="mb-4">Create Product Category</h1>
+
     <form method="POST" action="">
-        <label for="category_name">Category Name:</label>
-        <input type="text" class="form-control" name="category_name" required><br>
+    <hr style="border-top: 1px solid white;">
+    <h6>Create New Category</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="category_name">Category Name:</label>
+                <input type="text" class="form-control" name="category_name" required>
+            </div>
+        </div>
         <button class="btn btn-success" type="submit">Create</button>
     </form>
+
     <br>
     <a href="category_read.php">Back to Category List</a>
 </body>

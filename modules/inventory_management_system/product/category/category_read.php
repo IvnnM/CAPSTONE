@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -39,10 +39,9 @@ $stmt->execute();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Category List</title>
-    <link rel="stylesheet" href="../../../../assets/css/form.css">
-    <style>
-       
-    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -96,19 +95,20 @@ $stmt->execute();
 
     </div>
 
-    <script>
-        // Initialize DataTables
-        $(document).ready(function() {
-            $('#categoryTable').DataTable({
-                "paging": true,
-                "lengthChange": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "pageLength": 10
-            });
-        });
-    </script>
+
 </body>
 </html>
+<script>
+    // Initialize DataTables
+    $(document).ready(function() {
+        $('#categoryTable').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "pageLength": 10
+        });
+    });
+</script>

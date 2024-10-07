@@ -1,5 +1,4 @@
 <?php
-
 // Fetch categories from the database
 $query = "SELECT CategoryID, CategoryName FROM ProductCategoryTb";
 $stmt = $conn->prepare($query);
@@ -33,6 +32,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html>
 <head>
     <title>Available Products List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container-fluid mt-5">

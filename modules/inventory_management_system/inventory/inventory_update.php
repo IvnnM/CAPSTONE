@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -58,26 +58,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Inventory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
     <h3>Update Inventory</h3>
     <form method="POST" action="">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" value="<?= htmlspecialchars($inventory['ProductName']) ?>" readonly><br>
+        <hr style="border-top: 1px solid white;">
+        <h6>Update Inventory Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($inventory['ProductName']) ?>" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="category_name">Category:</label>
+                <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($inventory['CategoryName']) ?>" readonly>
+            </div>
+            <input type="hidden" name="product_id" value="<?= htmlspecialchars($inventory['ProductID']) ?>">
+        </div>
+        <hr style="border-top: 1px solid white;">
+        <h6>Update Quantity</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="inventory_qty">Quantity:</label>
+                <input type="number" class="form-control" name="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" min="0" required>
+            </div>
+        </div>
 
-        <label for="category_name">Category:</label>
-        <input type="text" name="category_name" value="<?= htmlspecialchars($inventory['CategoryName']) ?>" readonly><br>
-
-        <input type="hidden" name="product_id" value="<?= htmlspecialchars($inventory['ProductID']) ?>">
-
-        <label for="inventory_qty">Quantity:</label>
-        <input type="number" name="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" min="0" required><br>
-
-        <button type="submit">Update</button>
+        <button class="btn btn-success" type="submit">Update</button>
     </form>
+
     <br>
     <a href="inventory_read.php">Back to Inventory List</a>
 </body>

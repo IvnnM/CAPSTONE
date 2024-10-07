@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -102,41 +102,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
+<script>
+    // Function to validate onhand quantity against inventory quantity
+    function validateQuantity() {
+        const inventoryQty = parseInt(document.getElementById('inventory_qty').value);
+        const onhandQty = parseInt(document.getElementById('onhand_qty').value);
+        if (onhandQty > inventoryQty) {
+            alert("Onhand Quantity cannot exceed Inventory Quantity.");
+            document.getElementById('onhand_qty').value = inventoryQty; // Set to max allowed
+        }
+    }
+</script>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Onhand Record</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script>
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this onhand record?')) {
-                event.preventDefault();
-            }
-        }
-
-        // Function to validate onhand quantity against inventory quantity
-        function validateQuantity() {
-            const inventoryQty = parseInt(document.getElementById('inventory_qty').value);
-            const onhandQty = parseInt(document.getElementById('onhand_qty').value);
-            if (onhandQty > inventoryQty) {
-                alert("Onhand Quantity cannot exceed Inventory Quantity.");
-                document.getElementById('onhand_qty').value = inventoryQty; // Set to max allowed
-            }
-        }
-    </script>
-    <style>
-        label, .form-control {
-            font-size: small;
-        }
-    </style>
 </head>
 <body>
     <h1 class="mb-4">Onhand Form</h1>
-    <hr style="border-top: 1px solid white;">
-    <h6>Inventory Information</h6>
+
     <form method="POST" action="" onsubmit="confirmCreation(event)">
+        <hr style="border-top: 1px solid white;">
+        <h6>Inventory Information</h6>
         <div class="row mb-3">
+            <input type="hidden" name="inventory_id" value="<?= htmlspecialchars($inventory['InventoryID']) ?>">
             <div class="col-md-6">
                 <label for="product_name">Product Name:</label>
                 <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($inventory['ProductName']) ?>" readonly>
@@ -145,17 +137,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="category_name">Category:</label>
                 <input type="text" class="form-control" name="category_name" value="<?= htmlspecialchars($inventory['CategoryName']) ?>" readonly>
             </div>
-        </div>
-
-        <input type="hidden" name="inventory_id" value="<?= htmlspecialchars($inventory['InventoryID']) ?>">
-
-        <div class="row mb-3">
             <div class="col-md-6">
                 <label for="inventory_qty">Inventory Quantity:</label>
                 <input type="text" class="form-control" id="inventory_qty" value="<?= htmlspecialchars($inventory['InventoryQty']) ?>" readonly>
             </div>
-
         </div>
+
         <hr style="border-top: 1px solid white;">
         <h6>Set Quantity to Sell</h6>
         <div class="row mb-3">
@@ -164,6 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <input type="number" class="form-control" id="onhand_qty" name="onhand_qty" min="1" max="<?= htmlspecialchars($inventory['InventoryQty']) ?>" required oninput="validateQuantity()">
             </div>
         </div>
+
         <hr style="border-top: 1px solid white;">
         <h6>Set Prices</h6>
         <div class="row mb-3">
@@ -175,9 +163,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="min_promo_qty">Minimum Promo Quantity:</label>
                 <input type="number" class="form-control" name="min_promo_qty" min="1" required>
             </div>
-        </div>
-
-        <div class="row mb-3">
             <div class="col-md-6">
                 <label for="promo_price">Promo Price:</label>
                 <input type="text" class="form-control" name="promo_price" required>

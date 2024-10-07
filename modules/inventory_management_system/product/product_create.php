@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -65,47 +65,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script>
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this product?')) {
-                event.preventDefault();
-            }
-        }
-    </script>
-    <style>
-        label, .form-control {
-            font-size: small;
-        }
-    </style>
 </head>
 <body>
     <h1 class="mb-4">Product Form</h1>
-    <hr style="border-top: 1px solid white;">
-    <h6>Create New Product</h6>
+    
+
     <form method="POST" action="" enctype="multipart/form-data">
-        <label for="product_name">Product Name:</label>
-        <input type="text" class="form-control" name="product_name" required><br>
-
-        <label for="product_desc">Product Description:</label>
-        <input type="text" class="form-control" name="product_desc"><br>
-
-        <label for="category_id">Product Category:</label>
-        <select name="category_id" class="form-control" required>
-            <option value="">Select a category</option>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category['CategoryID']) ?>"><?= htmlspecialchars($category['CategoryName']) ?></option>
-            <?php endforeach; ?>
-        </select><br>
-
-        <label for="product_image">Product Image:</label>
-        <input type="file" class="form-control" name="product_image" accept="image/*" required><br>
-
+        <hr style="border-top: 1px solid white;">
+        <h6>Create New Product</h6>
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" required>
+            </div>
+            <div class="col-md-6">
+                <label for="category_id">Product Category:</label>
+                <select name="category_id" class="form-control" required>
+                    <option value="">Select a category</option>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category['CategoryID']) ?>"><?= htmlspecialchars($category['CategoryName']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="product_image">Product Image:</label>
+                <input type="file" class="form-control" name="product_image" accept="image/*" required>
+            </div>
+            <div class="col-md-12">
+                <label for="product_desc">Product Description:</label>
+                <input type="text" class="form-control" name="product_desc">
+            </div>
+        </div>
+        
         <button class="btn btn-success" type="submit">Create</button>
     </form>
+
     <br>
     <a href="product_read.php">Back to Product List</a>
 </body>

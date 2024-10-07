@@ -28,18 +28,8 @@ if (!$store) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Information</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            max-width: 600px;
-        }
-        h3 {
-            text-align: center;
-        }
         .store-info {
             margin-bottom: 20px;
         }
@@ -54,23 +44,30 @@ if (!$store) {
 </head>
 <body>
     <center>
-    <a href="../../../views/admin_view.php#Store">Go back</a>
-        <h3>Store Information</h3>
-        <div class="store-info">
-            <p><label>Store GCash Number:</label> <?= htmlspecialchars($store['StoreGcashNum']) ?></p>
-            <p><label>Store Location:</label> <?= htmlspecialchars($store['Location']) ?></p>
-            <p><label>Store Delivery Fee:</label> <?= htmlspecialchars($store['StoreDeliveryFee']) ?></p>
-            <p>
-                <label>Store GCash QR Code:</label><br>
-                <?php if ($store['StoreGcashQR']): ?>
-                    <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" alt="GCash QR Code" style="max-width: 100%; height: auto;">
-                <?php else: ?>
-                    <p>No QR Code available.</p>
-                <?php endif; ?>
-            </p>
-        </div>
-        <a href="store_update.php">Update Information</a><br>
+        <div class="container">
 
+
+            <h3>Store Information</h3>
+
+            <hr style="border-top: 1px solid white;">
+
+            <div class="store-info">
+                <p><label>Store GCash Number:</label> <?= htmlspecialchars($store['StoreGcashNum']) ?></p>
+                <p><label>Store Location:</label> <?= htmlspecialchars($store['Location']) ?></p>
+                <p><label>Store Delivery Fee:</label> <?= htmlspecialchars($store['StoreDeliveryFee']) ?></p>
+                <p>
+                    <label>Store GCash QR Code:</label><br>
+                    <?php if ($store['StoreGcashQR']): ?>
+                        <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" alt="GCash QR Code" style="max-width: 100%; height: auto;">
+                    <?php else: ?>
+                        <p>No QR Code available.</p>
+                    <?php endif; ?>
+                </p>
+            </div>
+            <a href="store_update.php">Edit Information</a><br>
+            <a href="../../../views/admin_view.php#Store">Go back</a>
+        </div>
     </center>
 </body>
 </html>
+

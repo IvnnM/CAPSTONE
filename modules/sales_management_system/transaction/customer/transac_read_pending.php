@@ -52,6 +52,15 @@ if (!empty($search_value)) {
 <body>
     <div class="container">
         <h3>Search Pending Transactions</h3>
+        <!-- Breadcrumb Navigation -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="../../../../views/customer_view.php#Orders">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">To Pay</li>
+                <li class="breadcrumb-item"><a href="transac_read_approved.php">To Receive</a></li>
+                <li class="breadcrumb-item"><a href="transac_read_delivered.php">Completed</a></li>
+            </ol>
+        </nav>
         <form method="GET" action="">
             <div class="form-group">
                 <label for="search_value">Enter Customer Number or Email:</label>
@@ -60,9 +69,7 @@ if (!empty($search_value)) {
             </div>
             <button type="submit" class="btn btn-primary mt-2">Search</button>
         </form>
-        <a href="../../../../views/customer_view.php#Orders"> Go to Available Product</a> |
-        <a href="transac_read_approved.php">Go to Approved Transactions</a> |
-        <a href="transac_read_delivered.php">Go to Delivered Transactions</a> 
+
         <?php if (!empty($transactions)): ?>
             <h4 class="mt-4">Pending Transaction Records</h4>
             <table class="table table-bordered table-striped">
@@ -78,7 +85,6 @@ if (!empty($search_value)) {
                         <th>Total Price</th>
                         <th>Status</th>
                         <th>Transaction Date</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -94,9 +100,6 @@ if (!empty($search_value)) {
                             <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
                             <td><?= htmlspecialchars($transaction['Status']) ?></td>
                             <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                            <td>
-                                <a href="transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">Delete</a>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the admin is logged in and has an admin ID in the session
@@ -45,75 +45,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+<script>
+    $(document).ready(function() {
+        // Fetch and populate province and city data
+        $.ajax({
+            url: "../../../../includes/get_location_data.php",
+            method: "GET",
+            dataType: "json",
+            success: function(data) {
+                var provinces = data.provinces;
+                var cities = data.cities;
+                var provinceDropdown = $("#province");
+                var cityDropdown = $("#city");
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Employee</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
-    <script>
-        $(document).ready(function() {
-            // Fetch and populate province and city data
-            $.ajax({
-                url: "../../../../includes/get_location_data.php",
-                method: "GET",
-                dataType: "json",
-                success: function(data) {
-                    var provinces = data.provinces;
-                    var cities = data.cities;
-                    var provinceDropdown = $("#province");
-                    var cityDropdown = $("#city");
+                // Populate province dropdown
+                provinces.forEach(function(province) {
+                    provinceDropdown.append(
+                        $("<option>").val(province.Province).text(province.Province)
+                    );
+                });
 
-                    // Populate province dropdown
-                    provinces.forEach(function(province) {
-                        provinceDropdown.append(
-                            $("<option>").val(province.Province).text(province.Province)
-                        );
+                // Event listener for province change
+                provinceDropdown.change(function() {
+                    var selectedProvince = $(this).val();
+                    cityDropdown.empty(); // Clear existing cities
+                    cityDropdown.append("<option value=''>Select City</option>");
+                    
+                    // Filter and populate city dropdown based on selected province
+                    cities.forEach(function(city) {
+                        if (city.Province === selectedProvince) {
+                            cityDropdown.append(
+                                $("<option>").val(city.LocationID).text(city.City)
+                            );
+                        }
                     });
-
-                    // Event listener for province change
-                    provinceDropdown.change(function() {
-                        var selectedProvince = $(this).val();
-                        cityDropdown.empty(); // Clear existing cities
-                        cityDropdown.append("<option value=''>Select City</option>");
-                        
-                        // Filter and populate city dropdown based on selected province
-                        cities.forEach(function(city) {
-                            if (city.Province === selectedProvince) {
-                                cityDropdown.append(
-                                    $("<option>").val(city.LocationID).text(city.City)
-                                );
-                            }
-                        });
-                    });
-                },
-                error: function() {
-                    alert("Error: Could not retrieve location data.");
-                }
-            });
-
-            // Update LocationID based on selected city
-            $("#city").change(function() {
-                $("#location_id").val($(this).val());
-            });
+                });
+            },
+            error: function() {
+                alert("Error: Could not retrieve location data.");
+            }
         });
 
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this employee?')) {
-                event.preventDefault();
-            }
-        }
-    </script>
-    <style>
-        label, .form-control {
-            font-size: small;
-        }
-    </style>
+        // Update LocationID based on selected city
+        $("#city").change(function() {
+            $("#location_id").val($(this).val());
+        });
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Employee</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+
 </head>
 <body>
     <h1 class="mb-4">Employee Form</h1>
-    <hr style="border-top: 1px solid white;">
+
     <?php if (isset($errorMessage) && !empty($errorMessage)): ?>
         <div style="color: red;"><?= htmlspecialchars($errorMessage) ?></div>
     <?php endif; ?>
@@ -121,32 +112,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div style="color: green;"><?= htmlspecialchars($successMessage) ?></div>
     <?php endif; ?>
 
-    <h6>Identification</h6>
-    <form method="POST" action="" onsubmit="confirmCreation(event)">
+    <form method="POST" action="">
+        <hr style="border-top: 1px solid white;">
+        <h6>Personal Information</h6>
         <div class="row mb-3">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <label for="emp_name">Employee Name:</label>
                 <input type="text" class="form-control" name="emp_name" required>
             </div>
-        </div>
-        <hr style="border-top: 1px solid white;">
-        <h6>Address Information</h6>
-        <div class="row mb-3">
             <div class="col-md-6">
                 <label for="province">Province:</label>
                 <select id="province" name="province" class="form-control" required>
                     <option value="">Select Province</option>
+                    <!-- Add your provinces dynamically here -->
                 </select>
             </div>
             <div class="col-md-6">
                 <label for="city">City:</label>
                 <select id="city" name="city" class="form-control" required>
                     <option value="">Select City</option>
+                    <!-- Add your cities dynamically here -->
                 </select>
             </div>
         </div>
+
         <hr style="border-top: 1px solid white;">
-        <h6>Account Information</h6>
+        <h6>Set Up Account</h6>
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="emp_email">Employee Email:</label>
@@ -156,13 +147,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="emp_password">Password:</label>
                 <input type="password" class="form-control" name="emp_password" required>
             </div>
+            <!-- Hidden field to store the selected LocationID -->
+            <input type="hidden" name="location_id" id="location_id" required>
         </div>
 
-        <!-- Hidden field to store the selected LocationID -->
-        <input type="hidden" name="location_id" id="location_id" required>
-
+        
         <button class="btn btn-success" type="submit">Create</button>
     </form>
+
 
 
     <br>

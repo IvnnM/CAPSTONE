@@ -15,7 +15,7 @@ if (isset($_GET['onhand_id'])) {
     $onhand_id = $_GET['onhand_id'];
 
     // Fetch existing on-hand record for display
-    $onhand_query = "SELECT o.*, p.ProductName, c.CategoryName 
+    $onhand_query = "SELECT o.*, i.InventoryQty, p.ProductName, c.CategoryName 
                      FROM OnhandTb o 
                      JOIN InventoryTb i ON o.InventoryID = i.InventoryID 
                      JOIN ProductTb p ON i.ProductID = p.ProductID 
@@ -37,29 +37,39 @@ if (isset($_GET['onhand_id'])) {
 
 // Handle form submission for updating on-hand record
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $onhand_qty = $_POST['onhand_qty'];
-    $retail_price = $_POST['retail_price'];
-    $min_promo_qty = $_POST['min_promo_qty'];
-    $promo_price = $_POST['promo_price'];
+    $additional_onhand_qty = $_POST['onhand_qty']; // Get the quantity to add
+    $current_onhand_qty = $onhand['OnhandQty']; // Get the current Onhand Qty
+    $inventory_qty = $onhand['InventoryQty']; // Get the Inventory Qty
 
-    // Update the OnhandTb with the new values
-    $update_query = "UPDATE OnhandTb 
-                     SET OnhandQty = :onhand_qty, 
-                         RetailPrice = :retail_price, 
-                         MinPromoQty = :min_promo_qty, 
-                         PromoPrice = :promo_price 
-                     WHERE OnhandID = :onhand_id";
-    $update_stmt = $conn->prepare($update_query);
-    $update_stmt->bindParam(':onhand_qty', $onhand_qty, PDO::PARAM_INT);
-    $update_stmt->bindParam(':retail_price', $retail_price, PDO::PARAM_STR);
-    $update_stmt->bindParam(':min_promo_qty', $min_promo_qty, PDO::PARAM_INT);
-    $update_stmt->bindParam(':promo_price', $promo_price, PDO::PARAM_STR);
-    $update_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
+    // Calculate the new onhand quantity
+    $new_onhand_qty = $current_onhand_qty + $additional_onhand_qty;
 
-    if ($update_stmt->execute()) {
-        echo "<script>alert('Onhand record updated successfully!');</script>";
+    // Check if the new Onhand quantity exceeds Inventory quantity
+    if ($new_onhand_qty > $inventory_qty) {
+        echo "<script>alert('Error: The new onhand quantity exceeds available inventory.');</script>";
     } else {
-        echo "<script>alert('Error: Could not update onhand record.');</script>";
+        // Update the OnhandTb only for OnhandQty
+        $update_query = "UPDATE OnhandTb SET OnhandQty = :onhand_qty WHERE OnhandID = :onhand_id";
+        $update_stmt = $conn->prepare($update_query);
+        $update_stmt->bindParam(':onhand_qty', $new_onhand_qty, PDO::PARAM_INT);
+        $update_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
+
+        if ($update_stmt->execute()) {
+            // Deduct the added quantity from the InventoryTb
+            $new_inventory_qty = $inventory_qty - $additional_onhand_qty;
+            $inventory_update_query = "UPDATE InventoryTb SET InventoryQty = :inventory_qty WHERE InventoryID = :inventory_id";
+            $inventory_update_stmt = $conn->prepare($inventory_update_query);
+            $inventory_update_stmt->bindParam(':inventory_qty', $new_inventory_qty, PDO::PARAM_INT);
+            $inventory_update_stmt->bindParam(':inventory_id', $onhand['InventoryID'], PDO::PARAM_INT);
+
+            if ($inventory_update_stmt->execute()) {
+                echo "<script>alert('Onhand quantity updated successfully and inventory adjusted!');</script>";
+            } else {
+                echo "<script>alert('Error: Could not update inventory quantity.');</script>";
+            }
+        } else {
+            echo "<script>alert('Error: Could not update onhand quantity.');</script>";
+        }
     }
 }
 ?>
@@ -67,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Update Onhand Record</title>
+    <title>Add Stocks to Onhand Record</title>
     <script>
         function confirmUpdate(event) {
-            if (!confirm('Are you sure you want to update this onhand record?')) {
+            if (!confirm('Are you sure you want to add to this onhand quantity?')) {
                 event.preventDefault();
             }
         }
@@ -78,10 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
-    <h3>Update Onhand Record</h3>
+    <h3>Add Stocks to Onhand Record</h3>
     <form method="POST" action="" onsubmit="confirmUpdate(event);">
         <hr style="border-top: 1px solid white;">
-        <h6>Update Onhand Information</h6>
+        <h6>Add Stocks Information</h6>
 
         <div class="row mb-3">
             <div class="col-md-6">
@@ -96,23 +106,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="onhand_qty">Onhand Quantity:</label>
-                <input type="number" class="form-control" id="onhand_qty" name="onhand_qty" min="0" value="<?= htmlspecialchars($onhand['OnhandQty']) ?>" required>
+                <label for="inventory_qty">Current Inventory Quantity:</label>
+                <input type="text" class="form-control" id="inventory_qty" value="<?= htmlspecialchars($onhand['InventoryQty']) ?>" readonly>
             </div>
             <div class="col-md-6">
-                <label for="retail_price">Retail Price:</label>
-                <input type="text" class="form-control" name="retail_price" value="<?= htmlspecialchars($onhand['RetailPrice']) ?>" required>
+                <label for="current_onhand_qty">Current Onhand Quantity:</label>
+                <input type="text" class="form-control" id="current_onhand_qty" value="<?= htmlspecialchars($onhand['OnhandQty']) ?>" readonly>
             </div>
         </div>
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <label for="min_promo_qty">Minimum Promo Quantity:</label>
-                <input type="number" class="form-control" name="min_promo_qty" min="1" value="<?= htmlspecialchars($onhand['MinPromoQty']) ?>" required>
-            </div>
-            <div class="col-md-6">
-                <label for="promo_price">Promo Price:</label>
-                <input type="text" class="form-control" name="promo_price" value="<?= htmlspecialchars($onhand['PromoPrice']) ?>" required>
+                <label for="onhand_qty">Additional Quantity:</label>
+                <input type="number" class="form-control" id="onhand_qty" name="onhand_qty" min="0" required>
             </div>
         </div>
 

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -28,18 +28,54 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Handle status change to approved
 if (isset($_POST['approve_transaction'])) {
     $transac_id = $_POST['transac_id'];
-    
-    // Update the status to 'Approved'
-    $update_sql = "UPDATE TransacTb SET Status = 'Approved' WHERE TransacID = :transac_id";
-    $update_stmt = $conn->prepare($update_sql);
-    $update_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
-    
-    if ($update_stmt->execute()) {
-        echo "<script>alert('Transaction approved successfully!');</script>";
-        echo"<script>window.history.back();</script>";
-        exit;
+
+    // Fetch the quantity and OnhandID of the transaction being approved
+    $transaction_query = "SELECT Quantity, OnhandID FROM TransacTb WHERE TransacID = :transac_id";
+    $transaction_stmt = $conn->prepare($transaction_query);
+    $transaction_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
+    $transaction_stmt->execute();
+    $transaction = $transaction_stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($transaction) {
+        $quantity_sold = $transaction['Quantity'];
+        $onhand_id = $transaction['OnhandID'];
+
+        // Update the stock quantity in OnhandTb
+        $update_stock_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity_sold WHERE OnhandID = :onhand_id";
+        $update_stock_stmt = $conn->prepare($update_stock_query);
+        $update_stock_stmt->bindParam(':quantity_sold', $quantity_sold, PDO::PARAM_INT);
+        $update_stock_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
+
+        // Start the transaction for data integrity
+        $conn->beginTransaction();
+
+        try {
+            // Execute the stock quantity update
+            if (!$update_stock_stmt->execute()) {
+                throw new Exception('Could not update product quantity.');
+            }
+
+            // Update the status to 'Approved'
+            $update_sql = "UPDATE TransacTb SET Status = 'Approved' WHERE TransacID = :transac_id";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
+            if (!$update_stmt->execute()) {
+                throw new Exception('Could not approve transaction.');
+            }
+
+            // Commit the transaction
+            $conn->commit();
+            echo "<script>alert('Transaction approved successfully!');</script>";
+            echo "<script>window.history.back();</script>";
+            exit;
+
+        } catch (Exception $e) {
+            // Roll back the transaction in case of error
+            $conn->rollBack();
+            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+        }
     } else {
-        echo "<script>alert('Error: Could not approve transaction.');</script>";
+        echo "<script>alert('Transaction details not found.');</script>";
     }
 }
 ?>
@@ -50,10 +86,9 @@ if (isset($_POST['approve_transaction'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Transactions</title>
-    <link rel="stylesheet" href="../../../../assets/css/form.css">
-    <style>
-
-    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -110,7 +145,6 @@ if (isset($_POST['approve_transaction'])) {
                                                 <i class="bi bi-trash"></i> <!-- Delete icon -->
                                             </a>
                                         </form>
-
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

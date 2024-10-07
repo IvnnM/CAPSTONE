@@ -1,3 +1,9 @@
+<style>
+  body {
+    background-color: #011222;
+  }
+</style>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
   <div class="container-fluid ps-lg-4 pe-lg-4">
     <!-- Logo and Title -->

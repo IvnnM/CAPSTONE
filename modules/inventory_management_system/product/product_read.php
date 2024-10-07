@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -47,10 +47,6 @@ $products = $product_stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" href="./../../../assets/css/form.css">
-    <style>
-
-    </style>
 </head>
 <body>
     <div class="container">
@@ -97,22 +93,11 @@ $products = $product_stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <div class="d-flex mb-2 justify-content-center">
-                                            <a href="product_update.php?id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-warning btn-sm me-2">
-                                                <i class="bi bi-pencil"></i> <!-- Update icon -->
-                                            </a>
-                                            <a href="product_delete.php?id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-danger btn-sm me-2" onclick="return confirm('Are you sure you want to delete this product?');">
-                                                <i class="bi bi-trash"></i> <!-- Delete icon -->
-                                            </a>
+                                        <div>
+                                            <a href="product_update.php?id=<?= htmlspecialchars($product['ProductID']) ?>">Update</a> | 
+                                            <a href="product_delete.php?id=<?= htmlspecialchars($product['ProductID']) ?>" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a> | 
+                                            <a href="../inventory/inventory_create.php?product_id=<?= htmlspecialchars($product['ProductID']) ?>">Add Product to Inventory</a>
                                         </div>
-                                        <div class="d-flex justify-content-center mb-2"> 
-                                            <a href="../inventory/inventory_create.php?product_id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-info btn-sm">
-                                                <i class="bi bi-plus-circle"></i> Move to Inventory
-                                            </a>
-                                        </div>
-
-
-
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

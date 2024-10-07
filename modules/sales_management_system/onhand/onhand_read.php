@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -50,10 +50,6 @@ $onhand_records = $onhand_stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" href="./../../../assets/css/form.css">
-    <style>
-
-    </style>
 </head>
 <body>
     <div class="container">
@@ -102,15 +98,11 @@ $onhand_records = $onhand_stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= htmlspecialchars($record['MinPromoQty']) ?></td>
                                     <td><?= htmlspecialchars($record['PromoPrice']) ?></td>
                                     <td>
-                                      <div class="d-flex mb-2">
-                                        <a href="onhand_update.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>" class="btn btn-warning btn-sm me-2">
-                                            <i class="bi bi-pencil"></i> <!-- Update icon -->
-                                        </a>
-                                        <a href="onhand_delete.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>" class="btn btn-danger btn-sm me-2" onclick="return confirm('Are you sure you want to delete this onhand record?');">
-                                            <i class="bi bi-trash"></i> <!-- Delete icon -->
-                                        </a>
-                                      </div>
-
+                                        <div>
+                                            <a href="onhand_update.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>">Update</a> | 
+                                            <a href="onhand_delete.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>" onclick="return confirm('Are you sure you want to delete this onhand record?');">Delete</a> |
+                                            <a href="onhand_add_stocks.php?onhand_id=<?= htmlspecialchars($record['OnhandID']) ?>">Add to Store</a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -50,10 +50,9 @@ if (isset($_POST['update_levels'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory List</title>
-    
-    <link rel="stylesheet" href="./../../../assets/css/form.css">
-    <style>
-    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -71,6 +70,7 @@ if (isset($_POST['update_levels'])) {
         <form method="POST" action="">
             <button type="submit" name="update_levels" class="btn btn-warning mt-2">Update Reorder and Max Stock Levels</button>
         </form>
+
         <h4 class="mt-4">Inventory Records</h4>
         <div class="container">
             <div class="table-responsive">
@@ -101,32 +101,11 @@ if (isset($_POST['update_levels'])) {
                                     <td><?= htmlspecialchars($record['ReorderLevel']) ?></td>
                                     <td><?= htmlspecialchars($record['MaxStockLevel']) ?></td>
                                     <td>
-                                        <div class="text-center">
-                                            <button class="btn btn-secondary" type="button" id="actionMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="actionMenu">
-                                                <li>
-                                                    <a class="dropdown-item" href="inventory_update.php?id=<?= htmlspecialchars($record['InventoryID']) ?>">
-                                                        <i class="bi bi-pencil"></i> Update
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="inventory_delete.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" onclick="return confirm('Are you sure you want to delete this inventory?');">
-                                                        <i class="bi bi-trash"></i> Delete
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>">
-                                                        <i class="bi bi-plus-circle"></i> Add Stocks
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="../../sales_management_system/onhand/onhand_create.php?inventory_id=<?= htmlspecialchars($record['InventoryID']) ?>">
-                                                        <i class="bi bi-box"></i> Add to Onhand
-                                                    </a>
-                                                </li>
-                                            </ul>
+                                        <div>
+                                            <a href="inventory_update.php?id=<?= htmlspecialchars($record['InventoryID']) ?>">Update</a> | 
+                                            <a href="inventory_delete.php?id=<?= htmlspecialchars($record['InventoryID']) ?>" onclick="return confirm('Are you sure you want to delete this inventory?');">Delete</a> | 
+                                            <a href="inventory_create.php?product_id=<?= htmlspecialchars($record['ProductID']) ?>">Add to Storage</a> | 
+                                            <a href="../../sales_management_system/onhand/onhand_create.php?inventory_id=<?= htmlspecialchars($record['InventoryID']) ?>">Add Inventory to Onhand</a>
                                         </div>
                                     </td>
                                 </tr>
@@ -140,7 +119,6 @@ if (isset($_POST['update_levels'])) {
                 </table>
             </div>
         </div>
-
     </div>
 
     <script>

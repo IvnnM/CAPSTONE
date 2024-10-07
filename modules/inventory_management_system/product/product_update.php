@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -78,32 +78,49 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Product</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
 </head>
 <body>
     <h3>Update Product</h3>
     <form method="POST" action="" enctype="multipart/form-data">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" required><br>
-
-        <label for="product_desc">Product Description:</label>
-        <input type="text" name="product_desc" value="<?= htmlspecialchars($product['ProductDesc']) ?>"><br>
-
-        <label for="category_id">Product Category:</label>
-        <select name="category_id" required>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category['CategoryID']) ?>" <?= $category['CategoryID'] == $product['CategoryID'] ? 'selected' : '' ?>><?= htmlspecialchars($category['CategoryName']) ?></option>
-            <?php endforeach; ?>
-        </select><br>
-
-        <label for="product_image">Product Image:</label>
-        <input type="file" name="product_image" accept="image/*"><br>
-        <small>Leave blank if you do not want to change the image.</small><br>
-
-        <button type="submit">Update</button>
+        <hr style="border-top: 1px solid white;">
+        <h6>Update Product Information</h6>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="product_name">Product Name:</label>
+                <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" required>
+            </div>
+            <div class="col-md-6">
+                <label for="category_id">Product Category:</label>
+                <select name="category_id" class="form-control" required>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category['CategoryID']) ?>" <?= $category['CategoryID'] == $product['CategoryID'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($category['CategoryName']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="col-md-12">
+                <label for="product_desc">Product Description:</label>
+                <input type="text" class="form-control" name="product_desc" value="<?= htmlspecialchars($product['ProductDesc']) ?>">
+            </div>
+        </div>      
+        <div class="row mb-3">
+            <div class="col-md-12">
+                <label for="product_image">Product Image:</label>
+                <input type="file" class="form-control" name="product_image" accept="image/*">
+                <small>Leave blank if you do not want to change the image.</small>
+            </div>
+        </div>
+        
+        <button class="btn btn-success" type="submit">Update</button>
     </form>
+
     <br>
     <a href="product_read.php">Back to Product List</a>
 </body>
