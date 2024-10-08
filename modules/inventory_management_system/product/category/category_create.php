@@ -39,24 +39,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product Category</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css"> -->
 </head>
 <body>
-    <h1 class="mb-4">Create Product Category</h1>
-
-    <form method="POST" action="">
-    <hr style="border-top: 1px solid white;">
-    <h6>Create New Category</h6>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="category_name">Category Name:</label>
-                <input type="text" class="form-control" name="category_name" required>
-            </div>
+    <div class="container-fluid">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Create Product Category</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Products">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Product Category</li>
+                </ol>
+            </nav><hr>
+            <!-- Button Group for Navigation -->
+            <!-- <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='category_create.php';">Back</button>
+            </div> -->
         </div>
-        <button class="btn btn-success" type="submit">Create</button>
-    </form>
+    
 
-    <br>
-    <a href="category_read.php">Back to Category List</a>
+        <form method="POST" action="">
+        <h6>Input Category</h6>
+
+            <div class="form-floating">
+                <input type="text" class="form-control" name="category_name" placeholder="Category" required>
+                <label for="category_name">Category</label>
+            </div>
+            <br>
+            
+            <button class="btn btn-success w-100 mb-2" type="submit">Create</button>
+            <a class="btn btn-secondary w-100 mb-2" href="category_read.php">Cancel</a>
+
+        </form>
+    </div>
 </body>
 </html>

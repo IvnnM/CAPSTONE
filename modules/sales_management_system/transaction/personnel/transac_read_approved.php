@@ -84,11 +84,11 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
                                     <td>
                                         <a href="../transac_update.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>&action=deliver" 
-                                        class="btn btn-success btn-sm" 
                                         onclick="return confirm('Are you sure you want to mark this transaction as delivered?');">
-                                            <i class="bi bi-truck">     Delivered</i> <!-- Deliver icon -->
+                                            Complete Transaction
                                         </a>
                                     </td>
+
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

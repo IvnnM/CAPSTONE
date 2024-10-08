@@ -39,76 +39,81 @@ $stmt->execute();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Category List</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h3>Product Category List</h3>
-        <!-- Breadcrumb Navigation -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Products">Home</a></li>
-                <li class="breadcrumb-item"><a href="category_create.php">Add New Category</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Product Categories</li>
-            </ol>
-        </nav>
-        <h4 class="mt-4">Category Records</h4>
-        <div class="container">
-            <div class="table-responsive">
-                <table id="categoryTable" class="display table table-bordered table-striped table-hover fixed-table">
-                    <thead>
-                        <tr>
-                            <th>Category ID</th>
-                            <th>Category Name</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ($stmt->rowCount() > 0): ?>
-                            <?php while ($category = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($category['CategoryID']) ?></td>
-                                    <td><?= htmlspecialchars($category['CategoryName']) ?></td>
-                                    <td>
-                                        <div class="d-flex mb-2 justify-content-center">
-                                            <a href="category_update.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" class="btn btn-warning btn-sm me-2">
-                                                <i class="bi bi-pencil"></i> <!-- Update icon -->
-                                            </a>
-                                            <a href="category_delete.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" onclick="return confirm('Are you sure you want to delete this category?');" class="btn btn-danger btn-sm">
-                                                <i class="bi bi-trash"></i> <!-- Delete icon -->
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="3">No categories found.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+    <div class="container-fluid">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Product Category List</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Products">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Product Categories</li>
+                </ol>
+            </nav><hr>
+            <!-- <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='category_create.php';">Back</button>
+                 <h4>Record</h4>
+                <button type="button" class="btn btn-success" onclick="window.location.href='category_create.php';">Add New Category</button>
+            </div> -->
+            <!-- Button Group for Navigation -->
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-success" onclick="window.location.href='category_create.php';">Add New Category</button>
             </div>
         </div>
-
+        <!-- Table to display product categories -->
+        <div class="table-responsive">
+            <table id="categoryTable" class="table table-secondary table-hover border-secondary">
+                <thead>
+                    <tr>
+                        <th>Actions</th>
+                        <th>Category ID</th>
+                        <th>Category Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if ($stmt->rowCount() > 0): ?>
+                        <?php while ($category = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
+                            <tr>
+                                <td>
+                                    <div class="btn-group w-100" role="group">
+                                        <a href="category_delete.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" onclick="return confirm('Are you sure you want to delete this category?');" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i> <!-- Delete icon -->
+                                        </a>
+                                        <a href="category_update.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil"></i> <!-- Update icon -->
+                                        </a>
+                                    </div>
+                                </td>
+                                <td><?= htmlspecialchars($category['CategoryID']) ?></td>
+                                <td><?= htmlspecialchars($category['CategoryName']) ?></td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="3">No categories found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#categoryTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 5, // Default number of entries per page
+                "lengthMenu": [5, 10, 25, 50, 100], // Options for number of entries
+            });
+        });
+    </script>
 </body>
 </html>
-<script>
-    // Initialize DataTables
-    $(document).ready(function() {
-        $('#categoryTable').DataTable({
-            "paging": true,
-            "lengthChange": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "autoWidth": false,
-            "pageLength": 10
-        });
-    });
-</script>

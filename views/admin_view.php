@@ -87,8 +87,8 @@ if (isset($_SESSION['AdminID'])) {
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_pending.php" class="text-decoration-none">
                     <div class="card p-4">
                         <i class="bi bi-clock icon"></i>
-                        <h5 class="card-title">Pending Transactions</h5>
-                        <p class="card-text">Accept Orders</p>
+                        <h5 class="card-title">Pending Payment</h5>
+                        <p class="card-text">Confirm Orders</p>
                     </div>
                 </a>
             </div>
@@ -97,8 +97,8 @@ if (isset($_SESSION['AdminID'])) {
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_approved.php" class="text-decoration-none">
                     <div class="card p-4">
                         <i class="bi bi-check-circle icon"></i>
-                        <h5 class="card-title">Approved Transactions</h5>
-                        <p class="card-text">Deliver Orders</p>
+                        <h5 class="card-title">Accepted for Delivery</h5>
+                        <p class="card-text">Ship Orders</p>
                     </div>
                 </a>
             </div>
@@ -107,7 +107,7 @@ if (isset($_SESSION['AdminID'])) {
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_delivered.php" class="text-decoration-none">
                     <div class="card p-4">
                         <i class="bi bi-check2-circle icon"></i>
-                        <h5 class="card-title">Complete Transactions</h5>
+                        <h5 class="card-title">Complete Transaction</h5>
                         <p class="card-text">Delivered Orders</p>
                     </div>
                 </a>
