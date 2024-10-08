@@ -3,7 +3,7 @@ session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 // $_SESSION['EmpID']='1';
-$_SESSION['AdminID']='1';
+// $_SESSION['AdminID']='1';
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
     echo "<script>alert('You must be logged in to access this page.'); 
@@ -88,7 +88,7 @@ $stmt->execute();
                                         <?= htmlspecialchars($category['CategoryName']) ?>
                                     </div>
                                 </td> -->
-                                <td class="adminActions d-flex justify-content-center" style="display:none;">
+                                <td class="adminActions" style="display:none;">
                                     <a href="category_update.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" 
                                     class="btn btn-warning btn-sm w-50 me-2">Edit
                                     </a>
@@ -97,7 +97,6 @@ $stmt->execute();
                                     class="btn btn-danger btn-sm w-50">Delete
                                     </a>
                                 </td>
-
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
