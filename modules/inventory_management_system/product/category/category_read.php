@@ -3,7 +3,7 @@ session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 // $_SESSION['EmpID']='1';
-// $_SESSION['AdminID']='1';
+$_SESSION['AdminID']='1';
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
     echo "<script>alert('You must be logged in to access this page.'); 
@@ -40,10 +40,9 @@ $stmt->execute();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Category List</title>
-    <script src="../../../../assets/js/checkUserType.js" defer></script>
 </head>
 <body>
-    <input type="hidden" id="userType" value="<?= isset($_SESSION['AdminID']) ? 'AdminID' : 'User' ?>">
+<input type="hidden" id="userType" value="<?= isset($_SESSION['AdminID']) ? 'AdminID' : (isset($_SESSION['EmpID']) ? 'EmpID' : 'Guest') ?>">
 
     <div class="container-fluid">
         <div class="sticky-top bg-light pb-2">
@@ -74,7 +73,11 @@ $stmt->execute();
                     <tr>
                         <th class="col-auto">ID</th>  
                         <th class="col-auto">Category</th> 
-                        <th class="adminActions col-auto" style="display:none;">Actions</th>  
+                        <?php if (isset($_SESSION['AdminID'])): ?>
+                            <th class="col-auto">Admin Actions</th> 
+                        <?php elseif (isset($_SESSION['EmpID'])): ?>
+                            <th class="col-auto">Employee Actions</th> 
+                        <?php endif; ?> 
                     </tr>
                 </thead>
                 <tbody>
@@ -83,20 +86,25 @@ $stmt->execute();
                             <tr>    
                                 <td><?= htmlspecialchars($category['CategoryID']) ?></td>
                                 <td><?= htmlspecialchars($category['CategoryName']) ?></td>
-                                <!-- <td>
-                                    <div class="d-inline-block text-truncate" style="max-width: 200px;" data-bs-toggle="tooltip" title="<?= htmlspecialchars($category['CategoryName']) ?>">
-                                        <?= htmlspecialchars($category['CategoryName']) ?>
-                                    </div>
-                                </td> -->
-                                <td class="adminActions" style="display:none;">
-                                    <a href="category_update.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" 
-                                    class="btn btn-warning btn-sm w-50 me-2">Edit
-                                    </a>
-                                    <a href="category_delete.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" 
-                                    onclick="return confirm('Are you sure you want to delete this category?');" 
-                                    class="btn btn-danger btn-sm w-50">Delete
-                                    </a>
-                                </td>
+
+                                <!-- Admin-only actions -->
+                                <?php if (isset($_SESSION['AdminID'])): ?>
+                                    <td class="d-flex justify-content-center">
+                                        <a href="category_update.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" 
+                                           class="btn btn-warning btn-sm w-50 me-2">Edit</a>
+                                        <a href="category_delete.php?id=<?= htmlspecialchars($category['CategoryID']) ?>" 
+                                           onclick="return confirm('Are you sure you want to delete this category?');" 
+                                           class="btn btn-danger btn-sm w-50">Delete</a>
+                                    </td>
+
+                                <!-- Employee-only actions -->
+                                <?php elseif (isset($_SESSION['EmpID'])): ?>
+                                    <td class="d-flex justify-content-center">
+                                        <button type="button" class="btn btn-primary btn-sm w-50 me-2">Employee Action</button>
+                                        <button type="button" class="btn btn-primary btn-sm w-50">Employee Action</button>
+                                    </td>
+                                <?php endif; ?>
+
                             </tr>
                         <?php endwhile; ?>
                     <?php else: ?>
