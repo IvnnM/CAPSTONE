@@ -29,8 +29,8 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_POST['approve_transaction'])) {
     $transac_id = $_POST['transac_id'];
 
-    // Fetch the quantity and OnhandID of the transaction being approved
-    $transaction_query = "SELECT Quantity, OnhandID FROM TransacTb WHERE TransacID = :transac_id";
+    // Fetch the quantity, OnhandID, and DeliveryFee of the transaction being approved
+    $transaction_query = "SELECT Quantity, OnhandID, DeliveryFee FROM TransacTb WHERE TransacID = :transac_id";
     $transaction_stmt = $conn->prepare($transaction_query);
     $transaction_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
     $transaction_stmt->execute();
@@ -39,6 +39,7 @@ if (isset($_POST['approve_transaction'])) {
     if ($transaction) {
         $quantity_sold = $transaction['Quantity'];
         $onhand_id = $transaction['OnhandID'];
+        $delivery_fee = $transaction['DeliveryFee']; // Get the DeliveryFee
 
         // Update the stock quantity in OnhandTb
         $update_stock_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity_sold WHERE OnhandID = :onhand_id";
@@ -56,7 +57,7 @@ if (isset($_POST['approve_transaction'])) {
             }
 
             // Update the status to 'Approved'
-            $update_sql = "UPDATE TransacTb SET Status = 'Approved' WHERE TransacID = :transac_id";
+            $update_sql = "UPDATE TransacTb SET Status = 'Approved', TransactionDate = NOW() WHERE TransacID = :transac_id"; // Update date to now
             $update_stmt = $conn->prepare($update_sql);
             $update_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
             if (!$update_stmt->execute()) {
@@ -103,22 +104,22 @@ if (isset($_POST['approve_transaction'])) {
             </ol>
         </nav>
         <?php if (!empty($transactions)): ?>
-            <h4 class="mt-4">Pending Transaction Records</h4>
+            <h4 class="mt-4">Orders</h4>
             <div class="container">
                 <div class="table-responsive">
                     <table id="transactionsTable" class="display table table-bordered table-striped table-hover fixed-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Customer Name</th>
-                                <th>Customer Number</th>
-                                <th>Customer Email</th>
-                                <th>Product Name</th>
-                                <th>Qty</th>
+                                <th>Name</th>
+                                <th>Number</th>
+                                <th>Email</th>
+                                <th>Product</th>
+                                <th>Qtty</th>
                                 <th>Price</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Transaction Date</th>
+                                <th>Delivery Fee</th> <!-- Added Delivery Fee Column -->
+                                <th>Total Cost</th>
+                                <th>Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -132,8 +133,8 @@ if (isset($_POST['approve_transaction'])) {
                                     <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Price']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['DeliveryFee']) ?></td> <!-- Display Delivery Fee -->
                                     <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['Status']) ?></td>
                                     <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
                                     <td>
                                         <form method="POST" action="" class="d-flex align-items-center">

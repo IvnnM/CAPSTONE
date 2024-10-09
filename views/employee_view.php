@@ -10,7 +10,7 @@ include("../config/database.php");
 // }
 
 ?>
+<?php include("../includes/personnel/header.php"); ?>
 
 
-
-<?php include("../includes/admin/footer.php"); ?>
+<?php include("../includes/personnel/footer.php"); ?>

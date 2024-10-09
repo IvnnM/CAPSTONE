@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Get Onhand ID from the query parameter
@@ -204,11 +204,11 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="cust_name">Customer Name:</label>
-                <input type="text" class="form-control" name="cust_name" required>
+                <input type="text" class="form-control" name="cust_name" value="<?= isset($_SESSION['cust_name']) ? htmlspecialchars($_SESSION['cust_name']) : '' ?>" required>
             </div>
             <div class="col-md-6">
                 <label for="cust_num">Customer Number:</label>
-                <input type="text" class="form-control" name="cust_num" required>
+                <input type="text" class="form-control" name="cust_num" value="<?= isset($_SESSION['cust_num']) ? htmlspecialchars($_SESSION['cust_num']) : '' ?>" required>
             </div>
         </div>
         <hr style="border-top: 1px solid white;">
@@ -232,7 +232,7 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
         <div class="row mb-3">
             <div class="col-md-6">
                 <label for="cust_email">Customer Email:</label>
-                <input type="email" class="form-control" name="cust_email" required>
+                <input type="email" class="form-control" name="cust_email" value="<?= isset($_SESSION['cust_email']) ? htmlspecialchars($_SESSION['cust_email']) : '' ?>" required>
             </div>
             <div class="col-md-6">
                 <label for="quantity">Quantity:</label>

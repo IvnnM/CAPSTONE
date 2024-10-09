@@ -5,6 +5,6 @@ session_start();
 session_unset();
 session_destroy();
 
-header("Location: /2CAPSTONE/index.php");
+header("Location: /3CAPSTONE/index.php");
 exit();
 ?>

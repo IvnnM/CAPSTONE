@@ -46,6 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $location_id = $_POST['location_id'];
     $quantity = $_POST['quantity'];
 
+    // Store the customer information in session variables
+    $_SESSION['cust_name'] = $cust_name;
+    $_SESSION['cust_num'] = $cust_num;
+    $_SESSION['cust_email'] = $cust_email;
+
     // Check if quantity is less than the minimum promo quantity
     if ($quantity < $min_promo_qty) {
         echo "<script>alert('Quantity must be at least " . $min_promo_qty . " for promo transactions.');</script>";
@@ -76,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Get the last inserted transaction ID
             $transaction_id = $conn->lastInsertId(); 
             echo "<script>alert('Transaction created successfully!'); window.location.href='transac_payment.php?transaction_id={$transaction_id}';</script>";
+            // Clear session variables after successful transaction
+            session_unset();
         } else {
             echo "<script>alert('Error: Could not create transaction.');</script>";
         }
@@ -207,11 +214,11 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="cust_name">Customer Name:</label>
-            <input type="text" class="form-control" name="cust_name" required>
+            <input type="text" class="form-control" name="cust_name" value="<?= $_SESSION['cust_name'] ?? '' ?>" required>
         </div>
         <div class="col-md-6">
             <label for="cust_num">Customer Number:</label>
-            <input type="text" class="form-control" name="cust_num" required>
+            <input type="text" class="form-control" name="cust_num" value="<?= $_SESSION['cust_num'] ?? '' ?>" required>
         </div>
     </div>
     <hr style="border-top: 1px solid white;">
@@ -235,7 +242,7 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="cust_email">Customer Email:</label>
-            <input type="email" class="form-control" name="cust_email" required>
+            <input type="email" class="form-control" name="cust_email" value="<?= $_SESSION['cust_email'] ?? '' ?>" required>
         </div>
         <div class="col-md-6">
             <label for="quantity">Quantity (min: <?= $min_promo_qty ?>):</label>
@@ -245,7 +252,7 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
     <div class="row mb-3">
         <div class="col-md-12">
             <label for="cust_note">Customer Note:</label>
-            <textarea name="cust_note" class="form-control" rows="4"></textarea>
+            <textarea name="cust_note" class="form-control" rows="4"><?= $_POST['cust_note'] ?? '' ?></textarea>
         </div>
     </div>
 

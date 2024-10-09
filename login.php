@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Successful login
             $_SESSION['EmpID'] = $employee['EmpID'];
             $_SESSION['EmpName'] = $employee['EmpName'];
-            header('Location: ./views/employee_view.php');
+            header('Location: ./views/admin_view.php');
             exit();
         } else {
             echo "<script>alert('Invalid employee credentials');</script>";
@@ -97,6 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </section>
   </div>
-  <?php include("./includes/admin/footer.php"); ?>
+  <?php include("./includes/personnel/footer.php"); ?>
 </body>
 </html>

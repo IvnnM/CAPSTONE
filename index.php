@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome | Employee Inventory & Sales Management</title>
+  <title>Welcome</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
@@ -25,23 +25,23 @@
       font-size: 18px;
       margin: 10px;
     }
-    .btn-personnel {
+    /* .btn-personnel {
       background-color: #007bff;
       color: white;
     }
     .btn-customer {
       background-color: #28a745;
       color: white;
-    }
+    } */
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Welcome to Inventory & Sales Management</h1>
+    <h1>WELCOME TO <span><strong>DKAT</strong></span> WEBSITE</h1>
     <div>
-      <a href="login.php"><button class="btn btn-personnel">Personnel Access</button></a>
-      <a href="./views/customer_view.php"><button class="btn btn-customer">Get Started as Customer</button></a>
+      <a href="login.php"><button class="btn btn-outline-primary">Personnel Access</button></a>
+      <a href="./views/customer_view.php"><button class="btn btn-outline-success">Get Started as Customer</button></a>
     </div>
   </div>
 

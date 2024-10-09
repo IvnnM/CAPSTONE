@@ -9,7 +9,7 @@
       <a href="#" class="text-light me-3"><i class="bi bi-envelope"></i></a>
       <a href="#" class="text-light"><i class="bi bi-telephone"></i></a>
     </div>
-    <a class="logout-link" href="/2CAPSTONE/logout.php">Logout</a>
+    <a class="logout-link" href="/3CAPSTONE/logout.php">Logout</a>
     <br><br>
   </div>
 </footer>

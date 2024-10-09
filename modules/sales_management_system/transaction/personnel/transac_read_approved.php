@@ -50,22 +50,22 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </nav>
 
         <?php if (!empty($transactions)): ?>
-            <h4 class="mt-4">Approved Transaction Records</h4>
+            <h4 class="mt-4">To Ship</h4>
             <div class="container">
                 <div class="table-responsive">
                     <table id="transactionsTable" class="display table table-bordered table-striped table-hover fixed-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Customer Name</th>
-                                <th>Customer Number</th>
-                                <th>Customer Email</th>
-                                <th>Product Name</th>
-                                <th>Qty</th>
+                                <th>Name</th>
+                                <th>Number</th>
+                                <th>Email</th>
+                                <th>Product</th>
+                                <th>Qtty</th>
                                 <th>Price</th>
-                                <th>Total Price</th>
-                                <th>Status</th>
-                                <th>Transaction Date</th>
+                                <th>Delivery Fee</th> <!-- Added Delivery Fee Column -->
+                                <th>Total Cost</th>
+                                <th>Date Approved</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -79,23 +79,21 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Price']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['DeliveryFee']) ?></td> <!-- Display Delivery Fee -->
                                     <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['Status']) ?></td>
                                     <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
                                     <td>
                                         <a href="../transac_update.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>&action=deliver" 
-                                        onclick="return confirm('Are you sure you want to mark this transaction as delivered?');">
+                                           onclick="return confirm('Are you sure you want to mark this transaction as delivered?');">
                                             Complete Transaction
                                         </a>
                                     </td>
-
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
-
         <?php else: ?>
             <p class="mt-4">No approved transactions found.</p>
         <?php endif; ?>

@@ -6,8 +6,20 @@ include("../config/database.php");
 // Check if the user is logged in as admin or employee
 if (isset($_SESSION['AdminID'])) {
     $_SESSION['AdminRole'] = 'Admin';
+    // Fetch additional admin details, if needed (e.g., AdminName)
+    $adminID = $_SESSION['AdminID'];
+    $stmt = $conn->prepare("SELECT AdminName FROM AdminTb WHERE AdminID = :adminID");
+    $stmt->execute(['adminID' => $adminID]);
+    $adminData = $stmt->fetch(PDO::FETCH_ASSOC);
+    $_SESSION['AdminName'] = $adminData['AdminName'] ?? 'Admin';  // Use AdminName instead of Name
 } elseif (isset($_SESSION['EmpID'])) {
     $_SESSION['AdminRole'] = 'Employee';
+    // Fetch additional employee details, if needed (e.g., EmployeeName)
+    $empID = $_SESSION['EmpID'];
+    $stmt = $conn->prepare("SELECT EmpName FROM EmpTb WHERE EmpID = :empID");  // Use EmpName instead of Name
+    $stmt->execute(['empID' => $empID]);
+    $employeeData = $stmt->fetch(PDO::FETCH_ASSOC);
+    $_SESSION['AdminName'] = $employeeData['EmpName'] ?? 'Employee';  // Use EmpName instead of Name
 } else {
     header("Location: ../index.php");
     exit();
@@ -23,7 +35,7 @@ if (isset($_SESSION['AdminID'])) {
 </head>
 <body>
 
-  <?php include("../includes/admin/header.php"); ?>
+  <?php include("../includes/personnel/header.php"); ?>
 
   <div class="page p-3 mt-3 mb-3" id="Overview">
       <h1>Dashboard</h1>
@@ -180,12 +192,13 @@ if (isset($_SESSION['AdminID'])) {
                         <i class="bi bi-person-circle" style="font-size: 80px;"></i>
                     </div>
                     <div>
-                        <h4 class="card-title mb-3" style="margin: 0; text-align: left;"><strong><?php echo htmlspecialchars($_SESSION['AdminRole']); ?></strong>
-                        </h4>
+                        <h4 class="card-title mb-3" style="margin: 0; text-align: left;"><strong><?php echo htmlspecialchars($_SESSION['AdminRole']); ?></strong></h4>
                         <p class="mb-1" style="margin: 0;"><strong>Name:</strong> <?php echo htmlspecialchars($_SESSION['AdminName']); ?></p>
+                        <?php if (isset($_SESSION['EmpID'])): ?>
+                            <p class="mb-1" style="margin: 0;"><strong>Employee ID:</strong> <?php echo htmlspecialchars($_SESSION['EmpID']); ?></p>
+                        <?php endif; ?>
                     </div>
                 </div>
-
                 </a>
             </div>
         </div>
@@ -194,7 +207,7 @@ if (isset($_SESSION['AdminID'])) {
 
   <br><br>
 
-  <?php include("../includes/admin/footer.php"); ?>
+  <?php include("../includes/personnel/footer.php"); ?>
 
 
 </body>

@@ -63,10 +63,10 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Product Name</th>
                                 <th>Qty</th>
                                 <th>Price</th>
+                                <th>Delivery Fee</th>
                                 <th>Total Price</th>
                                 <th>Status</th>
-                                <th>Transaction Date</th>
-                                <!-- <th>Action</th> -->
+                                <th>Date Delivered</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,17 +79,10 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Price']) ?></td>
+                                    <td><?= htmlspecialchars($transaction['DeliveryFee']) ?></td> <!-- Display Delivery Fee -->
                                     <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
                                     <td><?= htmlspecialchars($transaction['Status']) ?></td>
                                     <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                                    <!-- <td>
-                                        <a href="../transac_update.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>&action=approve" 
-                                        class="btn btn-secondary btn-sm" 
-                                        onclick="return confirm('Are you sure you want to revert this transaction to approved?');">Item Replacement</a>
-                                        <a href="../transac_update.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>&action=approved" 
-                                        class="btn btn-secondary btn-sm" 
-                                        onclick="return confirm('Are you sure you want to revert this transaction to approved?');">Failed to deliver</a>
-                                    </td> -->
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

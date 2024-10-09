@@ -2,8 +2,8 @@
 session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
-// $_SESSION['EmpID']='1';
-$_SESSION['AdminID']='1';
+$_SESSION['EmpID']='1';
+// $_SESSION['AdminID']='1';
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
     echo "<script>alert('You must be logged in to access this page.'); 
@@ -42,8 +42,6 @@ $stmt->execute();
     <title>Product Category List</title>
 </head>
 <body>
-<input type="hidden" id="userType" value="<?= isset($_SESSION['AdminID']) ? 'AdminID' : (isset($_SESSION['EmpID']) ? 'EmpID' : 'Guest') ?>">
-
     <div class="container-fluid">
         <div class="sticky-top bg-light pb-2">
             <h3>Product Category List</h3>

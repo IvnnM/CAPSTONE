@@ -9,13 +9,13 @@ $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $selectedCategory = isset($_GET['category']) ? $_GET['category'] : null;
 
 // Use PDO to fetch data based on the selected category
-$sql = "SELECT o.OnhandID, o.OnhandQty, o.RetailPrice, o.PromoPrice, p.ProductImage, p.ProductName 
+$sql = "SELECT o.OnhandID, o.OnhandQty, o.RetailPrice, o.PromoPrice, p.ProductImage, p.ProductName, p.ProductDesc 
         FROM OnhandTb o 
         JOIN InventoryTb i ON o.InventoryID = i.InventoryID 
         JOIN ProductTb p ON i.ProductID = p.ProductID";
 
 if ($selectedCategory) {
-    $sql .= " WHERE p.CategoryID = :categoryID"; // Assuming CategoryID is in ProductTb
+    $sql .= " WHERE p.CategoryID = :categoryID";
 }
 
 $stmt = $conn->prepare($sql);
@@ -29,20 +29,23 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Products List</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
-    <div class="container-fluid mt-5">
+    <div class="container-fluid">
         <!-- Category Dropdown -->
-        <div class="dropdown mb-3">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="dropdown p-1">
+            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Select Category
             </button>
             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-                <li><a class="dropdown-item" href="?">All Products</a></li> <!-- Link to show all products -->
+                <li><a class="dropdown-item" href="?">All Products</a></li>
                 <?php foreach ($categories as $category): ?>
                     <li>
                         <a class="dropdown-item" href="?category=<?php echo htmlspecialchars($category['CategoryID']); ?>">
@@ -55,31 +58,60 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         <!-- Products List -->
         <div class="row">
-            <?php 
-            // Define the base URL for images if necessary
-            $base_url = '/2CAPSTONE/modules/inventory_management_system/product/';
-            foreach ($products as $row): 
-                // Construct the image path based on the stored ProductImage value
+            <?php
+            $base_url = '/3CAPSTONE/modules/inventory_management_system/product/';
+            foreach ($products as $row):
                 $image_path = $base_url . htmlspecialchars($row['ProductImage']);
             ?>
-                <div class="col-lg-3 mt-3 mb-3">
-                    <div class="card border-info p-2">
+                <div class="col-lg-3 mb-1 mt-1">
+                    <div class="card border-info h-100 p-1">
                         <img src="<?= $image_path ?>" alt="<?= htmlspecialchars($row['ProductName']) ?>" class="card-img-top" style="width:100%; height: 200px; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title"><?= htmlspecialchars($row['ProductName']) ?></h5>
+                            <p class="card-text text-truncate"><?= htmlspecialchars($row['ProductDesc']) ?></p>
+                            <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#descModal<?= $row['OnhandID'] ?>">
+                                Read more
+                            </button>
                             <p class="card-text">
                                 Retail Price: <?= htmlspecialchars($row['RetailPrice']) ?> <br>
                                 Promo Price: <?= htmlspecialchars($row['PromoPrice']) ?> <br>
                                 Available Quantity: <?= htmlspecialchars($row['OnhandQty']) ?>
                             </p>
-                            
+
                             <?php if ($row['OnhandQty'] > 0): ?>
-                                <a href="../modules/sales_management_system/transaction/transac_create_retail.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-primary">Buy in Retail</a>
-                                <a href="../modules/sales_management_system/transaction/transac_create_promo.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-warning">Buy in Promo</a>
+                                <?php if (isset($_SESSION['cust_email'])): ?>
+                                    <!-- Buy Buttons visible only if the customer session is set -->
+                                    <a href="../modules/sales_management_system/transaction/transac_create_retail.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-primary">Buy in Retail</a>
+                                    <a href="../modules/sales_management_system/transaction/transac_create_promo.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-warning">Buy in Promo</a>
+                                <?php else: ?>
+                                    <!-- Message or disabled buttons if the customer session is not set -->
+                                    <p class="text-danger">Please submit your information to make a purchase.</p>
+                                    <a href="#" class="btn btn-secondary" disabled>Buy in Retail</a>
+                                    <a href="#" class="btn btn-secondary" disabled>Buy in Promo</a>
+                                <?php endif; ?>
                             <?php else: ?>
+                                <!-- Out of stock buttons (disabled) -->
                                 <button class="btn btn-secondary" disabled>Out Of Stock</button>
                                 <button class="btn btn-warning" disabled>Out Of Stock</button>
                             <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for full product description -->
+                <div class="modal fade" id="descModal<?= $row['OnhandID'] ?>" tabindex="-1" aria-labelledby="descModalLabel<?= $row['OnhandID'] ?>" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="descModalLabel<?= $row['OnhandID'] ?>">Product Description</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <?= htmlspecialchars($row['ProductDesc']) ?>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,8 +119,6 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
