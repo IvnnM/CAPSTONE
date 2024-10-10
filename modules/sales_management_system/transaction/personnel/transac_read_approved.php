@@ -19,7 +19,7 @@ $sql = "SELECT t.*, o.OnhandQty, o.RetailPrice, o.PromoPrice, p.ProductName
         JOIN OnhandTb o ON t.OnhandID = o.OnhandID
         JOIN InventoryTb i ON o.InventoryID = i.InventoryID
         JOIN ProductTb p ON i.ProductID = p.ProductID
-        WHERE t.Status = 'Approved'";
+        WHERE t.Status = 'ToShip'";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();
@@ -31,20 +31,20 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Approved Transactions</title>
+    <title>To Ship Transactions</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h3>Approved Transactions</h3>
+        <h3>To Ship Transactions</h3>
         <!-- Breadcrumb Navigation -->
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Transaction">Home</a></li>
                 <li class="breadcrumb-item"><a href="transac_read_pending.php">Pending Transactions</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Approved Transactions</li>
+                <li class="breadcrumb-item active" aria-current="page">To Ship Transactions</li>
                 <li class="breadcrumb-item"><a href="transac_read_delivered.php">Delivered Transactions</a></li>
             </ol>
         </nav>
@@ -65,7 +65,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th>Price</th>
                                 <th>Delivery Fee</th> <!-- Added Delivery Fee Column -->
                                 <th>Total Cost</th>
-                                <th>Date Approved</th>
+                                <th>Date Ship</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -95,7 +95,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
         <?php else: ?>
-            <p class="mt-4">No approved transactions found.</p>
+            <p class="mt-4">No To Ship transactions found.</p>
         <?php endif; ?>
     </div>
 

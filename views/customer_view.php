@@ -44,19 +44,7 @@ $cust_email = $_SESSION['cust_email'] ?? '';
         <div class="container-fluid">
             <div class="row">
                 <div class="col col-7">
-                    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                            <img src="..." class="d-block w-100" alt="...">
-                            </div>
-                            <div class="carousel-item">
-                            <img src="..." class="d-block w-100" alt="...">
-                            </div>
-                            <div class="carousel-item">
-                            <img src="..." class="d-block w-100" alt="...">
-                            </div>
-                        </div>
-                    </div>
+                    <?php include('../modules/sales_management_system/transaction/cart/cart_read.php');?>
                 </div>
                 <div class="col col-5">
                     <?php if (!isset($_SESSION['cust_email'])): ?>

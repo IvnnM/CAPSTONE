@@ -80,19 +80,16 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                             <?php if ($row['OnhandQty'] > 0): ?>
                                 <?php if (isset($_SESSION['cust_email'])): ?>
-                                    <!-- Buy Buttons visible only if the customer session is set -->
-                                    <a href="../modules/sales_management_system/transaction/transac_create_retail.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-primary">Buy in Retail</a>
-                                    <a href="../modules/sales_management_system/transaction/transac_create_promo.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-warning">Buy in Promo</a>
+                                    <!-- Add to Cart Button visible only if the customer session is set -->
+                                    <a href="../modules/sales_management_system/transaction/cart/add_to_cart.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-success">Add to Cart</a>
                                 <?php else: ?>
-                                    <!-- Message or disabled buttons if the customer session is not set -->
-                                    <p class="text-danger">Please submit your information to make a purchase.</p>
-                                    <a href="#" class="btn btn-secondary" disabled>Buy in Retail</a>
-                                    <a href="#" class="btn btn-secondary" disabled>Buy in Promo</a>
+                                    <!-- Message or disabled button if the customer session is not set -->
+                                    <p class="text-danger">Please submit your information to add items to the cart.</p>
+                                    <a href="#" class="btn btn-secondary" disabled>Add to Cart</a>
                                 <?php endif; ?>
                             <?php else: ?>
-                                <!-- Out of stock buttons (disabled) -->
+                                <!-- Out of stock button (disabled) -->
                                 <button class="btn btn-secondary" disabled>Out Of Stock</button>
-                                <button class="btn btn-warning" disabled>Out Of Stock</button>
                             <?php endif; ?>
                         </div>
                     </div>

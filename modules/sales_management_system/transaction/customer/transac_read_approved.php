@@ -1,35 +1,17 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
-// Determine the search value, either from URL or form submission
-$search_value = '';
-if (isset($_GET['cust_num']) && !empty($_GET['cust_num'])) {
-    $search_value = trim($_GET['cust_num']);
-} elseif (isset($_GET['search_value']) && !empty($_GET['search_value'])) {
-    $search_value = trim($_GET['search_value']);
-}
-
-// Initialize the transactions array
-$transactions = [];
-
-// Fetch the transactions only if there is a search value
-if (!empty($search_value)) {
-    $sql = "SELECT t.*, o.OnhandQty, o.RetailPrice, o.PromoPrice, p.ProductName
-            FROM TransacTb t
-            JOIN OnhandTb o ON t.OnhandID = o.OnhandID
-            JOIN InventoryTb i ON o.InventoryID = i.InventoryID
-            JOIN ProductTb p ON i.ProductID = p.ProductID
-            WHERE (t.CustNum LIKE :search_value OR t.CustEmail LIKE :search_value) 
-            AND t.Status = 'Approved'";
-
-    $stmt = $conn->prepare($sql);
-    $search_param = '%' . $search_value . '%'; // Wildcard search for partial matches
-    $stmt->bindParam(':search_value', $search_param);
-    $stmt->execute();
-    $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+// Fetch pending transactions for the current customer
+$cust_email = $_SESSION['cust_email'] ?? '';
+$query = "SELECT TransacID, CustName, CustNum, CustEmail, LocationID, OnhandID, Price, Quantity, DeliveryFee, TotalPrice, TransactionDate 
+          FROM TransacTb 
+          WHERE CustEmail = :cust_email AND Status = 'ToShip' 
+          ORDER BY TransactionDate DESC";
+$stmt = $conn->prepare($query);
+$stmt->execute(['cust_email' => $cust_email]);
+$pending_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -38,73 +20,85 @@ if (!empty($search_value)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Transactions</title>
-    <style>
-        /* Add some basic styling */
-        .container {
-            margin-top: 30px;
-        }
-        .table {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <h3>Search Approved Transactions</h3>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="../../../../views/customer_view.php#Orders">Home</a></li>
-                <li class="breadcrumb-item"><a href="transac_read_pending.php">To Pay</a></li>
-                <li class="breadcrumb-item active" aria-current="page">To Receive</li>
-                <li class="breadcrumb-item"><a href="transac_read_delivered.php">Completed</a></li>
-
-            </ol>
-        </nav>
-        <form method="GET" action="">
-            <div class="form-group">
-                <label for="search_value">Enter Customer Number or Email:</label>
-                <input type="text" name="search_value" id="search_value" class="form-control" 
-                       value="<?= htmlspecialchars($search_value) ?>" required>
+    <div class="container-fluid">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Pending Transactions</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/customer_view.php#Orders">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Pending Transactions</li>
+                </ol>
+            </nav>
+            <hr>
+            <!-- Button for Navigation -->
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary" onclick="window.history.back();">Back</button>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Search</button>
-        </form>
-        <?php if (!empty($transactions)): ?>
-            <h4 class="mt-4">Pending Transaction Records</h4>
-            <table class="table table-bordered table-striped">
-                <thead>
+        </div>
+        <!-- Table to display pending transactions -->
+        <div class="table-responsive">
+            <table id="transactionTable" class="table table-light table-hover border-secondary pt-2">
+                <thead class="table-info">
                     <tr>
                         <th>Transaction ID</th>
                         <th>Customer Name</th>
                         <th>Customer Number</th>
-                        <th>Customer Email</th>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
+                        <th>Email</th>
+                        <th>Location ID</th>
+                        <th>Onhand ID</th>
                         <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Delivery Fee</th>
                         <th>Total Price</th>
-                        <th>Status</th>
                         <th>Transaction Date</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($transactions as $transaction): ?>
+                    <?php if (empty($pending_transactions)): ?>
                         <tr>
-                            <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
-                            <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Price']) ?></td>
-                            <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
-                            <td><?= htmlspecialchars($transaction['Status']) ?></td>
-                            <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                            <td colspan="11">No pending transactions found.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($pending_transactions as $transaction): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustName']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
+                                <td><?= htmlspecialchars($transaction['LocationID']) ?></td>
+                                <td><?= htmlspecialchars($transaction['OnhandID']) ?></td>
+                                <td><?= htmlspecialchars($transaction['Price']) ?></td>
+                                <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
+                                <td><?= htmlspecialchars($transaction['DeliveryFee']) ?></td>
+                                <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
+                                <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
-        <?php elseif ($search_value): ?>
-            <p class="mt-4">No pending transactions found for the given Customer Number or Email.</p>
-        <?php endif; ?>
+        </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#transactionTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 5, // Default number of entries per page
+                "lengthMenu": [5, 10, 25, 50, 100], // Options for number of entries
+            });
+        });
+    </script>
 </body>
 </html>

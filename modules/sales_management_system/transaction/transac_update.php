@@ -10,7 +10,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     if (isset($_GET['action'])) {
         switch ($_GET['action']) {
             case 'approve':
-                $new_status = 'Approved';
+                $new_status = 'ToShip';
                 break;
             case 'deliver':
                 $new_status = 'Delivered';
@@ -30,7 +30,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         $conn->beginTransaction();
 
         // If the new status is 'Approved', we need to update the quantity in the OnhandTb
-        if ($new_status === 'Approved') {
+        if ($new_status === 'ToShip') {
             // Fetch the transaction details to get the quantity and OnhandID
             $transac_query = "SELECT Quantity, OnhandID FROM TransacTb WHERE TransacID = :transac_id";
             $transac_stmt = $conn->prepare($transac_query);
