@@ -1,17 +1,14 @@
 <?php
 session_start();
-include("../../../../includes/cdn.html"); 
-include("../../../../config/database.php");
+include("./../../../../includes/cdn.html");
+include("./../../../../config/database.php");
 
-// Check if the customer is logged in
-if (!isset($_SESSION['cust_email'])) {
-    echo "<p class='text-danger'>Please log in to view your cart.</p>";
-    exit();
-}
+// Fetch session data for customer email and number
+$cust_email = $_SESSION['cust_email'];
+$cust_num = $_SESSION['cust_num']; // Assuming CustNum is stored in the session
 
 // Fetch cart items for the current customer
-$cust_email = $_SESSION['cust_email'];
-$query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice, o.OnhandID
+$query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice, o.MinPromoQty, o.PromoPrice, o.OnhandID
           FROM CartTb c
           JOIN OnhandTb o ON c.OnhandID = o.OnhandID
           JOIN InventoryTb i ON o.InventoryID = i.InventoryID
@@ -21,10 +18,11 @@ $stmt = $conn->prepare($query);
 $stmt->execute(['cust_email' => $cust_email]);
 $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Check if the cart is empty
-if (empty($cart_items)) {
-    echo "<script>alert('Your cart is empty!'); window.location.href='customer_view.php';</script>";
-    exit();
+// Calculate total price
+$total_price = 0;
+foreach ($cart_items as $item) {
+    $price_to_use = $item['Quantity'] >= $item['MinPromoQty'] ? $item['PromoPrice'] : $item['RetailPrice'];
+    $total_price += $price_to_use * $item['Quantity'];
 }
 
 // Fetch store location and delivery fee from StoreInfoTb
@@ -33,74 +31,43 @@ $store_stmt = $conn->prepare($store_query);
 $store_stmt->execute();
 $store = $store_stmt->fetch(PDO::FETCH_ASSOC);
 
-// Handle form submission for creating transactions
+// Handle checkout form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $cust_name = $_SESSION['cust_name']; // Assuming you store this in session
-  $cust_num = $_SESSION['cust_num']; // Assuming you store this in session
-  $location_id = $_POST['location_id'];
-  $cust_note = $_POST['cust_note']; // New field for customer note
-
-  // Initialize a flag to track if all transactions were successful
-  $allTransactionsSuccessful = true;
-
-  // Loop through each item in the cart and create a transaction
-  foreach ($cart_items as $item) {
-    $quantity = $item['Quantity']; // Quantity from cart item
-    $onhand_id = $item['OnhandID']; // Onhand ID from cart item
-    $price = $item['RetailPrice']; // Price from cart item
-
-    // Calculate delivery fee based on the distance between the customer's location and the store's location
-    $delivery_fee = calculateDeliveryFee($location_id, $store['LocationID'], $conn, $store['StoreDeliveryFee']);
+    $locationID = trim($_POST['location_id']);
+    $custNote = trim($_POST['cust_note']);
     
-    $total_price = ($price * $quantity) + $delivery_fee;
+    // Calculate delivery fee based on the distance between the customer's location and the store's location
+    $delivery_fee = calculateDeliveryFee($locationID, $store['LocationID'], $conn, $store['StoreDeliveryFee']);
+    
+    $total_price_with_delivery = $total_price + $delivery_fee;
 
-    // Insert the new transaction record including CustNote
-    $insert_query = "INSERT INTO TransacTb (CustName, CustNum, CustEmail, LocationID, OnhandID, Price, Quantity, DeliveryFee, TotalPrice, TransactionDate, Status, CustNote) 
-                    VALUES (:cust_name, :cust_num, :cust_email, :location_id, :onhand_id, :price, :quantity, :delivery_fee, :total_price, NOW(), 'Pending', :cust_note)";
-    $insert_stmt = $conn->prepare($insert_query);
-    $insert_stmt->bindParam(':cust_name', $cust_name);
-    $insert_stmt->bindParam(':cust_num', $cust_num);
-    $insert_stmt->bindParam(':cust_email', $_SESSION['cust_email']);
-    $insert_stmt->bindParam(':location_id', $location_id, PDO::PARAM_INT);
-    $insert_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
-    $insert_stmt->bindParam(':price', $price);
-    $insert_stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-    $insert_stmt->bindParam(':delivery_fee', $delivery_fee, PDO::PARAM_STR);
-    $insert_stmt->bindParam(':total_price', $total_price, PDO::PARAM_STR);
-    $insert_stmt->bindParam(':cust_note', $cust_note, PDO::PARAM_STR); // Bind the customer note
+    // Insert data into TransacTb
+    $insert_query = "INSERT INTO TransacTb (CustName, CustEmail, CustNum, LocationID, DeliveryFee, TotalPrice, Status, CustNote) 
+                    VALUES (:cust_name, :cust_email, :cust_num, :location_id, :delivery_fee, :total_price, 'Pending', :cust_note)";
+    $stmt = $conn->prepare($insert_query);
+    $stmt->execute([
+        'cust_name' => $_SESSION['cust_name'],
+        'cust_email' => $cust_email,
+        'cust_num' => $cust_num,
+        'location_id' => $locationID,
+        'delivery_fee' => $delivery_fee,
+        'total_price' => $total_price_with_delivery,
+        'cust_note' => $custNote
+    ]);
 
-    if ($insert_stmt->execute()) {
-        // Update OnhandQty in OnhandTb after transaction creation
+    // Update OnhandTb to subtract the purchased quantity
+    foreach ($cart_items as $item) {
         $update_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity WHERE OnhandID = :onhand_id";
         $update_stmt = $conn->prepare($update_query);
-        $update_stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-        $update_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
-        
-        if (!$update_stmt->execute()) {
-            $allTransactionsSuccessful = false; // Set flag to false if the update fails
-            echo "<script>alert('Error: Could not update Onhand quantity for product with OnhandID $onhand_id.');</script>";
-        }
-    } else {
-        $allTransactionsSuccessful = false; // Set flag to false if any transaction fails
-        echo "<script>alert('Error: Could not create transaction for product with OnhandID $onhand_id.');</script>";
+        $update_stmt->execute([
+            'quantity' => $item['Quantity'],
+            'onhand_id' => $item['OnhandID']
+        ]);
     }
-  }
 
-
-  // If all transactions were successful, delete cart items
-  if ($allTransactionsSuccessful) {
-      $delete_query = "DELETE FROM CartTb WHERE CustEmail = :cust_email";
-      $delete_stmt = $conn->prepare($delete_query);
-      $delete_stmt->bindParam(':cust_email', $_SESSION['cust_email']);
-      
-      if ($delete_stmt->execute()) {
-          echo "<script>alert('Transactions created successfully and cart items removed!'); window.location.href='../transac_payment.php';</script>";
-      } else {
-          echo "<script>alert('Error: Could not remove cart items.');</script>";
-      }
-  }
+    // Redirect or provide a success message
+    echo "<script>alert('Checkout completed successfully.'); window.location.href = '../../../../views/customer_view.php';</script>";
 }
-
 
 // Function to calculate delivery fee based on distance
 function calculateDeliveryFee($customerLocationID, $storeLocationID, $conn, $storeDeliveryFee) {
@@ -127,7 +94,6 @@ function calculateDeliveryFee($customerLocationID, $storeLocationID, $conn, $sto
         $distance = haversineGreatCircleDistance($cust_lat, $cust_lng, $store_lat, $store_lng);
 
         // Calculate the delivery fee based on distance and store's delivery fee
-        // Set minimum delivery fee to StoreDeliveryFee
         $calculated_fee = $storeDeliveryFee * $distance; // Fee per km
         return max($calculated_fee, $storeDeliveryFee); // Ensure minimum fee is StoreDeliveryFee
     }
@@ -157,112 +123,93 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
 }
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Retail Transaction</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Fetch and populate province and city data
-            $.ajax({
-                url: "../../../../includes/get_location_data.php", // Adjust the path as necessary
-                method: "GET",
-                dataType: "json",
-                success: function(data) {
-                    var provinces = data.provinces;
-                    var cities = data.cities;
-                    var provinceDropdown = $("#province");
-                    var cityDropdown = $("#city");
+<script>
+    $(document).ready(function() {
+        // Fetch and populate province and city data
+        $.ajax({
+            url: "../../../../includes/get_location_data.php",
+            method: "GET",
+            dataType: "json",
+            success: function(data) {
+                var provinces = data.provinces;
+                var cities = data.cities;
+                var provinceDropdown = $("#province");
+                var cityDropdown = $("#city");
 
-                    // Populate province dropdown
-                    provinces.forEach(function(province) {
-                        provinceDropdown.append(
-                            $("<option>").val(province.Province).text(province.Province)
-                        );
+                // Populate province dropdown
+                provinces.forEach(function(province) {
+                    provinceDropdown.append(
+                        $("<option>").val(province.Province).text(province.Province)
+                    );
+                });
+                console.log(data);
+
+                // Event listener for province change
+                provinceDropdown.change(function() {
+                    var selectedProvince = $(this).val();
+                    cityDropdown.empty();
+                    cityDropdown.append("<option value=''>Select City</option>");
+
+                    // Filter and populate city dropdown based on selected province
+                    cities.forEach(function(city) {
+                        if (city.Province === selectedProvince) {
+                            cityDropdown.append(
+                                $("<option>").val(city.LocationID).text(city.City)
+                            );
+                        }
                     });
-
-                    // Event listener for province change
-                    provinceDropdown.change(function() {
-                        var selectedProvince = $(this).val();
-                        updateCityDropdown(selectedProvince, null, cities);
-                    });
-
-                    // Function to update city dropdown
-                    function updateCityDropdown(province, selectedCity, cities) {
-                        cityDropdown.empty(); // Clear existing cities
-                        cityDropdown.append("<option value=''>Select City</option>");
-                        
-                        // Filter and populate city dropdown based on selected province
-                        cities.forEach(function(city) {
-                            if (city.Province === province) {
-                                var cityOption = $("<option>").val(city.LocationID).text(city.City);
-                                cityDropdown.append(cityOption);
-                            }
-                        });
-                    }
-                },
-                error: function() {
-                    alert("Error: Could not retrieve location data.");
-                }
-            });
-
-            // Update LocationID based on selected city
-            $("#city").change(function() {
-                $("#location_id").val($(this).val());
-            });
+                });
+            },
+            error: function() {
+                alert("Error: Could not retrieve location data.");
+            }
         });
-    </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.min.css">
+
+        // Update LocationID based on selected city
+        $("#city").change(function() {
+            $("#location_id").val($(this).val());
+        });
+    });
+</script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h2>Create Retail Transaction</h2>
-        <form method="POST" action="">
-            <div class="mb-3" hidden>
-                <label for="location_id" class="form-label">Location ID:</label>
-                <input type="text" id="location_id" name="location_id" class="form-control" required readonly>
-            </div>
-            <div class="mb-3">
-                <label for="cust_note" class="form-label">Customer Note:</label>
-                <textarea id="cust_note" name="cust_note" class="form-control" rows="3"></textarea>
-            </div>
+    <div class="container mt-5">
+        <h2>Checkout</h2>
+        
+        <form method="POST">
             <div class="mb-3">
                 <label for="province" class="form-label">Province:</label>
-                <select id="province" class="form-select" required>
+                <select id="province" name="province" class="form-select" required>
                     <option value="">Select Province</option>
                 </select>
             </div>
+            
             <div class="mb-3">
                 <label for="city" class="form-label">City:</label>
-                <select id="city" class="form-select" required>
+                <select id="city" name="city" class="form-select" required>
                     <option value="">Select City</option>
                 </select>
+                <!-- Hidden field to store selected LocationID -->
+                <input type="hidden" name="location_id" id="location_id" required>
             </div>
-            <button type="submit" class="btn btn-primary">Create Transaction</button>
-        </form>
 
-        <h3>Your Cart</h3>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Added Date</th>
-                    <th>Retail Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($cart_items as $item): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($item['ProductName']); ?></td>
-                        <td><?php echo htmlspecialchars($item['Quantity']); ?></td>
-                        <td><?php echo htmlspecialchars($item['AddedDate']); ?></td>
-                        <td><?php echo htmlspecialchars($item['RetailPrice']); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <div class="mb-3">
+                <label for="cust_note" class="form-label">Customer Note:</label>
+                <textarea class="form-control" name="cust_note" id="cust_note" rows="3" placeholder="Any specific instructions"></textarea>
+            </div>
+
+            <h5>Total Price: <?= number_format($total_price, 2) ?></h5>
+
+            <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
+        </form>
     </div>
 </body>
 </html>

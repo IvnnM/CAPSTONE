@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php");
+
 include("./../../../config/database.php");
 
 // Fetch store details

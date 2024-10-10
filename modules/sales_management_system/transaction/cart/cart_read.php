@@ -1,7 +1,15 @@
 <?php
 
+// Check if customer session is set
+// if (!isset($_SESSION['cust_email'])) {
+//     header('Location: ../../../../views/customer_view.php');
+//     exit();
+// }
+
+// $cust_email = $_SESSION['cust_email'];
+
 // Fetch cart items for the current customer
-$query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice
+$query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice, o.MinPromoQty, o.PromoPrice
           FROM CartTb c
           JOIN OnhandTb o ON c.OnhandID = o.OnhandID
           JOIN InventoryTb i ON o.InventoryID = i.InventoryID
@@ -14,9 +22,10 @@ $cart_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Calculate total price
 $total_price = 0;
 foreach ($cart_items as $item) {
-    $total_price += $item['RetailPrice'] * $item['Quantity'];
+    // Determine the applicable price
+    $price_to_use = $item['Quantity'] >= $item['MinPromoQty'] ? $item['PromoPrice'] : $item['RetailPrice'];
+    $total_price += $price_to_use * $item['Quantity'];
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -26,9 +35,10 @@ foreach ($cart_items as $item) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <link rel="stylesheet" href="../../../../includes/cdn.php"> <!-- Adjust as necessary -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <h2>Your Cart</h2>
         <?php if (count($cart_items) > 0): ?>
             <table class="table table-bordered">
@@ -44,12 +54,16 @@ foreach ($cart_items as $item) {
                 </thead>
                 <tbody>
                     <?php foreach ($cart_items as $item): ?>
+                        <?php 
+                        // Determine the applicable price
+                        $price_to_use = $item['Quantity'] >= $item['MinPromoQty'] ? $item['PromoPrice'] : $item['RetailPrice'];
+                        ?>
                         <tr>
                             <td><?= htmlspecialchars($item['ProductName']) ?></td>
                             <td><?= htmlspecialchars($item['Quantity']) ?></td>
                             <td><?= htmlspecialchars($item['AddedDate']) ?></td>
-                            <td><?= number_format($item['RetailPrice'], 2) ?></td>
-                            <td><?= number_format($item['RetailPrice'] * $item['Quantity'], 2) ?></td> <!-- Total price for each item -->
+                            <td><?= number_format($price_to_use, 2) ?></td>
+                            <td><?= number_format($price_to_use * $item['Quantity'], 2) ?></td> <!-- Total price for each item -->
                             <td>
                                 <a href="../modules/sales_management_system/transaction/cart/remove_item.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-danger">Remove</a>
                                 <a href="../modules/sales_management_system/transaction/cart/update_cart.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-primary">Update</a>

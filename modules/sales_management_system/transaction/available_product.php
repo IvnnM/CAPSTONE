@@ -81,7 +81,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php if ($row['OnhandQty'] > 0): ?>
                                 <?php if (isset($_SESSION['cust_email'])): ?>
                                     <!-- Add to Cart Button visible only if the customer session is set -->
-                                    <a href="../modules/sales_management_system/transaction/cart/add_to_cart.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>" class="btn btn-success">Add to Cart</a>
+                                    <a href="../modules/sales_management_system/transaction/cart/add_to_cart.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>&cust_email=<?= htmlspecialchars($_SESSION['cust_email']) ?>" class="btn btn-success">Add to Cart</a>
                                 <?php else: ?>
                                     <!-- Message or disabled button if the customer session is not set -->
                                     <p class="text-danger">Please submit your information to add items to the cart.</p>

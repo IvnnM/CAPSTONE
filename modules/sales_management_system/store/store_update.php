@@ -1,6 +1,5 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
 include("./../../../config/database.php");
 // $_SESSION['EmpID']='1';
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
