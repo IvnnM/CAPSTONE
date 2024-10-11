@@ -1,15 +1,16 @@
 <?php
+session_start();
 include("./../../../config/database.php");
 
-// Check if a transaction ID is provided in the URL
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $transac_id = $_GET['id'];
+// Check if a transaction ID is provided in the POST request
+if (isset($_POST['transac_id']) && !empty($_POST['transac_id'])) {
+    $transac_id = $_POST['transac_id'];
     $new_status = '';
 
     // Determine the new status based on the action specified
-    if (isset($_GET['action'])) {
-        switch ($_GET['action']) {
-            case 'approve':
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'ToShip':
                 $new_status = 'ToShip';
                 break;
             case 'deliver':
@@ -29,10 +30,10 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Start a transaction to ensure data integrity
         $conn->beginTransaction();
 
-        // If the new status is 'Approved', we need to update the quantity in the OnhandTb
+        // If the new status is 'ToShip', fetch quantity and OnhandID from CartRecordTb
         if ($new_status === 'ToShip') {
             // Fetch the transaction details to get the quantity and OnhandID
-            $transac_query = "SELECT Quantity, OnhandID FROM TransacTb WHERE TransacID = :transac_id";
+            $transac_query = "SELECT Quantity, OnhandID FROM CartRecordTb WHERE TransacID = :transac_id";
             $transac_stmt = $conn->prepare($transac_query);
             $transac_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
             $transac_stmt->execute();

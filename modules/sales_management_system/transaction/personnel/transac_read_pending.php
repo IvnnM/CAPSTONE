@@ -13,13 +13,10 @@ if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
 // Initialize the transactions array
 $transactions = [];
 
-// Fetch all pending transactions
-$sql = "SELECT t.*, o.OnhandQty, o.RetailPrice, o.PromoPrice, p.ProductName
-        FROM TransacTb t
-        JOIN OnhandTb o ON t.OnhandID = o.OnhandID
-        JOIN InventoryTb i ON o.InventoryID = i.InventoryID
-        JOIN ProductTb p ON i.ProductID = p.ProductID
-        WHERE t.Status = 'Pending'";
+// Fetch all pending transactions (only TransacID and relevant info)
+$sql = "SELECT TransacID, CustName, CustNum, CustEmail, DeliveryFee, TotalPrice, TransactionDate
+        FROM TransacTb
+        WHERE Status = 'Pending'";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();
@@ -29,55 +26,18 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_POST['approve_transaction'])) {
     $transac_id = $_POST['transac_id'];
 
-    // Fetch the quantity, OnhandID, and DeliveryFee of the transaction being approved
-    $transaction_query = "SELECT Quantity, OnhandID, DeliveryFee FROM TransacTb WHERE TransacID = :transac_id";
-    $transaction_stmt = $conn->prepare($transaction_query);
-    $transaction_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
-    $transaction_stmt->execute();
-    $transaction = $transaction_stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($transaction) {
-        $quantity_sold = $transaction['Quantity'];
-        $onhand_id = $transaction['OnhandID'];
-        $delivery_fee = $transaction['DeliveryFee']; // Get the DeliveryFee
-
-        // Update the stock quantity in OnhandTb
-        $update_stock_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity_sold WHERE OnhandID = :onhand_id";
-        $update_stock_stmt = $conn->prepare($update_stock_query);
-        $update_stock_stmt->bindParam(':quantity_sold', $quantity_sold, PDO::PARAM_INT);
-        $update_stock_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
-
-        // Start the transaction for data integrity
-        $conn->beginTransaction();
-
-        try {
-            // Execute the stock quantity update
-            if (!$update_stock_stmt->execute()) {
-                throw new Exception('Could not update product quantity.');
-            }
-
-            // Update the status to 'Approved'
-            $update_sql = "UPDATE TransacTb SET Status = 'ToShip', TransactionDate = NOW() WHERE TransacID = :transac_id"; // Update date to now
-            $update_stmt = $conn->prepare($update_sql);
-            $update_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
-            if (!$update_stmt->execute()) {
-                throw new Exception('Could not approve transaction.');
-            }
-
-            // Commit the transaction
-            $conn->commit();
-            echo "<script>alert('Transaction Ship successfully!');</script>";
-            echo "<script>window.history.back();</script>";
-            exit;
-
-        } catch (Exception $e) {
-            // Roll back the transaction in case of error
-            $conn->rollBack();
-            echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
-        }
-    } else {
-        echo "<script>alert('Transaction details not found.');</script>";
+    // Update the status to 'ToShip'
+    $update_sql = "UPDATE TransacTb SET Status = 'ToShip', TransactionDate = NOW() WHERE TransacID = :transac_id"; // Update date to now
+    $update_stmt = $conn->prepare($update_sql);
+    $update_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
+    if (!$update_stmt->execute()) {
+        echo "<script>alert('Could not approve transaction.');</script>";
+        exit;
     }
+
+    echo "<script>alert('Transaction marked as To Ship successfully!');</script>";
+    echo "<script>window.history.back();</script>";
+    exit;
 }
 ?>
 
@@ -88,8 +48,15 @@ if (isset($_POST['approve_transaction'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pending Transactions</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+    .table td {
+        vertical-align: middle;
+    }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -106,56 +73,94 @@ if (isset($_POST['approve_transaction'])) {
         <?php if (!empty($transactions)): ?>
             <h4 class="mt-4">Orders</h4>
             <div class="container">
-                <div class="table-responsive">
-                    <table id="transactionsTable" class="display table table-bordered table-striped table-hover fixed-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Number</th>
-                                <th>Email</th>
-                                <th>Product</th>
-                                <th>Qtty</th>
-                                <th>Price</th>
-                                <th>Delivery Fee</th> <!-- Added Delivery Fee Column -->
-                                <th>Total Cost</th>
-                                <th>Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($transactions as $transaction): ?>
-                                <tr>
-                                    <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['ProductName']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['Quantity']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['Price']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['DeliveryFee']) ?></td> <!-- Display Delivery Fee -->
-                                    <td><?= htmlspecialchars($transaction['TotalPrice']) ?></td>
-                                    <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                                    <td>
-                                        <form method="POST" action="" class="d-flex align-items-center">
-                                            <input type="hidden" name="transac_id" value="<?= htmlspecialchars($transaction['TransacID']) ?>">
-                                            <button type="submit" name="approve_transaction" class="btn btn-success btn-sm me-2" onclick="return confirm('Are you sure you want to mark this transaction as to ship?');">
-                                                <i class="bi bi-check-lg"></i> <!-- Approve icon -->
-                                            </button>
-                                            <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">
-                                                <i class="bi bi-trash"></i> <!-- Delete icon -->
-                                            </a>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive">
+            <table id="transactionsTable" class="display table table-light table-bordered table-striped table-hover fixed-table">
+                <thead class="table-info">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Number</th>
+                        <th>Email</th>
+                        <th>Delivery Fee</th>
+                        <th>Total Cost</th>
+                        <th>Date</th>
+                        <th>Cart Records</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($transactions as $transaction): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
+                            <td><?= htmlspecialchars($transaction['CustName']) ?></td>
+                            <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
+                            <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
+                            <td><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
+                            <td><?= number_format(htmlspecialchars($transaction['TotalPrice']), 2) ?></td>
+                            <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                            <td>
+                                <!-- Button to trigger the modal for cart records -->
+                                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#cartModal" data-transac-id="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                    <i class="bi bi-eye"></i> View Cart Records
+                                </button>
+                            </td>
+                            <form method="POST" action="../transac_update.php" class="d-flex justify-content-center align-items-center">
+                                <td>
+                                <div class="d-flex justify-content-center">
+                                    <input type="hidden" name="transac_id" value="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                    <input type="hidden" name="action" value="ToShip"> <!-- Set action to 'ToShip' -->
+                                    <button type="submit" name="approve_transaction" class="btn btn-success btn-sm me-2" onclick="return confirm('Are you sure you want to mark this transaction as to ship?');">
+                                        <i class="bi bi-truck"></i> Mark as To Ship
+                                    </button>
+                                    <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">
+                                        <i class="bi bi-trash fs-5"></i> 
+                                    </a>
+                                </div>
+                                </td>
+                            </form>
+                           
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+</div>
+
             </div>
         <?php else: ?>
             <p class="mt-4">No pending transactions found.</p>
         <?php endif; ?>
+    </div>
+
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cartModalLabel">Cart Records</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartRecordsContainer" class="table-responsive">
+                        <table id="cartTable" class="display table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Onhand ID</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Added Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartRecordsBody">
+                                <!-- Cart records will be populated here via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -169,6 +174,25 @@ if (isset($_POST['approve_transaction'])) {
                 "info": true,
                 "autoWidth": false,
                 "pageLength": 10
+            });
+
+            // Handle the modal show event
+            $('#cartModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var transacId = button.data('transac-id'); // Extract info from data-* attributes
+
+                // Fetch cart records via AJAX
+                $.ajax({
+                    url: 'fetch_cart_records.php', // URL to fetch cart records
+                    type: 'GET',
+                    data: { transac_id: transacId },
+                    success: function(data) {
+                        $('#cartRecordsBody').html(data); // Populate the modal body with fetched records
+                    },
+                    error: function() {
+                        $('#cartRecordsBody').html('<tr><td colspan="4" class="text-center">Error fetching records.</td></tr>');
+                    }
+                });
             });
         });
     </script>

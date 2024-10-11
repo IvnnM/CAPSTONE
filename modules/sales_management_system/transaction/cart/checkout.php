@@ -55,6 +55,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'cust_note' => $custNote
     ]);
 
+    // Get the last inserted TransacID
+    $transac_id = $conn->lastInsertId();
+
+    // Insert items from CartTb into CartRecordTb
+    foreach ($cart_items as $item) {
+        $insert_cart_record_query = "INSERT INTO CartRecordTb (TransacID, CustName, CustEmail, OnhandID, Quantity, AddedDate, Price) 
+                                      VALUES (:transac_id, :cust_name, :cust_email, :onhand_id, :quantity, :added_date, :price)";
+        $insert_cart_record_stmt = $conn->prepare($insert_cart_record_query);
+        $insert_cart_record_stmt->execute([
+            'transac_id' => $transac_id,
+            'cust_name' => $_SESSION['cust_name'],
+            'cust_email' => $cust_email,
+            'onhand_id' => $item['OnhandID'],
+            'quantity' => $item['Quantity'],
+            'added_date' => $item['AddedDate'],
+            'price' => $item['RetailPrice'] // or use $item['PromoPrice'] if applicable
+        ]);
+    }
+
     // Update OnhandTb to subtract the purchased quantity
     foreach ($cart_items as $item) {
         $update_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity WHERE OnhandID = :onhand_id";
@@ -64,6 +83,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'onhand_id' => $item['OnhandID']
         ]);
     }
+
+    // Clear the CartTb for the user after checkout
+    $clear_cart_query = "DELETE FROM CartTb WHERE CustEmail = :cust_email";
+    $clear_cart_stmt = $conn->prepare($clear_cart_query);
+    $clear_cart_stmt->execute(['cust_email' => $cust_email]);
 
     // Redirect or provide a success message
     echo "<script>alert('Checkout completed successfully.'); window.location.href = '../../../../views/customer_view.php';</script>";

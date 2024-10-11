@@ -2,7 +2,7 @@
 session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
-$_SESSION['EmpID']='1';
+// $_SESSION['EmpID']='1';
 // $_SESSION['AdminID']='1';
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
@@ -50,6 +50,7 @@ $stmt->execute();
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="../../../../views/admin_view.php#Products">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Product Category List</li>
+                    <li class="breadcrumb-item"><a href="../product_read.php">Product List</a></li>
                     <li class="breadcrumb-item"><a href="../../inventory/inventory_read.php">Product Inventory List</a></li>
                     <li class="breadcrumb-item"><a href="../../../sales_management_system/onhand/onhand_read.php">Product Onhand List</a></li>
                 </ol>
@@ -61,7 +62,12 @@ $stmt->execute();
             </div> -->
             <!-- Button Group for Navigation -->
             <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-success" onclick="window.location.href='category_create.php';">Create New Category</button>
+                <?php if (isset($_SESSION['AdminID'])): ?>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='category_create.php';">Create New Category</button>
+                <?php elseif (isset($_SESSION['EmpID'])): ?>
+                    
+                <?php endif; ?> 
+                
             </div>
         </div>
         <!-- Table to display product categories -->
@@ -74,7 +80,7 @@ $stmt->execute();
                         <?php if (isset($_SESSION['AdminID'])): ?>
                             <th class="col-auto">Admin Actions</th> 
                         <?php elseif (isset($_SESSION['EmpID'])): ?>
-                            <th class="col-auto">Employee Actions</th> 
+                            <!-- <th class="col-auto">Employee Actions</th>  -->
                         <?php endif; ?> 
                     </tr>
                 </thead>
@@ -97,10 +103,10 @@ $stmt->execute();
 
                                 <!-- Employee-only actions -->
                                 <?php elseif (isset($_SESSION['EmpID'])): ?>
-                                    <td class="d-flex justify-content-center">
+                                    <!-- <td class="d-flex justify-content-center">
                                         <button type="button" class="btn btn-primary btn-sm w-50 me-2">Employee Action</button>
                                         <button type="button" class="btn btn-primary btn-sm w-50">Employee Action</button>
-                                    </td>
+                                    </td> -->
                                 <?php endif; ?>
 
                             </tr>
