@@ -1,0 +1,8 @@
+body {
+  overflow: hidden;
+  overflow: auto;
+  background-color: #011222;
+}
+body::-webkit-scrollbar {
+  display: none;
+}

@@ -14,9 +14,12 @@ if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
 $transactions = [];
 
 // Fetch all pending transactions (only TransacID and relevant info)
-$sql = "SELECT TransacID, CustName, CustNum, CustEmail, DeliveryFee, TotalPrice, TransactionDate
-        FROM TransacTb
-        WHERE Status = 'Pending'";
+$sql = "SELECT t.TransacID, t.CustName, t.CustNum, t.CustEmail, t.DeliveryFee, t.TotalPrice, t.TransactionDate, 
+               l.Province, l.City
+        FROM TransacTb t
+        JOIN LocationTb l ON t.LocationID = l.LocationID
+        WHERE t.Status = 'Pending'";
+
 
 $stmt = $conn->prepare($sql);
 $stmt->execute();
@@ -71,59 +74,65 @@ if (isset($_POST['approve_transaction'])) {
             </ol>
         </nav>
         <?php if (!empty($transactions)): ?>
-            <h4 class="mt-4">Orders</h4>
+
             <div class="container">
+            <h4 class="mt-4">Orders</h4>
             <div class="table-responsive">
-            <table id="transactionsTable" class="display table table-light table-bordered table-striped table-hover fixed-table">
-                <thead class="table-info">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Number</th>
-                        <th>Email</th>
-                        <th>Delivery Fee</th>
-                        <th>Total Cost</th>
-                        <th>Date</th>
-                        <th>Cart Records</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($transactions as $transaction): ?>
+                <table id="transactionsTable" class="display table table-light table-bordered table-striped table-hover fixed-table">
+                    <thead class="table-info">
                         <tr>
-                            <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
-                            <td><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
-                            <td><?= number_format(htmlspecialchars($transaction['TotalPrice']), 2) ?></td>
-                            <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                            <td>
-                                <!-- Button to trigger the modal for cart records -->
-                                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#cartModal" data-transac-id="<?= htmlspecialchars($transaction['TransacID']) ?>">
-                                    <i class="bi bi-eye"></i> View Cart Records
-                                </button>
-                            </td>
-                            <form method="POST" action="../transac_update.php" class="d-flex justify-content-center align-items-center">
-                                <td>
-                                <div class="d-flex justify-content-center">
-                                    <input type="hidden" name="transac_id" value="<?= htmlspecialchars($transaction['TransacID']) ?>">
-                                    <input type="hidden" name="action" value="ToShip"> <!-- Set action to 'ToShip' -->
-                                    <button type="submit" name="approve_transaction" class="btn btn-success btn-sm me-2" onclick="return confirm('Are you sure you want to mark this transaction as to ship?');">
-                                        <i class="bi bi-truck"></i> Mark as To Ship
-                                    </button>
-                                    <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this transaction?');">
-                                        <i class="bi bi-trash fs-5"></i> 
-                                    </a>
-                                </div>
-                                </td>
-                            </form>
-                           
+                            <th class="col-auto">ID</th>
+                            <th class="col-auto">Name</th>
+                            <th class="col-auto">Number</th>
+                            <th class="col-auto">Email</th>
+                            <th class="col-auto">Delivery Fee</th>
+                            <th class="col-auto">Total Cost</th>
+                            <th class="col-auto">Date</th>
+                            <th class="col-auto">Location</th> <!-- New Column -->
+                            <th class="col-auto">Cart Records</th>
+                            <th class="col-auto">Action</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-</div>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($transactions as $transaction): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustName']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
+                                <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
+                                <td><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
+                                <td><?= number_format(htmlspecialchars($transaction['TotalPrice']), 2) ?></td>
+                                <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                                <td><?= htmlspecialchars($transaction['City'] . ', ' . $transaction['Province']) ?></td> <!-- Displaying Location -->
+                                <td>
+                                    <!-- Button to trigger the modal for cart records -->
+                                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#cartModal" data-transac-id="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                        <i class="bi bi-eye"></i> View Items
+                                    </button>
+                                </td>
+                                <form method="POST" action="../transac_update.php" class="d-flex justify-content-center align-items-center">
+                                    <td>
+                                    <div class="d-flex justify-content-center">
+                                        <input type="hidden" name="transac_id" value="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                        <input type="hidden" name="action" value="ToShip"> <!-- Set action to 'ToShip' -->
+                                        <button class="btn btn-success btn-sm w-50 me-2">
+                                            <a href="../transac_update.php" class="text-white" onclick="return confirm('Are you sure you want to mark this transaction as to ship?');" style="text-decoration: none;">
+                                                <i class="bi bi-truck fs-5"></i> Deliver
+                                            </a>
+                                        </button>
+                                        <button class="btn btn-danger btn-sm w-50">
+                                            <a href="../transac_delete.php?id=<?= htmlspecialchars($transaction['TransacID']) ?>" class="text-white" onclick="return confirm('Are you sure you want to delete this transaction?');" style="text-decoration: none;">
+                                                <i class="bi bi-trash fs-5"></i> Delete
+                                            </a>
+                                        </button>
+                                    </div>
+                                    </td>
+                                </form>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
             </div>
         <?php else: ?>
@@ -142,14 +151,17 @@ if (isset($_POST['approve_transaction'])) {
                 <div class="modal-body">
                     <div id="cartRecordsContainer" class="table-responsive">
                         <table id="cartTable" class="display table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Onhand ID</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Added Date</th>
-                                </tr>
-                            </thead>
+                        <thead>
+                            <tr>
+                                <th>Onhand ID</th>
+                                <th>Product Name</th> <!-- New Column -->
+                                <th>Category</th> <!-- New Column -->
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Added Date</th>
+
+                            </tr>
+                        </thead>
                             <tbody id="cartRecordsBody">
                                 <!-- Cart records will be populated here via JavaScript -->
                             </tbody>

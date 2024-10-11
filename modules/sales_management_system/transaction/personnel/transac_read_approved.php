@@ -50,8 +50,9 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </nav>
 
         <?php if (!empty($transactions)): ?>
-            <h4 class="mt-4">To Ship</h4>
+
             <div class="container">
+            <h4 class="mt-4">To Deliver</h4>
                 <div class="table-responsive">
                     <table id="transactionsTable" class="display table table-bordered table-striped table-hover fixed-table">
                         <thead>
@@ -117,6 +118,8 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <thead>
                                 <tr>
                                     <th>Onhand ID</th>
+                                    <th>Product Name</th> <!-- New Column -->
+                                    <th>Category</th> <!-- New Column -->
                                     <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Added Date</th>

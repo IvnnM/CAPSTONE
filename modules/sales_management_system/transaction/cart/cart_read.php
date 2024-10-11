@@ -74,7 +74,7 @@ foreach ($cart_items as $item) {
                         <td colspan="4" class="text-end"><strong>Total Price:</strong></td>
                         <td><strong><?= number_format($total_price, 2) ?></strong></td>
                         <td>
-                            <a href="../modules/sales_management_system/transaction/cart/checkout.php" class="btn btn-success">Checkout</a>
+                            <a href="../modules/sales_management_system/transaction/cart/checkout.php" class="btn btn-success">Proceed to Payment</a>
                         </td>
                     </tr>
                 </tbody>

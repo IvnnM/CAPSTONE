@@ -205,35 +205,52 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>Checkout</h2>
-        
-        <form method="POST">
-            <div class="mb-3">
-                <label for="province" class="form-label">Province:</label>
-                <select id="province" name="province" class="form-select" required>
-                    <option value="">Select Province</option>
-                </select>
+    <div class="container-fluid mt-5">
+        <div class="row">
+            <div class="col-7">
+                <?php include('../transac_payment.php');?>
             </div>
-            
-            <div class="mb-3">
-                <label for="city" class="form-label">City:</label>
-                <select id="city" name="city" class="form-select" required>
-                    <option value="">Select City</option>
-                </select>
-                <!-- Hidden field to store selected LocationID -->
-                <input type="hidden" name="location_id" id="location_id" required>
+            <div class="col-4 ms-4 p-4" style="border:solid; border-radius: 10px;">
+                <h2>Checkout</h2><hr>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="province" class="form-label">Province:</label>
+                        <select id="province" name="province" class="form-select" required>
+                            <option value="">Select Province</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City:</label>
+                        <select id="city" name="city" class="form-select" required>
+                            <option value="">Select City</option>
+                        </select>
+                        <!-- Hidden field to store selected LocationID -->
+                        <input type="hidden" name="location_id" id="location_id" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="cust_note" class="form-label">Customer Note:</label>
+                        <textarea class="form-control" name="cust_note" id="cust_note" rows="3" placeholder="Any specific instructions"></textarea>
+                    </div>
+
+                    <h5>Total Price: <?= number_format($total_price, 2) ?></h5>
+
+                    <!-- Payment Confirmation Checkbox -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="payment_confirmation" name="payment_confirmation" required>
+                        <label class="form-check-label" for="payment_confirmation">
+                            I confirm that I understand I need to pay before proceeding to checkout.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Proceed to Checkout</button>
+                </form>
+                    <button type="button" class="btn btn-secondary w-100" onclick="window.history.back();">Cancel</button>
+
             </div>
 
-            <div class="mb-3">
-                <label for="cust_note" class="form-label">Customer Note:</label>
-                <textarea class="form-control" name="cust_note" id="cust_note" rows="3" placeholder="Any specific instructions"></textarea>
-            </div>
-
-            <h5>Total Price: <?= number_format($total_price, 2) ?></h5>
-
-            <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
-        </form>
+        </div>
     </div>
 </body>
 </html>
