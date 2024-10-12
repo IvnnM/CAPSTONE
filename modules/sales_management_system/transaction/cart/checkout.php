@@ -2,11 +2,10 @@
 session_start();
 include("./../../../../includes/cdn.html");
 include("./../../../../config/database.php");
-include("calculate_delivery_fee.php"); // Include delivery fee calculation function
 
-// Fetch session data for customer email and number
+// Fetch session data for customer email and location ID
 $cust_email = $_SESSION['cust_email'];
-$cust_num = $_SESSION['cust_num'];
+$locationID = $_SESSION['location_id']; // Fetch LocationID from the session
 
 // Fetch cart items for the current customer
 $query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice, o.MinPromoQty, o.PromoPrice, o.OnhandID
@@ -26,25 +25,16 @@ foreach ($cart_items as $item) {
     $total_price += $price_to_use * $item['Quantity'];
 }
 
-// Fetch store location and delivery fee from StoreInfoTb
-$store_query = "SELECT LocationID, StoreDeliveryFee FROM StoreInfoTb LIMIT 1";
-$store_stmt = $conn->prepare($store_query);
-$store_stmt->execute();
-$store = $store_stmt->fetch(PDO::FETCH_ASSOC);
+// Get delivery fee from session
+$delivery_fee = isset($_SESSION['delivery_fee']) ? $_SESSION['delivery_fee'] : 0;
+
+// Calculate grand total
+$grand_total = $total_price + $delivery_fee;
 
 // Handle checkout form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $locationID = trim($_POST['location_id']);
     $custNote = trim($_POST['cust_note']);
-
-    // Calculate delivery fee
-    $delivery_fee = calculateDeliveryFee($locationID, $store['LocationID'], $conn, $store['StoreDeliveryFee']);
-    if ($delivery_fee === false) {
-        echo "<script>alert('Error calculating delivery fee. Please try again.');</script>";
-        return;
-    }
-
-    $total_price_with_delivery = $total_price + $delivery_fee;
+    $cust_num = trim($_POST['cust_num']); // Get cust_num from form input
 
     // Insert data into TransacTb
     $insert_query = "INSERT INTO TransacTb (CustName, CustEmail, CustNum, LocationID, DeliveryFee, TotalPrice, Status, CustNote) 
@@ -53,10 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->execute([
         'cust_name' => $_SESSION['cust_name'],
         'cust_email' => $cust_email,
-        'cust_num' => $cust_num,
+        'cust_num' => $cust_num, // Use cust_num from form input
         'location_id' => $locationID,
-        'delivery_fee' => $delivery_fee,
-        'total_price' => $total_price_with_delivery,
+        'delivery_fee' => $delivery_fee, // Include delivery fee
+        'total_price' => $grand_total, // Use grand total
         'cust_note' => $custNote
     ]);
 
@@ -99,83 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 ?>
 
-<script>
-    $(document).ready(function() {
-        // Fetch and populate province and city data
-        $.ajax({
-            url: "../../../../includes/get_location_data.php",
-            method: "GET",
-            dataType: "json",
-            success: function(data) {
-                var provinces = data.provinces;
-                var cities = data.cities;
-                var provinceDropdown = $("#province");
-                var cityDropdown = $("#city");
-
-                // Populate province dropdown
-                provinces.forEach(function(province) {
-                    provinceDropdown.append(
-                        $("<option>").val(province.Province).text(province.Province)
-                    );
-                });
-
-                // Event listener for province change
-                provinceDropdown.change(function() {
-                    var selectedProvince = $(this).val();
-                    cityDropdown.empty();
-                    cityDropdown.append("<option value=''>Select City</option>");
-
-                    // Filter and populate city dropdown based on selected province
-                    cities.forEach(function(city) {
-                        if (city.Province === selectedProvince) {
-                            cityDropdown.append(
-                                $("<option>").val(city.LocationID).text(city.City)
-                            );
-                        }
-                    });
-                });
-            },
-            error: function() {
-                alert("Error: Could not retrieve location data.");
-            }
-        });
-
-        $("#city").change(function() {
-            var locationID = $(this).val();
-            $("#location_id").val(locationID);
-
-            // Call the backend to calculate the delivery fee
-            $.ajax({
-                url: './calculate_delivery_fee.php',
-                method: 'POST',
-                contentType: 'application/json', // Set content type
-                data: JSON.stringify({
-                    location_id: locationID,
-                    store_location_id: <?= json_encode($store['LocationID']) ?>,
-                    store_delivery_fee: <?= json_encode($store['StoreDeliveryFee']) ?>,
-                    is_checkout: 'false' 
-                }),
-                dataType: 'json', // Expect JSON response
-                success: function(response) {
-                    if (response && response.delivery_fee !== undefined) {
-                        var deliveryFee = parseFloat(response.delivery_fee).toFixed(2);
-                        var totalPriceWithDelivery = (parseFloat(<?= $total_price ?>) + parseFloat(deliveryFee)).toFixed(2);
-
-                        // Update the UI with delivery fee and total price
-                        $("#delivery_fee").text("Delivery Fee: ₱" + deliveryFee);
-                        $("#total_price_with_delivery").text("Total Price (with Delivery): ₱" + totalPriceWithDelivery);
-                    } else {
-                        alert("Error: Invalid response from server.");
-                    }
-                },
-                error: function() {
-                    alert("Error: Could not calculate delivery fee.");
-                }
-            });
-        });
-    });
-</script>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -195,18 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <hr>
                 <form method="POST">
                     <div class="mb-3">
-                        <label for="province" class="form-label">Province:</label>
-                        <select id="province" name="province" class="form-select" required>
-                            <option value="">Select Province</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="city" class="form-label">City:</label>
-                        <select id="city" name="city" class="form-select" required>
-                            <option value="">Select City</option>
-                        </select>
-                        <input type="hidden" name="location_id" id="location_id" required>
+                        <label for="cust_num" class="form-label">Contact Number:</label>
+                        <input type="text" class="form-control" name="cust_num" id="cust_num" required>
                     </div>
 
                     <div class="mb-3">
@@ -215,8 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <h5>Total Price: ₱<?= number_format($total_price, 2) ?></h5>
-                    <h5 id="delivery_fee">Delivery Fee: ₱0.00</h5>
-                    <h5 id="total_price_with_delivery">Total Price (with Delivery): ₱<?= number_format($total_price, 2) ?></h5>
+                    <h5>Delivery Fee: ₱<?= number_format($delivery_fee, 2) ?></h5>
+                    <h5>Grand Total: ₱<?= number_format($grand_total, 2) ?></h5>
 
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="payment_confirmation" name="payment_confirmation" required>

@@ -7,14 +7,25 @@ include("../config/database.php");
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize and store input values in session
     $_SESSION['cust_name'] = htmlspecialchars($_POST['cust_name']);
-    $_SESSION['cust_num'] = htmlspecialchars($_POST['cust_num']);
+    // $_SESSION['cust_num'] = htmlspecialchars($_POST['cust_num']);
     $_SESSION['cust_email'] = htmlspecialchars($_POST['cust_email']);
+    $_SESSION['location_id'] = htmlspecialchars($_POST['location_id']); // Store the selected location
 }
 
 // Check if session values are set
 $cust_name = $_SESSION['cust_name'] ?? '';
 $cust_num = $_SESSION['cust_num'] ?? '';
 $cust_email = $_SESSION['cust_email'] ?? '';
+$location_id = $_SESSION['location_id'] ?? '';
+// Fetch the real location (city name) based on location_id
+$city_name = '';
+if ($location_id) {
+    $query = "SELECT City FROM LocationTb WHERE LocationID = :location_id"; // Adjust table name and column as needed
+    $stmt = $conn->prepare($query);
+    $stmt->execute(['location_id' => $location_id]);
+    $city = $stmt->fetch(PDO::FETCH_ASSOC);
+    $city_name = $city['City'] ?? ''; // Get the city name
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -29,7 +40,7 @@ $cust_email = $_SESSION['cust_email'] ?? '';
         <?php include("../includes/customer/header.php"); ?>
         <div class="container-fluid">
             <div class="row mx-auto w-80" style="border: solid;">
-                <div class="col col-7" style="max-height: 300px; overflow-y: auto;"> <!-- Set max-height and enable scroll -->
+                <div class="col col-7" style="max-height: 300px; overflow-y: auto;">
                     <?php include('../modules/sales_management_system/transaction/cart/cart_read.php'); ?>
                 </div>
                 <div class="col col-5">
@@ -40,13 +51,26 @@ $cust_email = $_SESSION['cust_email'] ?? '';
                                 <label for="cust_name" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="cust_name" name="cust_name" required>
                             </div>
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="cust_num" class="form-label">Contact Number</label>
                                 <input type="text" class="form-control" id="cust_num" name="cust_num" required>
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="cust_email" class="form-label">Email Address</label>
                                 <input type="email" class="form-control" id="cust_email" name="cust_email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="province" class="form-label">Province</label>
+                                <select id="province" name="province" class="form-select" required>
+                                    <option value="">Select Province</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <select id="city" name="city" class="form-select" required>
+                                    <option value="">Select City</option>
+                                </select>
+                                <input type="hidden" name="location_id" id="location_id" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
@@ -55,6 +79,7 @@ $cust_email = $_SESSION['cust_email'] ?? '';
                             <h2>Welcome, <?= htmlspecialchars($cust_name); ?>!</h2>
                             <p>Contact Number: <?= htmlspecialchars($cust_num); ?></p>
                             <p>Email Address: <?= htmlspecialchars($cust_email); ?></p>
+                            <p>Address: <?= htmlspecialchars($city_name); ?></p>
                             <p>You can now proceed with your purchases!</p>
                         </div>
                     <?php endif; ?>
@@ -112,8 +137,55 @@ $cust_email = $_SESSION['cust_email'] ?? '';
 
     </div>
 
-    <script src="../assets/js/navbar.js"></script>
 
-    
+    <script>
+        $(document).ready(function() {
+            // Fetch and populate province and city data
+            $.ajax({
+                url: "../includes/get_location_data.php",
+                method: "GET",
+                dataType: "json",
+                success: function(data) {
+                    var provinces = data.provinces;
+                    var cities = data.cities;
+                    var provinceDropdown = $("#province");
+                    var cityDropdown = $("#city");
+
+                    // Populate province dropdown
+                    provinces.forEach(function(province) {
+                        provinceDropdown.append(
+                            $("<option>").val(province.Province).text(province.Province)
+                        );
+                    });
+
+                    // Event listener for province change
+                    provinceDropdown.change(function() {
+                        var selectedProvince = $(this).val();
+                        cityDropdown.empty();
+                        cityDropdown.append("<option value=''>Select City</option>");
+
+                        // Filter and populate city dropdown based on selected province
+                        cities.forEach(function(city) {
+                            if (city.Province === selectedProvince) {
+                                cityDropdown.append(
+                                    $("<option>").val(city.LocationID).text(city.City)
+                                );
+                            }
+                        });
+                    });
+                },
+                error: function() {
+                    alert("Error: Could not retrieve location data.");
+                }
+            });
+
+            // When city is selected, set location_id
+            $("#city").change(function() {
+                var locationID = $(this).val();
+                $("#location_id").val(locationID);
+            });
+        });
+    </script>
+    <script src="../assets/js/navbar.js"></script>
 </body>
 </html>
