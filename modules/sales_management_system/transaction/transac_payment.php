@@ -20,7 +20,19 @@ if (!$store) {
 
 // Fetch cart items (assuming session for customer is available)
 $cart_query = "
-    SELECT p.ProductName, c.Quantity, o.RetailPrice AS Price, (c.Quantity * o.RetailPrice) AS TotalPrice
+    SELECT p.ProductName, c.Quantity, 
+           o.RetailPrice, 
+           o.MinPromoQty, 
+           o.PromoPrice,
+           CASE 
+               WHEN c.Quantity >= o.MinPromoQty THEN o.PromoPrice 
+               ELSE o.RetailPrice 
+           END AS Price, 
+           (c.Quantity * 
+               CASE 
+                   WHEN c.Quantity >= o.MinPromoQty THEN o.PromoPrice 
+                   ELSE o.RetailPrice 
+               END) AS TotalPrice
     FROM CartTb c
     JOIN OnhandTb o ON c.OnhandID = o.OnhandID
     JOIN ProductTb p ON o.InventoryID = p.ProductID
@@ -107,10 +119,6 @@ if ($cart_stmt->rowCount() == 0) {
             </div>
         </div>
     </div>
-
-
-
-
 </div>
 
 </body>

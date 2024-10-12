@@ -30,3 +30,15 @@
       });
   });
 </script>
+<script>
+$(document).ready(function() {
+    // Check if the alert message exists
+    var alert = $('#alert-message');
+    if (alert.length) {
+        // Set a timeout to fade out the alert after 5 seconds (5000 milliseconds)
+        setTimeout(function() {
+            alert.fadeOut(1000); // Fades out over 1 second
+        }, 2000);
+    }
+});
+</script>

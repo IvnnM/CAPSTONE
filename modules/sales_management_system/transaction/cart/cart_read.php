@@ -34,11 +34,10 @@ foreach ($cart_items as $item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
-    <link rel="stylesheet" href="../../../../includes/cdn.php"> <!-- Adjust as necessary -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="container pt-1">
         <h2>Your Cart</h2>
         <?php if (count($cart_items) > 0): ?>
             <table class="table table-bordered">
@@ -65,8 +64,8 @@ foreach ($cart_items as $item) {
                             <td><?= number_format($price_to_use, 2) ?></td>
                             <td><?= number_format($price_to_use * $item['Quantity'], 2) ?></td> <!-- Total price for each item -->
                             <td>
-                                <a href="../modules/sales_management_system/transaction/cart/remove_item.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-danger">Remove</a>
-                                <a href="../modules/sales_management_system/transaction/cart/update_cart.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-primary">Update</a>
+                                <a href="../modules/sales_management_system/transaction/cart/update_cart.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-primary btn-sm w-100  mb-1">Update</a>
+                                <a href="../modules/sales_management_system/transaction/cart/remove_item.php?cart_id=<?= htmlspecialchars($item['CartID']) ?>" class="btn btn-danger btn-sm w-100">Remove</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

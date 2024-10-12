@@ -28,9 +28,9 @@ $cust_email = $_SESSION['cust_email'] ?? '';
     <div class="page" id="Overview">
         <?php include("../includes/customer/header.php"); ?>
         <div class="container-fluid">
-            <div class="row">
-                <div class="col col-7">
-                    <?php include('../modules/sales_management_system/transaction/cart/cart_read.php');?>
+            <div class="row mx-auto w-80" style="border: solid;">
+                <div class="col col-7" style="max-height: 300px; overflow-y: auto;"> <!-- Set max-height and enable scroll -->
+                    <?php include('../modules/sales_management_system/transaction/cart/cart_read.php'); ?>
                 </div>
                 <div class="col col-5">
                     <?php if (!isset($_SESSION['cust_email'])): ?>
@@ -62,7 +62,7 @@ $cust_email = $_SESSION['cust_email'] ?? '';
             </div>
         </div><hr>
         <div class="row m-0">
-            <div class="col col-12 p-0" >
+            <div class="col col-12 p-0">
                 <?php include("../modules/sales_management_system/transaction/available_product.php"); ?>
             </div>
         </div>

@@ -6,7 +6,9 @@ $cust_email = $_SESSION['cust_email'];
 
 // Check if cart_id is provided
 if (!isset($_GET['cart_id'])) {
-    echo "<p class='text-danger'>No cart item specified.</p>";
+    $_SESSION['alert'] = 'No cart item specified.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../views/customer_view.php");
     exit();
 }
 
@@ -24,7 +26,9 @@ $stmt->execute(['cart_id' => $cart_id, 'cust_email' => $cust_email]);
 $item = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$item) {
-    echo "<p class='text-danger'>Cart item not found.</p>";
+    $_SESSION['alert'] = 'Cart item not found.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../views/customer_view.php");
     exit();
 }
 
@@ -34,14 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate new quantity
     if ($new_quantity < 1) {
-        echo "<p class='text-danger'>Quantity must be at least 1.</p>";
+        $_SESSION['alert'] = 'Quantity must be at least 1.';
+        $_SESSION['alert_type'] = 'danger';
     } else {
         // Update the cart item in the database
         $update_query = "UPDATE CartTb SET Quantity = :quantity WHERE CartID = :cart_id";
         $update_stmt = $conn->prepare($update_query);
         $update_stmt->execute(['quantity' => $new_quantity, 'cart_id' => $cart_id]);
 
-        // Redirect back to cart_read.php after updating
+        // Set success message and redirect
+        $_SESSION['alert'] = 'Quantity updated successfully!';
+        $_SESSION['alert_type'] = 'info';
         header("Location: ../../../../views/customer_view.php");
         exit();
     }

@@ -63,9 +63,12 @@ if ($check_stmt->rowCount() > 0) {
         'quantity' => $quantity,
         'price' => $price, // Include the price here
         'added_date' => $added_date
+
+        
     ]);
 }
-
+$_SESSION['alert'] = "Item added to cart successfully.";
+$_SESSION['alert_type'] = "success"; 
 // Redirect back to the previous page
 $previous_page = $_SERVER['HTTP_REFERER'];
 header("Location: $previous_page");

@@ -2,10 +2,11 @@
 session_start();
 include("./../../../../includes/cdn.html");
 include("./../../../../config/database.php");
+include("calculate_delivery_fee.php"); // Include delivery fee calculation function
 
 // Fetch session data for customer email and number
 $cust_email = $_SESSION['cust_email'];
-$cust_num = $_SESSION['cust_num']; // Assuming CustNum is stored in the session
+$cust_num = $_SESSION['cust_num'];
 
 // Fetch cart items for the current customer
 $query = "SELECT c.CartID, p.ProductName, c.Quantity, c.AddedDate, o.RetailPrice, o.MinPromoQty, o.PromoPrice, o.OnhandID
@@ -35,10 +36,14 @@ $store = $store_stmt->fetch(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $locationID = trim($_POST['location_id']);
     $custNote = trim($_POST['cust_note']);
-    
-    // Calculate delivery fee based on the distance between the customer's location and the store's location
+
+    // Calculate delivery fee
     $delivery_fee = calculateDeliveryFee($locationID, $store['LocationID'], $conn, $store['StoreDeliveryFee']);
-    
+    if ($delivery_fee === false) {
+        echo "<script>alert('Error calculating delivery fee. Please try again.');</script>";
+        return;
+    }
+
     $total_price_with_delivery = $total_price + $delivery_fee;
 
     // Insert data into TransacTb
@@ -70,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'onhand_id' => $item['OnhandID'],
             'quantity' => $item['Quantity'],
             'added_date' => $item['AddedDate'],
-            'price' => $item['RetailPrice'] // or use $item['PromoPrice'] if applicable
+            'price' => $item['RetailPrice']
         ]);
     }
 
@@ -90,60 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $clear_cart_stmt->execute(['cust_email' => $cust_email]);
 
     // Redirect or provide a success message
-    echo "<script>alert('Checkout completed successfully.'); window.location.href = '../../../../views/customer_view.php';</script>";
-}
-
-// Function to calculate delivery fee based on distance
-function calculateDeliveryFee($customerLocationID, $storeLocationID, $conn, $storeDeliveryFee) {
-    // Fetch latitude and longitude for the customer location
-    $cust_location_query = "SELECT LatLng FROM LocationTb WHERE LocationID = :customerLocationID";
-    $cust_location_stmt = $conn->prepare($cust_location_query);
-    $cust_location_stmt->bindParam(':customerLocationID', $customerLocationID, PDO::PARAM_INT);
-    $cust_location_stmt->execute();
-    $cust_location = $cust_location_stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Fetch latitude and longitude for the store location
-    $store_location_query = "SELECT LatLng FROM LocationTb WHERE LocationID = :storeLocationID";
-    $store_location_stmt = $conn->prepare($store_location_query);
-    $store_location_stmt->bindParam(':storeLocationID', $storeLocationID, PDO::PARAM_INT);
-    $store_location_stmt->execute();
-    $store_location = $store_location_stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($cust_location && $store_location) {
-        // Parse latitude and longitude
-        list($cust_lat, $cust_lng) = explode(';', $cust_location['LatLng']);
-        list($store_lat, $store_lng) = explode(';', $store_location['LatLng']);
-
-        // Calculate the distance using the Haversine formula
-        $distance = haversineGreatCircleDistance($cust_lat, $cust_lng, $store_lat, $store_lng);
-
-        // Calculate the delivery fee based on distance and store's delivery fee
-        $calculated_fee = $storeDeliveryFee * $distance; // Fee per km
-        return max($calculated_fee, $storeDeliveryFee); // Ensure minimum fee is StoreDeliveryFee
-    }
-
-    return $storeDeliveryFee; // Return StoreDeliveryFee if location is not found
-}
-
-// Function to calculate the distance using Haversine formula
-function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earthRadius = 6371) {
-    // Convert from degrees to radians
-    $latFrom = deg2rad($latFrom);
-    $lonFrom = deg2rad($lonFrom);
-    $latTo = deg2rad($latTo);
-    $lonTo = deg2rad($lonTo);
-
-    // Haversine formula
-    $lonDelta = $lonTo - $lonFrom;
-    $latDelta = $latTo - $latFrom;
-    
-    $a = sin($latDelta / 2) * sin($latDelta / 2) +
-         cos($latFrom) * cos($latTo) *
-         sin($lonDelta / 2) * sin($lonDelta / 2);
-    
-    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-    
-    return $earthRadius * $c; // Returns distance in kilometers
+    echo "<script>window.location.href = '../../../../views/customer_view.php';</script>";
 }
 ?>
 
@@ -166,7 +118,6 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
                         $("<option>").val(province.Province).text(province.Province)
                     );
                 });
-                console.log(data);
 
                 // Event listener for province change
                 provinceDropdown.change(function() {
@@ -189,9 +140,38 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
             }
         });
 
-        // Update LocationID based on selected city
         $("#city").change(function() {
-            $("#location_id").val($(this).val());
+            var locationID = $(this).val();
+            $("#location_id").val(locationID);
+
+            // Call the backend to calculate the delivery fee
+            $.ajax({
+                url: './calculate_delivery_fee.php',
+                method: 'POST',
+                contentType: 'application/json', // Set content type
+                data: JSON.stringify({
+                    location_id: locationID,
+                    store_location_id: <?= json_encode($store['LocationID']) ?>,
+                    store_delivery_fee: <?= json_encode($store['StoreDeliveryFee']) ?>,
+                    is_checkout: 'false' 
+                }),
+                dataType: 'json', // Expect JSON response
+                success: function(response) {
+                    if (response && response.delivery_fee !== undefined) {
+                        var deliveryFee = parseFloat(response.delivery_fee).toFixed(2);
+                        var totalPriceWithDelivery = (parseFloat(<?= $total_price ?>) + parseFloat(deliveryFee)).toFixed(2);
+
+                        // Update the UI with delivery fee and total price
+                        $("#delivery_fee").text("Delivery Fee: ₱" + deliveryFee);
+                        $("#total_price_with_delivery").text("Total Price (with Delivery): ₱" + totalPriceWithDelivery);
+                    } else {
+                        alert("Error: Invalid response from server.");
+                    }
+                },
+                error: function() {
+                    alert("Error: Could not calculate delivery fee.");
+                }
+            });
         });
     });
 </script>
@@ -208,10 +188,11 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
     <div class="container-fluid mt-5">
         <div class="row">
             <div class="col-7">
-                <?php include('../transac_payment.php');?>
+                <?php include('../transac_payment.php'); ?>
             </div>
-            <div class="col-4 ms-4 p-4" style="border:solid; border-radius: 10px;">
-                <h2>Checkout</h2><hr>
+            <div class="col-4 ms-4 p-4 border rounded">
+                <h2>Checkout</h2>
+                <hr>
                 <form method="POST">
                     <div class="mb-3">
                         <label for="province" class="form-label">Province:</label>
@@ -219,13 +200,12 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
                             <option value="">Select Province</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="city" class="form-label">City:</label>
                         <select id="city" name="city" class="form-select" required>
                             <option value="">Select City</option>
                         </select>
-                        <!-- Hidden field to store selected LocationID -->
                         <input type="hidden" name="location_id" id="location_id" required>
                     </div>
 
@@ -234,9 +214,10 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
                         <textarea class="form-control" name="cust_note" id="cust_note" rows="3" placeholder="Any specific instructions"></textarea>
                     </div>
 
-                    <h5>Total Price: <?= number_format($total_price, 2) ?></h5>
+                    <h5>Total Price: ₱<?= number_format($total_price, 2) ?></h5>
+                    <h5 id="delivery_fee">Delivery Fee: ₱0.00</h5>
+                    <h5 id="total_price_with_delivery">Total Price (with Delivery): ₱<?= number_format($total_price, 2) ?></h5>
 
-                    <!-- Payment Confirmation Checkbox -->
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="payment_confirmation" name="payment_confirmation" required>
                         <label class="form-check-label" for="payment_confirmation">
@@ -246,10 +227,8 @@ function haversineGreatCircleDistance($latFrom, $lonFrom, $latTo, $lonTo, $earth
 
                     <button type="submit" class="btn btn-primary w-100">Proceed to Checkout</button>
                 </form>
-                    <button type="button" class="btn btn-secondary w-100" onclick="window.history.back();">Cancel</button>
-
+                <button type="button" class="btn btn-secondary w-100" onclick="window.history.back();">Cancel</button>
             </div>
-
         </div>
     </div>
 </body>

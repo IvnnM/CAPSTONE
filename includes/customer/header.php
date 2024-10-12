@@ -1,3 +1,18 @@
+<?php
+ $alert = isset($_SESSION['alert']) ? $_SESSION['alert'] : '';
+ $alert_type = isset($_SESSION['alert_type']) ? $_SESSION['alert_type'] : '';
+
+ // Clear alert after displaying
+ unset($_SESSION['alert']);
+ unset($_SESSION['alert_type']);
+ ?>
+ <!-- Display alert if available -->
+ <?php if ($alert): ?>
+     <div class="alert alert-<?= htmlspecialchars($alert_type) ?> position-fixed top-0 start-50 translate-middle-x w-50" role="alert" id="alert-message" style="z-index: 1050;">
+         <?= htmlspecialchars($alert) ?>
+     </div>
+ <?php endif; ?>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top mb-2">
   <div class="container-fluid ps-lg-4 pe-lg-4">
     <!-- Logo -->
