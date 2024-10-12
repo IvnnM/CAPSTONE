@@ -34,14 +34,12 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Available Products List</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
     <div class="container-fluid">
         <!-- Category Dropdown -->
         <div class="dropdown p-1">
-            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-outline-light dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                 Select Category
             </button>
             <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
@@ -81,7 +79,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php if ($row['OnhandQty'] > 0): ?>
                                 <?php if (isset($_SESSION['cust_email'])): ?>
                                     <!-- Add to Cart Button visible only if the customer session is set -->
-                                    <a href="../modules/sales_management_system/transaction/cart/add_to_cart.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>&cust_email=<?= htmlspecialchars($_SESSION['cust_email']) ?>" class="btn btn-success">Add to Cart</a>
+                                    <a href="../modules/sales_management_system/transaction/cart/add_to_cart.php?onhand_id=<?= htmlspecialchars($row['OnhandID']) ?>&cust_email=<?= htmlspecialchars($_SESSION['cust_email']) ?>" class="btn btn-success" >Add to Cart</a>
                                 <?php else: ?>
                                     <!-- Message or disabled button if the customer session is not set -->
                                     <p class="text-danger">Please submit your information to add items to the cart.</p>
@@ -116,6 +114,5 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

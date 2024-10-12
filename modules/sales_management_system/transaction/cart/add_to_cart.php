@@ -7,12 +7,6 @@ if (!isset($conn)) {
     die("Database connection failed");
 }
 
-// Check if customer session is set and onhand_id is provided
-// if (!isset($_SESSION['cust_email']) || !isset($_GET['onhand_id'])) {
-//     header('Location: ../../../../views/customer_view.php'); 
-//     exit();
-// }
-
 // Retrieve customer details from the session
 $cust_email = $_SESSION['cust_email'];
 $cust_name = $_SESSION['cust_name']; // Assuming cust_name is stored in session
@@ -27,7 +21,10 @@ $price_stmt->execute(['onhand_id' => $onhand_id]);
 $price_info = $price_stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$price_info) {
-    die("Error: Product not found.");
+    $_SESSION['alert'] = "Error: Product not found.";
+    $_SESSION['alert_type'] = "danger";
+    header("Location: ../../../../views/customer_view.php");
+    exit();
 }
 
 // Determine the correct price based on quantity and promotional logic
@@ -63,14 +60,14 @@ if ($check_stmt->rowCount() > 0) {
         'quantity' => $quantity,
         'price' => $price, // Include the price here
         'added_date' => $added_date
-
-        
     ]);
 }
-$_SESSION['alert'] = "Item added to cart successfully.";
+
+// Set success message
+$_SESSION['alert'] = "Added Item to Cart.";
 $_SESSION['alert_type'] = "success"; 
-// Redirect back to the previous page
-$previous_page = $_SERVER['HTTP_REFERER'];
-header("Location: $previous_page");
+
+// Redirect to customer view
+header("Location: ../../../../views/customer_view.php");
 exit();
 ?>

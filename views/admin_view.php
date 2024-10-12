@@ -46,12 +46,12 @@ if (isset($_SESSION['AdminID'])) {
   <div class="page p-3 mt-3 mb-3" id="Products" style="display: none;">
       <h1>Products</h1>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row text-center text-center">
             <!-- Button 1 -->
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/product/category/category_read.php" class="text-decoration-none"> 
                     <div class="card p-4">
-                        <i class="bi bi-grid icon"></i>
+                        <i class="bi bi-grid icon fs-1 mb-1"></i>
                         <h5 class="card-title">Category</h5>
                         <p class="card-text">Product Category</p>
                     </div>
@@ -61,7 +61,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/product/product_read.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-box icon"></i>
+                        <i class="bi bi-box icon fs-1 mb-1"></i>
                         <h5 class="card-title">Product</h5>
                         <p class="card-text">Manage Product</p>
                     </div>
@@ -71,7 +71,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/inventory/inventory_read.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-house-door icon"></i>
+                        <i class="bi bi-house-door icon fs-1 mb-1"></i>
                         <h5 class="card-title">Inventory</h5>
                         <p class="card-text">Manage Inventory</p>
                     </div>
@@ -81,7 +81,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/onhand/onhand_read.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-box-seam icon"></i>
+                        <i class="bi bi-box-seam icon fs-1 mb-1"></i>
                         <h5 class="card-title">Onhand</h5>
                         <p class="card-text">Manage Onhand Product</p>
                     </div>
@@ -94,12 +94,12 @@ if (isset($_SESSION['AdminID'])) {
   <div class="page p-3 mt-3 mb-3" id="Transaction" style="display: none;">
       <h1>Transaction</h1>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row text-center">
             <!-- Button 1 -->
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_pending.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-clock icon"></i>
+                        <i class="bi bi-clock icon fs-1 mb-1"></i>
                         <h5 class="card-title">Pending Payment</h5>
                         <p class="card-text">Confirm Orders</p>
                     </div>
@@ -109,7 +109,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_approved.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-check-circle icon"></i>
+                        <i class="bi bi-check-circle icon fs-1 mb-1"></i>
                         <h5 class="card-title">Accepted for Delivery</h5>
                         <p class="card-text">Ship Orders</p>
                     </div>
@@ -119,7 +119,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/transaction/personnel/transac_read_delivered.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-check2-circle icon"></i>
+                        <i class="bi bi-check2-circle icon fs-1 mb-1"></i>
                         <h5 class="card-title">Complete Transaction</h5>
                         <p class="card-text">Delivered Orders</p>
                     </div>
@@ -132,11 +132,11 @@ if (isset($_SESSION['AdminID'])) {
   <div class="page p-3 mt-3 mb-3" id="Employee" style="display: none;">
       <h1>Employee</h1>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/employee/employee_create.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-person-plus icon"></i>
+                        <i class="bi bi-person-plus icon fs-1 mb-1"></i>
                         <h5 class="card-title">Add New Employee</h5>
                         <p class="card-text">Create Account</p>
                     </div>
@@ -145,7 +145,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/employee/employee_read.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-person-dash icon"></i>
+                        <i class="bi bi-person-dash icon fs-1 mb-1"></i>
                         <h5 class="card-title">Employee Account</h5>
                         <p class="card-text">Manage Account</p>
                     </div>
@@ -158,11 +158,11 @@ if (isset($_SESSION['AdminID'])) {
   <div class="page p-3 mt-3 mb-3" id="Store" style="display: none;">
       <h1>Store</h1>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-3 mb-3">
                 <a href="../modules/sales_management_system/store/store_create.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-shop icon"></i>
+                        <i class="bi bi-shop icon fs-1 mb-1"></i>
                         <h5 class="card-title">Store Information</h5>
                         <p class="card-text">Manage Information</p>
                     </div>
@@ -171,7 +171,7 @@ if (isset($_SESSION['AdminID'])) {
             <div class="col-md-3 mb-3">
                 <a href="../modules/geographic_information_system/site_selection_report.php" class="text-decoration-none">
                     <div class="card p-4">
-                        <i class="bi bi-printer icon"></i>
+                        <i class="bi bi-printer icon fs-1 mb-1"></i>
                         <h5 class="card-title">Site Selection Report</h5>
                         <p class="card-text">Print Report</p>
                     </div>
@@ -184,12 +184,12 @@ if (isset($_SESSION['AdminID'])) {
   <div class="page p-3 mt-3 mb-3" id="Profile" style="display: none;">
       <h1>Profile</h1>
       <div class="container-fluid mt-5">
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-3 mb-3">
                 <a href="../modules/inventory_management_system/user_management/admin/admin_update.php" class="text-decoration-none">
-                <div class="card p-4 d-flex flex-row align-items-start" style="width: 300px;">
+                <div class="card p-4 d-flex flex-row text-center align-items-start" style="width: 300px;">
                     <div class="me-3">
-                        <!-- Icon for User Image -->
+                        <!-- icon fs-1 mb-1 for User Image -->
                         <i class="bi bi-person-circle" style="font-size: 80px;"></i>
                     </div>
                     <div>

@@ -84,6 +84,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $clear_cart_stmt = $conn->prepare($clear_cart_query);
     $clear_cart_stmt->execute(['cust_email' => $cust_email]);
 
+    $_SESSION['alert'] = "Transaction completed successfully!";
+    $_SESSION['alert_type'] = "success"; // You can set this to "danger" for error messages
+
     // Redirect or provide a success message
     echo "<script>window.location.href = '../../../../views/customer_view.php';</script>";
 }
@@ -99,12 +102,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="container-fluid mt-5">
-        <div class="row">
-            <div class="col-7">
-                <?php include('../transac_payment.php'); ?>
-            </div>
-            <div class="col-4 ms-4 p-4 border rounded">
-                <h2>Checkout</h2>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4 border rounded border-secondary p-4">
+                <h2 class="text-center">Checkout</h2>
                 <hr>
                 <form method="POST">
                     <div class="mb-3">
@@ -118,8 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <h5>Total Price: ₱<?= number_format($total_price, 2) ?></h5>
-                    <h5>Delivery Fee: ₱<?= number_format($delivery_fee, 2) ?></h5>
-                    <h5>Grand Total: ₱<?= number_format($grand_total, 2) ?></h5>
+                    <h5>Delivery Fee: ₱<?= number_format($delivery_fee, 2) ?></h5><hr>
+                    <h5><strong>Grand Total: ₱<?= number_format($grand_total, 2) ?></strong></h5>
 
                     <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="payment_confirmation" name="payment_confirmation" required>
@@ -130,9 +130,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                     <button type="submit" class="btn btn-primary w-100">Proceed to Checkout</button>
                 </form>
-                <button type="button" class="btn btn-secondary w-100" onclick="window.history.back();">Cancel</button>
+                <button type="button" class="btn btn-secondary w-100 mt-2" onclick="window.history.back();">Cancel</button>
+            </div>
+            <div class="col-12 col-md-6 col-lg-4 border border-secondary mt-3 mt-md-0">
+                <?php include('../transac_payment.php'); ?>
             </div>
         </div>
     </div>
+
+    <?php include("../../../../includes/customer/footer.php"); ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

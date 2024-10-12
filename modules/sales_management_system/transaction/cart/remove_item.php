@@ -17,14 +17,13 @@ $delete_stmt = $conn->prepare($delete_query);
 
 // Execute the delete statement
 if ($delete_stmt->execute(['cart_id' => $cart_id, 'cust_email' => $cust_email])) {
-    $_SESSION['alert'] = "Item removed from cart successfully.";
+    $_SESSION['alert'] = "Removed Item from Cart.";
     $_SESSION['alert_type'] = "danger";
 } else {
     $_SESSION['alert'] = "Failed to remove item from cart.";
     $_SESSION['alert_type'] = "danger";
 }
 
-// Redirect back to the cart page
-header('Location: ../../../../views/customer_view.php'); // Redirect to the customer view (cart page)
+header("Location: ../../../../views/customer_view.php");
 exit();
 ?>

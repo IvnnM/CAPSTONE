@@ -73,52 +73,43 @@ if ($cart_stmt->rowCount() == 0) {
 <body>
 
 <div class="container-fluid p-0">
-    <div class="row">
-        <div class="col-12 mb-2">
-            <!-- Cart Table -->
-            <div class="row">
-                <div class="col-4">
-                    <h4>Payment</h4>
-                    <p><strong>GCash: <?= htmlspecialchars($store['StoreGcashNum']) ?></strong></p>
-                    <?php if ($store['StoreGcashQR']): ?>
-                        <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" alt="GCash QR Code" style="max-width: 100%; height: auto;">
-                    <?php else: ?>
-                        <p>No QR Code available.</p>
-                    <?php endif; ?>
-                </div>
-                <div class="col">
-                    <h4>Items in Your Cart</h4>
-                    <table class="table cart-table">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (!empty($cart_items)): ?>
-                                <?php foreach ($cart_items as $item): ?>
-                                    <tr>
-                                        <td><?= htmlspecialchars($item['ProductName']) ?></td>
-                                        <td><?= htmlspecialchars($item['Quantity']) ?></td>
-                                        <td>₱<?= number_format($item['Price'], 2) ?></td>
-                                        <td>₱<?= number_format($item['TotalPrice'], 2) ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <tr>
-                                    <td colspan="4" class="text-center">Your cart is empty.</td>
-                                </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
 
-            </div>
-        </div>
+    <h4 class="text-center">GCash Payment: <?= htmlspecialchars($store['StoreGcashNum']) ?></h4>
+    <?php if ($store['StoreGcashQR']): ?>
+        <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" alt="GCash QR Code" style="max-width: 100%; height: auto;">
+    <?php else: ?>
+        <p>No QR Code available.</p>
+    <?php endif; ?>
+    <!-- Cart Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Qtty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($cart_items)): ?>
+                    <?php foreach ($cart_items as $item): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($item['ProductName']) ?></td>
+                            <td><?= htmlspecialchars($item['Quantity']) ?></td>
+                            <td>₱<?= number_format($item['Price'], 2) ?></td>
+                            <td>₱<?= number_format($item['TotalPrice'], 2) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="4" class="text-center">Your cart is empty.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
+
 </div>
 
 </body>

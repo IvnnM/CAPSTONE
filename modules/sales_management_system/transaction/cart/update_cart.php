@@ -5,14 +5,14 @@ include('../../../../config/database.php'); // Adjust path as necessary
 $cust_email = $_SESSION['cust_email'];
 
 // Check if cart_id is provided
-if (!isset($_GET['cart_id'])) {
+if (!isset($_POST['cart_id'])) {
     $_SESSION['alert'] = 'No cart item specified.';
     $_SESSION['alert_type'] = 'danger';
     header("Location: ../../../../views/customer_view.php");
     exit();
 }
 
-$cart_id = $_GET['cart_id'];
+$cart_id = $_POST['cart_id'];
 
 // Fetch the current quantity for the cart item
 $query = "SELECT c.Quantity, p.ProductName 
@@ -46,34 +46,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $update_stmt = $conn->prepare($update_query);
         $update_stmt->execute(['quantity' => $new_quantity, 'cart_id' => $cart_id]);
 
-        // Set success message and redirect
-        $_SESSION['alert'] = 'Quantity updated successfully!';
-        $_SESSION['alert_type'] = 'info';
-        header("Location: ../../../../views/customer_view.php");
-        exit();
+        $_SESSION['alert'] = 'Quantity updated successfully.';
+        $_SESSION['alert_type'] = 'success';
     }
-}
-?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Quantity</title>
-    <link rel="stylesheet" href="../../../../includes/cdn.php"> <!-- Adjust as necessary -->
-</head>
-<body>
-    <div class="container">
-        <h2>Update Quantity for <?= htmlspecialchars($item['ProductName']) ?></h2>
-        <form method="POST" action="">
-            <div class="mb-3">
-                <label for="quantity" class="form-label">Quantity</label>
-                <input type="number" id="quantity" name="quantity" value="<?= htmlspecialchars($item['Quantity']) ?>" min="1" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="../../../../views/customer_view.php" class="btn btn-secondary">Cancel</a>
-        </form>
-    </div>
-</body>
-</html>
+    header("Location: ../../../../views/customer_view.php");
+    exit();
+}

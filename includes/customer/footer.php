@@ -1,4 +1,5 @@
-<footer class="container-fluid bg-dark text-light text-center mt-auto">
+<link rel="stylesheet" href="../assets/css/style.css">
+<footer class="container-fluid text-light text-center mt-auto">
     <hr class="my-4" style="border-top: 1px solid white;">
     <div class="container">
         <p class="mb-2">Feel free to contact us via email or phone. We're here to assist you with any inquiries or issues you may have.</p>
@@ -9,9 +10,9 @@
             <a href="#" class="text-light"><i class="bi bi-telephone"></i></a>
         </div>
         <!-- <a class="logout-link text-light mt-3 d-block" href="/3CAPSTONE/logout.php">Logout</a> -->
-         <br>
+            <br>
     </div>
-</foot>
+</footer>
 
 <script>
     function goBack() {
@@ -38,7 +39,8 @@ $(document).ready(function() {
         // Set a timeout to fade out the alert after 5 seconds (5000 milliseconds)
         setTimeout(function() {
             alert.fadeOut(1000); // Fades out over 1 second
-        }, 2000);
+        }, 3000);
     }
 });
 </script>
+

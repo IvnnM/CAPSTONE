@@ -1,18 +1,17 @@
-<!-- Divider -->
-
-<footer class="container-fluid text-dark text-center position-absolute bottom-0 start-50 translate-middle-x">
-<hr class="my-4" style="border-top: 1px solid white;">
-  <div class="container">
-    <p class="mb-2">Feel free to contact us via email or phone. We're here to assist you with any inquiries or issues you may have.</p>
-    <p class="mb-0">© 2024 DKAT's Company. All rights reserved.</p>
-    <div class="social-icons mt-3">
-      <a href="#" class="text-dark me-3"><i class="bi bi-facebook"></i></a>
-      <a href="#" class="text-dark me-3"><i class="bi bi-envelope"></i></a>
-      <a href="#" class="text-dark"><i class="bi bi-telephone"></i></a>
+<link rel="stylesheet" href="../assets/css/style.css">
+<footer class="container-fluid text-light text-center mt-auto">
+    <hr class="my-4" style="border-top: 1px solid white;">
+    <div class="container">
+      <p class="mb-2">Feel free to contact us via email or phone. We're here to assist you with any inquiries or issues you may have.</p>
+      <p class="mb-0">© 2024 DKAT's Company. All rights reserved.</p>
+      <div class="social-icons mt-3">
+        <a href="#" class="text-light me-3"><i class="bi bi-facebook"></i></a>
+        <a href="#" class="text-light me-3"><i class="bi bi-envelope"></i></a>
+        <a href="#" class="text-light"><i class="bi bi-telephone"></i></a>
+      </div>
+      <!-- <a class="logout-link" href="/3CAPSTONE/logout.php">Logout</a> -->
+      <br><br>
     </div>
-    <a class="logout-link" href="/3CAPSTONE/logout.php">Logout</a>
-    <br><br>
-  </div>
 </footer>
 
 <script>
