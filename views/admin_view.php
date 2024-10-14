@@ -125,6 +125,16 @@ if (isset($_SESSION['AdminID'])) {
                     </div>
                 </a>
             </div>
+            <!-- Button 4 -->
+            <div class="col-md-3 mb-3">
+                <a href="../modules/geographic_information_system/route_optimization/map.php" class="text-decoration-none">
+                    <div class="card p-4">
+                        <i class="bi bi-map icon fs-1 mb-1"></i>
+                        <h5 class="card-title">Route Optimization</h5>
+                        <p class="card-text">Orders Route</p>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
   </div>

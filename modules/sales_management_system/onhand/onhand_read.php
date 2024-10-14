@@ -64,9 +64,9 @@ $onhand_records = $onhand_stmt->fetchAll(PDO::FETCH_ASSOC);
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="../../../views/admin_view.php#Products">Home</a></li>
-                    <li class="breadcrumb-item"><a href="../../inventory_management_system/inventory/inventory_create.php">Add New Onhand</a></li>
-                    <li class="breadcrumb-item"><a href="../../inventory_management_system/product/product_read.php">Go to Product List</a></li>
-                    <li class="breadcrumb-item"><a href="../../inventory_management_system/inventory/inventory_read.php">Go to Inventory List</a></li>
+                    <li class="breadcrumb-item"><a href="../../inventory_management_system/product/category/category_read.php">Product Category List</a></li>
+                    <li class="breadcrumb-item"><a href="../../inventory_management_system/product/product_read.php">Product List</a></li>
+                    <li class="breadcrumb-item"><a href="../../inventory_management_system/inventory/inventory_read.php">Product Inventory List</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Onhand List</li>
                 </ol>
             </nav>

@@ -1,21 +1,22 @@
 <?php
 session_start();
-
 include("./../../../config/database.php");
 
-// Fetch store details
+// Fetch store details with a limit of 1
 $store_query = "
     SELECT s.StoreInfoID, s.StoreGcashNum, s.StoreGcashQR, s.StoreDeliveryFee, CONCAT(l.Province, ', ', l.City) AS Location 
     FROM StoreInfoTb s
     JOIN LocationTb l ON s.LocationID = l.LocationID
+    LIMIT 1
 ";
 
 $store_stmt = $conn->prepare($store_query);
 $store_stmt->execute();
 $store = $store_stmt->fetch(PDO::FETCH_ASSOC);
 
+// Display an alert if no store is found
 if (!$store) {
-    echo "<script>alert('Store not found.'); window.history.back();</script>";
+    echo "<script>alert('No store found.'); window.history.back();</script>";
     exit;
 }
 
@@ -45,10 +46,7 @@ if (!$store) {
 <body>
     <center>
         <div class="container">
-
-
             <h3>Store Information</h3>
-
             <hr style="border-top: 1px solid white;">
 
             <div class="store-info">
@@ -70,4 +68,3 @@ if (!$store) {
     </center>
 </body>
 </html>
-

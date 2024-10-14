@@ -1,113 +1,65 @@
 <?php
+include('./../../../../includes/database_connection.php'); // Include your database connection
 
-// Function to calculate delivery fee based on distance
-function calculateDeliveryFee($customerLocationID, $conn) {
-    // Get customer location LatLng and store's base delivery fee and location
-    $storeDetails = getStoreDetails($conn);
-    if ($storeDetails === null) {
-        error_log("Store details could not be retrieved.");
-        return 0; // Return a default delivery fee of 0 if store details are not found
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['customer_coords'])) {
+    $customer_coords = explode(',', $_POST['customer_coords']); // Get customer coordinates from the POST data
+
+    if (count($customer_coords) !== 2) {
+        echo json_encode(['error' => 'Invalid coordinates']);
+        exit;
     }
 
-    $locations = getLatLng($customerLocationID, $storeDetails['LocationID'], $conn);
-    if ($locations === null) {
-        error_log("Location data could not be retrieved.");
-        return $storeDetails['StoreDeliveryFee']; // Return the base fee if location is not found
+    // Fetch the store's exact coordinates and delivery fee
+    $query_store = "SELECT StoreExactCoordinates, StoreDeliveryFee FROM StoreInfoTb LIMIT 1";
+    $stmt_store = $conn->prepare($query_store);
+    $stmt_store->execute();
+    $store_data = $stmt_store->fetch(PDO::FETCH_ASSOC);
+
+    if ($store_data && !empty($store_data['StoreExactCoordinates'])) {
+        $store_coords = explode(',', $store_data['StoreExactCoordinates']);
+        $store_base_fee = $store_data['StoreDeliveryFee'];
+    } else {
+        echo json_encode(['error' => 'Store information not found']);
+        exit;
     }
 
-    // Parse latitude and longitude
-    [$cust_lat, $cust_lng] = explode(';', $locations['customer']);
-    [$store_lat, $store_lng] = explode(';', $locations['store']);
+    // Haversine formula to calculate the distance between two lat/lon points
+    function haversine($lat1, $lon1, $lat2, $lon2) {
+        $earth_radius = 6371; // Earth radius in kilometers
 
-    // Calculate distance using the Haversine formula
-    $distance = haversineDistance($cust_lat, $cust_lng, $store_lat, $store_lng);
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        $distance = $earth_radius * $c; // Distance in kilometers
+        return $distance;
+    }
+
+    // Get customer and store coordinates
+    $customer_lat = $customer_coords[0];
+    $customer_lng = $customer_coords[1];
+    $store_lat = $store_coords[0];
+    $store_lng = $store_coords[1];
+
+    // Calculate the distance between customer and store
+    $distance = haversine($customer_lat, $customer_lng, $store_lat, $store_lng);
 
     // Calculate the delivery fee based on distance
-    $calculatedFee = $storeDetails['StoreDeliveryFee'] * $distance;
-    return max($calculatedFee, $storeDetails['StoreDeliveryFee']); // Ensure the minimum fee
+    // You can adjust this logic based on your business rules (e.g., charge more for long distances)
+    $delivery_fee = $store_base_fee * $distance; // Example: multiply base fee by distance
+
+    echo json_encode([
+        'delivery_fee' => number_format($delivery_fee, 2),
+        'distance' => number_format($distance, 2)
+    ]);
+    exit;
 }
 
-// Fetch latitude and longitude for customer and store locations
-function getLatLng($customerLocationID, $storeLocationID, $conn) {
-    $query = "SELECT LocationID, LatLng FROM LocationTb WHERE LocationID IN (:customerLocationID, :storeLocationID)";
-    $stmt = $conn->prepare($query);
-    $stmt->bindParam(':customerLocationID', $customerLocationID, PDO::PARAM_INT);
-    $stmt->bindParam(':storeLocationID', $storeLocationID, PDO::PARAM_INT);
-
-    if (!$stmt->execute()) {
-        error_log("Error fetching locations: " . implode(", ", $stmt->errorInfo()));
-        return null; // Return null if the query fails
-    }
-
-    $locations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    if ($locations === false || count($locations) < 2) {
-        error_log("No locations found for customerLocationID: $customerLocationID or storeLocationID: $storeLocationID");
-        return null; // Return null if either location is not found or query fails
-    }
-
-    $result = [];
-    foreach ($locations as $location) {
-        if ($location['LocationID'] == $customerLocationID) {
-            $result['customer'] = $location['LatLng'];
-        } else {
-            $result['store'] = $location['LatLng'];
-        }
-    }
-    return $result;
-}
-
-// Fetch store's delivery fee and location
-function getStoreDetails($conn) {
-    $query = "SELECT LocationID, StoreDeliveryFee FROM StoreInfoTb LIMIT 1"; // Fetch one record
-    $stmt = $conn->prepare($query);
-    $stmt->execute();
-
-    $storeDetails = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($storeDetails === false) {
-        error_log("Failed to fetch store details.");
-        return null; // Return null if the query fails
-    }
-
-    return $storeDetails; // Return the fetched details
-}
-
-// Calculate the distance using the Haversine formula
-function haversineDistance($latFrom, $lonFrom, $latTo, $lonTo, $earthRadius = 6371) {
-    // Convert from degrees to radians
-    $latFrom = deg2rad($latFrom);
-    $lonFrom = deg2rad($lonFrom);
-    $latTo = deg2rad($latTo);
-    $lonTo = deg2rad($lonTo);
-
-    // Haversine formula
-    $latDelta = $latTo - $latFrom;
-    $lonDelta = $lonTo - $lonFrom;
-
-    $a = sin($latDelta / 2) * sin($latDelta / 2) +
-         cos($latFrom) * cos($latTo) *
-         sin($lonDelta / 2) * sin($lonDelta / 2);
-
-    $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-    return $earthRadius * $c; // Returns distance in kilometers
-}
-
-// Check if location_id session is set and calculate delivery fee
-if (isset($_SESSION['location_id'])) {
-    $customerLocationID = $_SESSION['location_id']; // Get the location ID from session
-
-    // Calculate the delivery fee
-    $deliveryFee = calculateDeliveryFee($customerLocationID, $conn);
-
-    // Store the delivery fee in session
-    $_SESSION['delivery_fee'] = $deliveryFee;
-
-    // Return the result as JSON
-
-} else {
-    // If location_id is not set, return a default message
-    echo json_encode(['error' => 'Location ID is not set.']);
-}
+echo json_encode(['error' => 'Invalid request']);
+exit;
 ?>

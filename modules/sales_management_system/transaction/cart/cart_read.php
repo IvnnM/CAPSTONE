@@ -19,16 +19,16 @@ foreach ($cart_items as $item) {
     $total_price += $price_to_use * $item['Quantity'];
 }
 
-// Calculate delivery fee if location_id is set
-$delivery_fee = 0;
-if (isset($_SESSION['location_id'])) {
-    // Call the delivery fee calculation
-    include("calculate_delivery_fee.php"); 
-    $delivery_fee = isset($_SESSION['delivery_fee']) ? $_SESSION['delivery_fee'] : 0;
-}
+// // Calculate delivery fee if location_id is set
+// $delivery_fee = 0;
+// if (isset($_SESSION['location_id'])) {
+//     // Call the delivery fee calculation
+//     include("calculate_delivery_fee.php"); 
+//     $delivery_fee = isset($_SESSION['delivery_fee']) ? $_SESSION['delivery_fee'] : 0;
+// }
 
-// Calculate grand total
-$grand_total = $total_price + $delivery_fee;
+// // Calculate grand total
+// $grand_total = $total_price + $delivery_fee;
 ?>
 
 <!DOCTYPE html>
@@ -77,19 +77,7 @@ $grand_total = $total_price + $delivery_fee;
                         <tr>
                             <td colspan="3" class="text-end"><strong>Total Price:</strong></td>
                             <td><strong><?= number_format($total_price, 2) ?></strong></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-end"><strong>Delivery Fee:</strong></td>
-                            <td><strong><?= number_format($delivery_fee, 2) ?></strong></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="text-end"><strong>Grand Total:</strong></td>
-                            <td><strong><?= number_format($grand_total, 2) ?></strong></td>
-                            <td>
-                                <a href="../modules/sales_management_system/transaction/cart/checkout.php" class="btn btn-success w-100">Proceed to Payment</a>
-                            </td>
+                            <td colspan="3" class="text-end"><a href="../modules/sales_management_system/transaction/cart/checkout_view.php" class="btn btn-success w-100">Proceed to Payment</a></td>
                         </tr>
                     </tbody>
                 </table>

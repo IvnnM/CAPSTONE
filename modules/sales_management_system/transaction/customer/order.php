@@ -3,19 +3,18 @@ session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
-// Fetch session data for the current customer
-$cust_num = $_SESSION['cust_num'] ?? '';
+// Fetch session data for the current customer email
 $cust_email = $_SESSION['cust_email'] ?? '';
 
-// Fetch pending transactions for the current customer using session email and contact number
-$query = "SELECT t.TransacID, t.CustName, t.CustNum, t.CustEmail, 
+// Fetch pending transactions for the current customer using session email
+$query = "SELECT t.TransacID, t.CustName, t.CustEmail, 
                  l.Province, l.City, t.DeliveryFee, t.TotalPrice, t.TransactionDate 
           FROM TransacTb t
           JOIN LocationTb l ON t.LocationID = l.LocationID
-          WHERE t.CustEmail = :cust_email AND t.CustNum = :cust_num AND t.Status = 'Pending' 
+          WHERE t.CustEmail = :cust_email AND t.Status = 'Pending' 
           ORDER BY t.TransactionDate DESC";
 $stmt = $conn->prepare($query);
-$stmt->execute(['cust_email' => $cust_email, 'cust_num' => $cust_num]);
+$stmt->execute(['cust_email' => $cust_email]);
 $pending_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
@@ -62,7 +61,6 @@ $pending_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <tr>
                         <th>Transaction ID</th>
                         <th>Name</th>
-                        <th>Number</th>
                         <th>Email</th>
                         <th>Address</th> 
                         <th>Delivery Fee</th>
@@ -74,14 +72,13 @@ $pending_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <tbody>
                     <?php if (empty($pending_transactions)): ?>
                         <tr>
-                            <td colspan="9">No pending transactions found.</td>
+                            <td colspan="8">No pending transactions found.</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($pending_transactions as $transaction): ?>
                             <tr>
                                 <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
                                 <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                                <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
                                 <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
                                 <td><?= htmlspecialchars($transaction['Province'] . ', ' . $transaction['City']) ?></td>
                                 <td><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
