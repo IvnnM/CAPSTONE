@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -39,75 +39,116 @@ $products = $product_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product List</title>
-    <link rel="stylesheet" href="path-to-bootstrap.css"> <!-- Add bootstrap link if needed -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <style>
-        .container {
-            margin-top: 30px;
-        }
-        .table {
-            margin-top: 20px;
-        }
+    .table td {
+        vertical-align: middle;
+    }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h3>Product List</h3>
-        <form method="GET" action="">
-            <div class="form-group">
-                <label for="search_value">Search by Product Name or Description:</label>
-                <input type="text" name="search_value" id="search_value" class="form-control" 
-                       value="<?= htmlspecialchars($search_value) ?>">
+<?php include("../../../includes/personnel/header.php"); ?>
+<?php include("../../../includes/personnel/navbar.php"); ?>
+    <div class="container-fluid"><hr>
+        <div class="sticky-top bg-light pb-2">
+            <h3>Product List</h3>
+            <!-- Breadcrumb Navigation -->
+            <!--<nav aria-label="breadcrumb">-->
+            <!--    <ol class="breadcrumb">-->
+            <!--        <li class="breadcrumb-item"><a href="./../../../views/personnel_view.php#Products">Home</a></li>-->
+            <!--        <li class="breadcrumb-item"><a href="./../product/category/category_read.php">Product Category List</a></li>-->
+            <!--        <li class="breadcrumb-item active" aria-current="page">Product List</li>-->
+            <!--        <li class="breadcrumb-item"><a href="./../inventory/inventory_read.php">Product Inventory List</a></li>-->
+            <!--        <li class="breadcrumb-item"><a href="../../../modules/sales_management_system/onhand/onhand_read.php">Product Onhand List</a></li>-->
+            <!--    </ol>-->
+            <!--</nav><hr>-->
+            <div class="d-flex justify-content-end">
+                <?php if (isset($_SESSION['AdminID'])): ?>
+                    <button type="button" class="btn btn-success" onclick="window.location.href='product_create.php';">Create New Product</button>
+                <?php elseif (isset($_SESSION['EmpID'])): ?>
+                    
+                <?php endif; ?> 
             </div>
-            <button type="submit" class="btn btn-primary mt-2">Search</button>
-        </form>
+        </div>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Product ID</th>
-                    <th>Product Name</th>
-                    <th>Product Description</th>
-                    <th>Category</th>
-                    <th>Product Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($products) > 0): ?>
-                    <?php foreach ($products as $product): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($product['ProductID']) ?></td>
-                            <td><?= htmlspecialchars($product['ProductName']) ?></td>
-                            <td><?= htmlspecialchars($product['ProductDesc']) ?></td>
-                            <td><?= htmlspecialchars($product['CategoryName']) ?></td>
-                            <td>
-                                <?php if ($product['ProductImage']): ?>
-                                    <img src="<?= htmlspecialchars($product['ProductImage']) ?>" alt="<?= htmlspecialchars($product['ProductName']) ?>" width="100">
-                                <?php else: ?>
-                                    No Image
-                                <?php endif; ?>
-                            </td>
-                            <td>
-                                <a href="product_update.php?id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-warning btn-sm">Update</a> | 
-                                <a href="product_delete.php?id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a> | 
-                                <a href="../inventory/inventory_create.php?product_id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-info btn-sm">Add to Inventory</a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+        <div class="table-responsive">
+            <table id="productTable" class="table table-light table-hover border-secondary pt-2">
+                <thead class="table-info">
                     <tr>
-                        <td colspan="6">No products found.</td>
+                        <th class="col-auto">Product ID</th>
+                        <th class="col-auto">Product Name</th>
+                        <th class="col-3">Product Description</th>
+                        <th class="col-auto">Category</th>
+                        <th class="col-auto">Product Image</th>
+                        <?php if (isset($_SESSION['AdminID'])): ?>
+                            <th class="col-auto">Admin Actions</th>
+                        <?php elseif (isset($_SESSION['EmpID'])): ?>
+                            
+                        <?php endif; ?>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <br>
-        <a href="product_create.php" class="btn btn-success">Add New Product</a>
-        <br><br>
-        <a href="../inventory/inventory_read.php" class="btn btn-secondary">Go to Inventory List</a>
+                </thead>
+                <tbody>
+                    <?php if (count($products) > 0): ?>
+                        <?php foreach ($products as $product): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($product['ProductID']) ?></td>
+                                <td><?= htmlspecialchars($product['ProductName']) ?></td>
+                                <td class="description-cell"><?= htmlspecialchars($product['ProductDesc']) ?></td>
+                                <td><?= htmlspecialchars($product['CategoryName']) ?></td>
+                                <td>
+                                    <?php if ($product['ProductImage']): ?>
+                                        <img src="<?= htmlspecialchars($product['ProductImage']) ?>" alt="<?= htmlspecialchars($product['ProductName']) ?>" width="100">
+                                    <?php else: ?>
+                                        No Image
+                                    <?php endif; ?>
+                                </td>
+                                <td class="text-center">
+                                    <!-- Admin-only actions -->
+                                    <?php if (isset($_SESSION['AdminID'])): ?>
+                                        <div class="d-flex justify-content-center">
+                                            <a href="product_update.php?id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-warning btn-sm me-2 w-50">Update</a>
+                                            <a href="product_delete.php?id=<?= htmlspecialchars($product['ProductID']) ?>" onclick="return confirm('Are you sure you want to delete this product?');" class="btn btn-danger btn-sm me-2 w-50">Delete</a>
+                                            <a href="../inventory/inventory_create.php?product_id=<?= htmlspecialchars($product['ProductID']) ?>" class="btn btn-primary btn-sm w-50">Add to Inventory</a>
+                                        </div>
+                                    <!-- Employee-only actions -->
+                                    <?php elseif (isset($_SESSION['EmpID'])): ?>
+
+                                    <?php endif; ?>
+                                </td>
+
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6">No products found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <script>
+        // Initialize DataTables
+        $(document).ready(function() {
+            $('#productTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 5, // Default number of entries per page
+                "lengthMenu": [5, 10, 25, 50, 100], // Options for number of entries
+            });
+        });
+    </script>
 </body>
 </html>

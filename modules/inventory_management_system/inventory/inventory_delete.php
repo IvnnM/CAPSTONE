@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("./../../../config/database.php");
 
 // Check if an ID is provided in the URL
@@ -12,14 +13,18 @@ if (isset($_GET['id'])) {
 
     // Execute the delete query
     if ($delete_stmt->execute()) {
-        echo "<script>alert('Inventory deleted successfully!');</script>";
+        $_SESSION['alert'] = 'Inventory deleted successfully!';
+        $_SESSION['alert_type'] = 'success';
     } else {
-        echo "<script>alert('Error: Could not delete the inventory.');</script>";
+        $_SESSION['alert'] = 'Error: Could not delete the inventory.';
+        $_SESSION['alert_type'] = 'danger';
     }
 } else {
-    echo "<script>alert('Invalid inventory ID.');</script>";
+    $_SESSION['alert'] = 'Invalid inventory ID.';
+    $_SESSION['alert_type'] = 'danger';
 }
 
-echo "<script>window.history.back();</script>";
+// Redirect back to the previous page or a specific inventory management page
+header("Location: inventory_read.php"); // Change to the relevant page as needed
 exit;
 ?>

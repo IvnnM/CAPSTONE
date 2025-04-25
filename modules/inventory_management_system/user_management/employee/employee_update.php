@@ -1,12 +1,13 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the user is logged in and has an employee ID in the session
 if (!isset($_SESSION['EmpID'])) {
-    echo "<script>alert('You must be logged in to access this page.'); 
-    window.location.href = '../../../../login.php';</script>";
+    $_SESSION['alert'] = 'You must be logged in to access this page.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../login.php");
     exit;
 }
 
@@ -21,7 +22,9 @@ $employee_stmt->execute();
 $employee = $employee_stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$employee) {
-    echo "<script>alert('Employee not found.'); window.history.back();</script>";
+    $_SESSION['alert'] = 'Employee not found.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../views/personnel_view.php");
     exit;
 }
 
@@ -31,7 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Verify the old password using password_verify
     if (!password_verify($old_password, $employee['EmpPassword'])) {
-        echo "<script>alert('Old password is incorrect.');</script>";
+        $_SESSION['alert'] = 'Old password is incorrect.';
+        $_SESSION['alert_type'] = 'danger';
+        header("Location: ../../../../modules/inventory_management_system/user_management/employee/employee_update.php");
+        exit;
     } else {
         $emp_name = $_POST['emp_name'];
         $location_id = $_POST['location_id'];
@@ -45,8 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Hash the new password
                 $emp_password = password_hash($new_password, PASSWORD_DEFAULT);
             } else {
-                // If passwords don't match, show alert and exit
-                echo "<script>alert('New passwords do not match.'); window.history.back();</script>";
+                $_SESSION['alert'] = 'New passwords do not match.';
+                $_SESSION['alert_type'] = 'danger';
+                header("Location: ../../../../modules/inventory_management_system/user_management/employee/employee_update.php");
                 exit;
             }
         } else {
@@ -65,20 +72,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Execute the update query
         if ($update_stmt->execute()) {
-            echo "<script>alert('Employee details updated successfully!'); window.history.back();</script>";
-            exit;
+            $_SESSION['alert'] = 'Your details updated successfully!';
+            $_SESSION['alert_type'] = 'success';
         } else {
-            echo "<script>alert('Error: Could not update employee details.');</script>";
+            $_SESSION['alert'] = 'Error: Could not update employee details.';
+            $_SESSION['alert_type'] = 'danger';
         }
+
+        // Redirect back to the personnel view page
+        header("Location: ../../../../modules/inventory_management_system/user_management/employee/employee_update.php");
+        exit;
     }
 }
 ?>
 
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Employee</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="../../../../assets/css/form.css" rel="stylesheet">
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -150,7 +165,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $("#location_id").val($(this).val());
             });
         });
+    </script>
 
+    <script>
         function confirmUpdate(event) {
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
@@ -168,39 +185,97 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </head>
 <body>
-    <h3>Update Your Employee Account</h3>
-    <form method="POST" action="" onsubmit="confirmUpdate(event)">
-        <label for="old_password">Old Password:</label>
-        <input type="password" name="old_password" id="old_password" required><br>
+    <div class="container relative">
+        <div class="sticky-top pb-2">
+            <h3>Manage Account</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/personnel_view.php">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Update Account</li>
+                </ol>
+            </nav>
+            <hr>
+        </div>
+        <!-- Alert Display Section -->
+        <?php if(isset($_SESSION['alert'])): ?>
+        <div class="alert alert-<?= htmlspecialchars($_SESSION['alert_type']) ?> alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($_SESSION['alert']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php 
+        // Unset the alert after displaying to prevent it from showing again
+        unset($_SESSION['alert']);
+        unset($_SESSION['alert_type']);
+        endif; 
+        ?>
+        <form method="POST" action="" onsubmit="confirmUpdate(event)">
+            <!-- Identification Section -->
+            <h6>Identification</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="emp_name" name="emp_name" value="<?= htmlspecialchars($employee['EmpName']) ?>" placeholder="Employee Name" required>
+                    <label for="emp_name">Employee Name</label>
+                </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select id="province" name="province" class="form-control" required>
+                            <option value="">Select Province</option>
+                        </select>
+                        <label for="province">Province</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select id="city" name="city" class="form-control" required>
+                            <option value="">Select City</option>
+                        </select>
+                        <label for="city">City</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Account Information Section -->
+            <h6>Account Information</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="emp_email" name="emp_email" value="<?= htmlspecialchars($employee['EmpEmail']) ?>" placeholder="Employee Email" required>
+                        <label for="emp_email">Employee Email</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="old_password" name="old_password" placeholder="Old Password" required>
+                        <label for="old_password">Old Password</label>
+                    </div>
+                </div>
+            </div>
 
-        <label for="emp_name">Employee Name:</label>
-        <input type="text" name="emp_name" id="emp_name" value="<?= htmlspecialchars($employee['EmpName']) ?>" required><br>
+            <input type="hidden" name="location_id" id="location_id" value="<?= htmlspecialchars($employee['LocationID']) ?>" required>
 
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
+            <!-- Password Update Section -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New Password">
+                        <label for="new_password">New Password</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm New Password">
+                        <label for="confirm_password">Confirm New Password</label>
+                    </div>
+                </div>
+                <small>Leave blank to keep your old password.</small>
+            </div>
 
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
-
-        <!-- Hidden field to store the selected LocationID -->
-        <input type="hidden" name="location_id" id="location_id" value="<?= htmlspecialchars($employee['LocationID']) ?>" required>
-
-        <label for="emp_email">Employee Email:</label>
-        <input type="email" name="emp_email" id="emp_email" value="<?= htmlspecialchars($employee['EmpEmail']) ?>" required><br>
-
-        <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" id="new_password"><br>
-
-        <label for="confirm_password">Confirm New Password:</label>
-        <input type="password" name="confirm_password" id="confirm_password"><br>
-
-        <button type="submit">Update</button>
-    </form>
-    <br>
-    <a href="">Go to your Profile</a>
+            <button class="btn btn-primary w-100 mb-2" type="submit">Update</button>
+            <a class="btn btn-secondary w-100 mb-2" href="../../../../views/personnel_view.php">Cancel</a>
+        </form>
+    </div>
 </body>
+
 </html>
