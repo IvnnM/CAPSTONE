@@ -1,9 +1,9 @@
 <?php
 // config/database.php
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "db_capstone";
+$username = "u581904928_dkatcaspst";
+$password = "Dkatcaspst@1";
+$dbname = "u581904928_dkat";
 
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);

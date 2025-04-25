@@ -1,0 +1,129 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+.map-container {
+    height: 500px;
+    margin-bottom: 2rem;
+}
+.charts-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+@media (min-width: 768px) {
+    .charts-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+.chart {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    height: 400px;
+}
+.legend {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+.legend-color {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+}
+.reset-view-btn {
+    padding: 5px 10px;
+    background: white;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 4px;
+    cursor: pointer;
+}
+.reset-view-btn:hover {
+    background: #f4f4f4;
+}
+.metrics-container {
+display: flex;
+gap: 1.5rem;
+padding: 1rem;
+font-family: system-ui, -apple-system, sans-serif;
+}
+
+.metric-card {
+flex: 1;
+background: white;
+border-radius: 0.75rem;
+padding: 1.5rem;
+box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+min-width: 0; /* Prevents flex items from overflowing */
+}
+
+.card-header {
+display: flex;
+align-items: center;
+margin-bottom: 1.5rem;
+gap: 0.5rem;
+}
+
+.card-title {
+font-size: 1.25rem;
+font-weight: 600;
+color: #1f2937;
+margin: 0;
+}
+
+.metrics-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 1rem;
+}
+
+.metric-item {
+padding: 0.75rem;
+background: #f3f4f6;
+border-radius: 0.5rem;
+}
+
+.metric-label {
+font-size: 0.875rem;
+color: #6b7280;
+margin-bottom: 0.25rem;
+}
+
+.metric-value {
+font-size: 1.25rem;
+font-weight: 600;
+color: #1f2937;
+}
+
+.contribution-metric {
+grid-column: span 2;
+background: #dbeafe;
+}
+
+.icon {
+width: 24px;
+height: 24px;
+color: #3b82f6;
+}
+
+/* Make it responsive */
+@media (max-width: 768px) {
+.metrics-container {
+flex-direction: column;
+}
+}
+
