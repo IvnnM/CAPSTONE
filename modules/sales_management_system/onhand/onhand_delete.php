@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start the session for session-based alerts
 include("./../../../config/database.php");
 
 // Check if an Onhand ID is provided in the URL
@@ -12,14 +13,18 @@ if (isset($_GET['onhand_id'])) {
 
     // Execute the delete query
     if ($delete_stmt->execute()) {
-        echo "<script>alert('Onhand record deleted successfully!');</script>";
+        $_SESSION['alert'] = 'Onhand record deleted successfully!';
+        $_SESSION['alert_type'] = 'success';
     } else {
-        echo "<script>alert('Error: Could not delete onhand record.');</script>";
+        $_SESSION['alert'] = 'Error: Could not delete onhand record.';
+        $_SESSION['alert_type'] = 'danger';
     }
 } else {
-    echo "<script>alert('Invalid onhand ID.'); window.history.back();</script>";
+    $_SESSION['alert'] = 'Invalid onhand ID.';
+    $_SESSION['alert_type'] = 'warning';
 }
 
-echo "<script>window.history.back();</script>";
+// Redirect back to the previous page (or to the onhand listing page if desired)
+header("Location: onhand_read.php"); // Replace 'onhand_read.php' with the correct URL if needed
 exit();
 ?>

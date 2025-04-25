@@ -3,26 +3,17 @@ session_start();
 include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
-// Check if the user is logged in and has either an Employee ID or an Admin ID in the session
-if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
-    echo "<script>alert('You must be logged in to access this page.'); 
-    window.location.href = '../../../../login.php';</script>";
-    exit;
-}
-
-// Initialize the transactions array
-$transactions = [];
-
-// Fetch all delivered transactions
-$sql = "SELECT t.TransacID, t.CustName, t.CustNum, t.CustEmail, t.DeliveryFee, t.TotalPrice, t.TransactionDate, 
-               l.Province, l.City
-        FROM TransacTb t
-        JOIN LocationTb l ON t.LocationID = l.LocationID
-        WHERE t.Status = 'Delivered'";
-
-$stmt = $conn->prepare($sql);
-$stmt->execute();
-$transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Fetch delivered transactions for the current customer
+$cust_email = $_SESSION['cust_email'] ?? '';
+$query = "SELECT t.TransacID, t.CustName, t.CustNum, t.CustEmail, 
+                 l.Province, l.City, t.DeliveryFee, t.TotalPrice, t.TransactionDate 
+          FROM TransacTb t
+          JOIN LocationTb l ON t.LocationID = l.LocationID
+          WHERE t.CustEmail = :cust_email AND t.Status = 'Delivered' 
+          ORDER BY t.TransactionDate DESC";
+$stmt = $conn->prepare($query);
+$stmt->execute(['cust_email' => $cust_email]);
+$delivered_transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -31,67 +22,80 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delivered Transactions</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="../../../../assets/css/table.css">
+    <style>
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
-<?php include("../../../../includes/personnel/header.php"); ?>
-<?php include("../../../../includes/personnel/navbar.php"); ?>
-    <div class="container-fluid"><hr>
+    <div class="container-fluid">
         <div class="sticky-top bg-light pb-2">
             <h3>Delivered Transactions</h3>
             <!-- Breadcrumb Navigation -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <!--<li class="breadcrumb-item"><a href="../../../../views/personnel_view.php#Transaction">Home</a></li>-->
-                    <li class="breadcrumb-item"><a href="transac_read_pending.php">Pending Transactions</a></li>
-                    <li class="breadcrumb-item"><a href="transac_read_approved.php">Approved Transactions</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Delivered Transactions</li>
+                    <li class="breadcrumb-item"><a href="../../../../views/customer_view.php#Overview">Home</a></li>
+                    <li class="breadcrumb-item"><a href="./order.php"><span class="status-badge status-pending">Pending</span></a></li>
+                    <li class="breadcrumb-item"><a href="./toShip.php"><span class="status-badge status-accepted">Accepted</span></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><span class="status-badge status-completed">Completed</span></li>
                 </ol>
             </nav>
             <hr>
+            <!-- Button for Navigation -->
+            <!--<div class="d-flex justify-content-end">-->
+            <!--    <button type="button" class="btn btn-secondary" onclick="window.history.back();">Back</button>-->
+            <!--</div>-->
         </div>
-        <?php if (!empty($transactions)): ?>
- 
+        <!-- Table to display delivered transactions -->
         <div class="table-responsive">
-            <table id="transactionsTable" class="display table table-light table-bordered table-striped table-hover fixed-table pt-2">
+            <table id="transactionTable" class="display table table-light table-hover border-secondary pt-2">
                 <thead class="table-info">
                     <tr>
-                        <th>ID</th>
+                        <th>Transaction ID</th>
                         <th>Name</th>
                         <th>Number</th>
                         <th>Email</th>
-                        <th>Address</th>
+                        <th>Address</th> <!-- Province and City -->
                         <th>Delivery Fee</th>
-                        <th>Total Cost</th>
-                        <th>Date Delivered</th>
-                        <th>Cart Records</th>
+                        <th>Total Price</th>
+                        <th>Transaction Date</th>
+                        <th>Cart Records</th> <!-- New Column -->
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($transactions as $transaction): ?>
+                    <?php if (empty($delivered_transactions)): ?>
                         <tr>
-                            <td><?= htmlspecialchars($transaction['TransacID']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustName']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustNum']) ?></td>
-                            <td><?= htmlspecialchars($transaction['CustEmail']) ?></td>
-                            <td><?= htmlspecialchars($transaction['City'] . ', ' . $transaction['Province']) ?></td>
-                            <td><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
-                            <td><?= number_format(htmlspecialchars($transaction['TotalPrice']), 2) ?></td>
-                            <td><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
-                            <td>
-                                <!-- Button to trigger the modal for cart records -->
-                                <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#cartModal" data-transac-id="<?= htmlspecialchars($transaction['TransacID']) ?>">
-                                    <i class="bi bi-eye"></i> View Cart Records
-                                </button>
-                            </td>
+                            <td colspan="9">No delivered transactions found.</td>
                         </tr>
-                    <?php endforeach; ?>
+                    <?php else: ?>
+                        <?php foreach ($delivered_transactions as $transaction): ?>
+                            <tr>
+                                <td data-label="Transaction ID"><?= htmlspecialchars($transaction['TransacID']) ?></td>
+                                <td data-label="Name"><?= htmlspecialchars($transaction['CustName']) ?></td>
+                                <td data-label="Number"><?= htmlspecialchars($transaction['CustNum']) ?></td>
+                                <td data-label="Email"><?= htmlspecialchars($transaction['CustEmail']) ?></td>
+                                <td data-label="Address"><?= htmlspecialchars($transaction['Province'] . ', ' . $transaction['City']) ?></td> <!-- Display Province and City -->
+                                <td data-label="Delivery Fee"><?= number_format(htmlspecialchars($transaction['DeliveryFee']), 2) ?></td>
+                                <td data-label="Total Price"><?= number_format(htmlspecialchars($transaction['TotalPrice']), 2) ?></td>
+                                <td data-label="Transaction Date"><?= htmlspecialchars($transaction['TransactionDate']) ?></td>
+                                <td data-label="Actions">
+                                    <!-- Button to trigger the modal for cart records -->
+                                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#cartModal" data-transac-id="<?= htmlspecialchars($transaction['TransacID']) ?>">
+                                        <i class="bi bi-eye"></i> View Items
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
-
-        <?php else: ?>
-            <p class="mt-4">No delivered transactions found.</p>
-        <?php endif; ?>
     </div>
 
     <!-- Bootstrap Modal for Cart Records -->
@@ -131,7 +135,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </table>
                     </div>
                 </div>
-                 <div class="modal-footer">
+                <div class="modal-footer">
                     <div class="me-auto">
                         <strong>Total Price: </strong>
                         <span id="cartTotalPrice" class="text-success">₱0.00</span>
@@ -145,7 +149,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
         // Initialize DataTables
         $(document).ready(function() {
-            $('#transactionsTable').DataTable({
+            $('#transactionTable').DataTable({
                 "paging": true,
                 "lengthChange": true,
                 "searching": true,
@@ -153,8 +157,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 "info": true,
                 "autoWidth": false,
                 "pageLength": 5, // Default number of entries per page
-                "lengthMenu": [5, 10, 25, 50, 100],
-                "order": [[7, 'asc']]
+                "lengthMenu": [5, 10, 25, 50, 100], // Options for number of entries
             });
 
             // Handle the modal show event
@@ -164,7 +167,7 @@ $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 
                 // Fetch cart records via AJAX
                 $.ajax({
-                    url: 'fetch_cart_records.php', // URL to fetch cart records
+                    url: '../personnel/fetch_cart_records.php', // URL to fetch cart records
                     type: 'GET',
                     data: { transac_id: transacId },
                     success: function(data) {

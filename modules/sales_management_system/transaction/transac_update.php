@@ -1,16 +1,17 @@
 <?php
+session_start();
 include("./../../../config/database.php");
 
-// Check if a transaction ID is provided in the URL
-if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $transac_id = $_GET['id'];
+// Check if a transaction ID is provided in the POST request
+if (isset($_POST['transac_id']) && !empty($_POST['transac_id'])) {
+    $transac_id = $_POST['transac_id'];
     $new_status = '';
 
     // Determine the new status based on the action specified
-    if (isset($_GET['action'])) {
-        switch ($_GET['action']) {
-            case 'approve':
-                $new_status = 'Approved';
+    if (isset($_POST['action'])) {
+        switch ($_POST['action']) {
+            case 'ToShip':
+                $new_status = 'ToShip';
                 break;
             case 'deliver':
                 $new_status = 'Delivered';
@@ -19,7 +20,9 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
                 $new_status = 'Pending';
                 break;
             default:
-                echo "<script>alert('Invalid action.');</script>";
+                $_SESSION['alert'] = 'Invalid action.';
+                $_SESSION['alert_type'] = 'danger';
+                echo "<script>window.history.back();</script>";
                 exit();
         }
     }
@@ -29,35 +32,40 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Start a transaction to ensure data integrity
         $conn->beginTransaction();
 
-        // If the new status is 'Approved', we need to update the quantity in the OnhandTb
-        if ($new_status === 'Approved') {
+        // If the new status is 'ToShip', fetch quantity and OnhandID from CartRecordTb
+        if ($new_status === 'ToShip') {
             // Fetch the transaction details to get the quantity and OnhandID
-            $transac_query = "SELECT Quantity, OnhandID FROM TransacTb WHERE TransacID = :transac_id";
+            $transac_query = "SELECT Quantity, OnhandID FROM CartRecordTb WHERE TransacID = :transac_id";
             $transac_stmt = $conn->prepare($transac_query);
             $transac_stmt->bindParam(':transac_id', $transac_id, PDO::PARAM_INT);
             $transac_stmt->execute();
-            $transac = $transac_stmt->fetch(PDO::FETCH_ASSOC);
+            $transac = $transac_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if ($transac) {
-                $quantity_sold = $transac['Quantity'];
-                $onhand_id = $transac['OnhandID'];
+            // Check if records exist for the given TransacID
+            if ($transac && count($transac) > 0) {
+                foreach ($transac as $item) {
+                    $quantity_sold = $item['Quantity'];
+                    $onhand_id = $item['OnhandID'];
 
-                // Update the OnhandQty in OnhandTb
-                $update_onhand_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity_sold WHERE OnhandID = :onhand_id";
-                $update_onhand_stmt = $conn->prepare($update_onhand_query);
-                $update_onhand_stmt->bindParam(':quantity_sold', $quantity_sold, PDO::PARAM_INT);
-                $update_onhand_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
+                    // Update the OnhandQty in OnhandTb
+                    $update_onhand_query = "UPDATE OnhandTb SET OnhandQty = OnhandQty - :quantity_sold WHERE OnhandID = :onhand_id";
+                    $update_onhand_stmt = $conn->prepare($update_onhand_query);
+                    $update_onhand_stmt->bindParam(':quantity_sold', $quantity_sold, PDO::PARAM_INT);
+                    $update_onhand_stmt->bindParam(':onhand_id', $onhand_id, PDO::PARAM_INT);
 
-                // Check if quantity update was successful
-                if (!$update_onhand_stmt->execute()) {
-                    $conn->rollBack();
-                    echo "<script>alert('Error: Could not update product quantity.');</script>";
-                    echo "<script>window.history.back();</script>";
-                    exit();
+                    // Check if quantity update was successful
+                    if (!$update_onhand_stmt->execute()) {
+                        $conn->rollBack();
+                        $_SESSION['alert'] = 'Error: Could not update product quantity.';
+                        $_SESSION['alert_type'] = 'danger';
+                        echo "<script>window.history.back();</script>";
+                        exit();
+                    }
                 }
             } else {
                 $conn->rollBack();
-                echo "<script>alert('Transaction details not found.');</script>";
+                $_SESSION['alert'] = 'Transaction details not found for the provided ID.';
+                $_SESSION['alert_type'] = 'danger';
                 echo "<script>window.history.back();</script>";
                 exit();
             }
@@ -73,20 +81,24 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
         if ($update_stmt->execute()) {
             // Commit the transaction
             $conn->commit();
-            echo "<script>alert('Transaction status updated to $new_status successfully!');</script>";
+            $_SESSION['alert'] = "Transaction status updated to $new_status successfully!";
+            $_SESSION['alert_type'] = 'success';
         } else {
             // Roll back the transaction in case of error
             $conn->rollBack();
-            echo "<script>alert('Error: Could not update transaction status.');</script>";
+            $_SESSION['alert'] = 'Error: Could not update transaction status.';
+            $_SESSION['alert_type'] = 'danger';
         }
     } else {
-        echo "<script>alert('Invalid action.');</script>";
+        $_SESSION['alert'] = 'Invalid action.';
+        $_SESSION['alert_type'] = 'danger';
     }
 } else {
-    echo "<script>alert('Invalid transaction ID.'); window.history.back();</script>";
+    $_SESSION['alert'] = 'Invalid transaction ID.';
+    $_SESSION['alert_type'] = 'danger';
 }
 
-// Redirect back to the previous page
-echo "<script>window.history.back();</script>";
+// Redirect to a suitable page, e.g., the previous page or a list of transactions
+ header("Location: " . $_SERVER['HTTP_REFERER']);
 exit();
 ?>
