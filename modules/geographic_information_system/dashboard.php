@@ -1,182 +1,120 @@
-<?php
-// /modules/geographic_information_system/dashboard.php
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geographic Information System</title>
-    <!-- Leaflet CSS and JS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Your JavaScript Files -->
-    <script src="../modules/geographic_information_system/js/map/gis_map.js"></script>
-    <script src="../modules/geographic_information_system/js/dropdown_functions.js"></script>
-    <script src="../modules/geographic_information_system/js/map/map_functions.js"></script>
-    <script src="../modules/geographic_information_system/js/charts/total_transactions_line_graph.js"></script>
-    <script src="../modules/geographic_information_system/js/charts/total_transactions_bar_graph.js"></script>
-    <script src="../modules/geographic_information_system/js/charts/forecast_graph.js"></script>
-    <script src="../modules/geographic_information_system/js/charts/product_demand_graph.js"></script>
-
-    <!-- Additional styling -->
+    <title>Business Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <style>
-        body {
-            color: white;
+        .progress-bar-container {
+            margin-bottom: 20px;
         }
-        .p-2 {
-            padding: 1rem;
-        }
-        #map {
-            width: 100%;
-            height: 400px; /* Adjust height as necessary */
-        }
-        .col-6, .col-12 {
-            border: solid white;
-            border-radius: 14px;
-        }
-        .dropdown-container {
-            margin-bottom: 10px;
-        }
-
-        /* Custom styles to ensure responsive height */
-        #forecastChart {
-            height: 300px; /* Default height for smaller screens */
-        }
-
-        @media (min-width: 768px) {
-            #forecastChart {
-                max-height: 400px; /* Height for larger screens */
-            }
+        .progress-bar-container:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
-<body>
-
-<div class="container-fluid text-center p-0">
-  
-  <div class="row g-2">
-    
-    <!-- Two columns at the top -->
-    <div class="col-md-5 col-12">
-      <div class="p-2">
-      </div> <!-- Left side: blank -->
-    </div>
-    <div class="col-md-7 col-12">
-      <div class="p-2">
-        <canvas id="allTransactionsChart" width="400px" height="200px"></canvas>
-      </div>
-    </div>
-
-    <!-- Two columns in the middle -->
-    <div class="col-md-7 col-12">
-      <div class="p-2">
-        <!-- Map container with two rows -->
-        <label>CALABARZON</label>
-        <div id="map" style="height: 450px; border-radius: 12px;"></div> <!-- Map -->
-
-        <div>
-          <!-- Dropdowns for Province and City -->
-          <div class="dropdown-container">
-            <label for="province">Select Province:</label>
-            <select id="province" class="form-control">
-              <option value="">--Select Province--</option>
-            </select>
-          </div>
-          <div class="dropdown-container">
-            <label for="city">Select City:</label>
-            <select id="city" class="form-control">
-              <option value="">--Select City--</option>
-            </select>
-          </div>
+<body class="">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Dashboard</h1>
+            <div class="flex items-center space-x-2">
+                <label for="yearSelect" class="text-gray-600">Select Year:</label>
+                <select id="yearSelect" class="form-select rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <!-- Years will be populated dynamically -->
+                </select>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            <a href="/views/personnel_view.php#Transaction" class="bg-white p-4 rounded-lg shadow block no-underline hover:no-underline">
+                <h3 class="text-dark text-sm font-normal">Total Transactions</h3>
+                <p id="total-transactions" class="text-2xl font-bold text-blue-900">0</p>
+            </a>
+            <a href="" class="bg-white p-4 rounded-lg shadow block no-underline hover:no-underline">
+                <h3 class="text-dark text-sm font-normal">Total Revenue</h3>
+                <p id="total-revenue" class="text-2xl font-bold text-blue-900">₱0</p>
+            </a>
+            <a href="/modules/sales_management_system/transaction/personnel/transac_read_pending.php" class="bg-white p-4 rounded-lg shadow block no-underline hover:no-underline">
+                <h3 class="text-dark text-sm font-normal">Pending Orders 
+                    <?php if ($pending_count > 0): ?>
+                        <span class="badge bg-danger ms-1 rounded-circle" style="width: 12px; height: 12px; display: inline-block;"></span>
+                    <?php endif; ?>
+                </h3>
+                <p id="pending-orders" class="text-2xl font-bold text-blue-900">
+                    <?= $pending_count ?>
+                </p>
+            </a>
+            
+            <!-- To Ship Orders Card -->
+            <a href="/modules/sales_management_system/transaction/personnel/transac_read_approved.php" class="bg-white p-4 rounded-lg shadow block no-underline hover:no-underline">
+                <h3 class="text-dark text-sm font-normal">To Ship
+                    <?php if ($toship_count > 0): ?>
+                        <span class="badge bg-danger ms-1 rounded-circle" style="width: 12px; height: 12px; display: inline-block;"></span>
+                    <?php endif; ?>
+                </h3>
+                <p id="to-ship-orders" class="text-2xl font-bold text-blue-900">
+                    <?= $toship_count ?>
+                </p>
+            </a>
+            <a href="/modules/sales_management_system/transaction/personnel/transac_read_delivered.php" class="bg-white p-4 rounded-lg shadow block no-underline hover:no-underline">
+                <h3 class="text-dark text-sm font-normal">Delivered</h3>
+                <p id="delivered-orders" class="text-2xl font-bold text-blue-900">0</p>
+            </a>
         </div>
 
-      </div>
-    </div>
-    <div class="col-md-5 col-12">
-      <div class="p-2">
-        <div>
-          <div class="dropdown-container">
-            <label for="year">Select Year:</label>
-            <select id="year" class="form-control">
-                <option value="">--Select Year--</option>
-            </select>
-          </div>
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow lg:col-span-2">
+                <h2 class="text-xl font-bold mb-4">Sales Trend by Quarter</h2>
+                <canvas id="revenue-chart"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">Revenue by Province</h2>
+                <canvas id="province-pie-chart"></canvas>
+            </div>
         </div>
-        <hr style="border-top: 1px solid white;">
-        <div><canvas id="productDemandChart" width="400" height="250"></canvas></div>
-        <hr style="border-top: 1px solid white;">
-        <div> <canvas id="transactionsChart" width="400" height="250"></canvas></div>
-      </div>
-    </div>
-    <!-- One column at the bottom -->
-    <div class="col-12">
-      <div class="p-2">
-        <label>Sales Forecast</label>
-        <div class="row">
-          <div class="col-md-8 offset-md-2"> <!-- Center the chart on larger screens -->
-            <canvas id="forecastChart" class="w-100" style="height: 400px;"></canvas> <!-- Full width and responsive height -->
-          </div>
+        
+        <!-- Product Performance Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">Top Selling Products</h2>
+                <canvas id="top-selling-products-chart"></canvas>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">Least Selling Products</h2>
+                <canvas id="least-selling-products-chart"></canvas>
+            </div>
         </div>
-      </div> 
+
+        <!-- Progress Bars Section -->
+        <div class="bg-white p-4 rounded-lg shadow mb-8">
+            <h2 class="text-xl font-bold mb-4">Province Revenue Distribution</h2>
+            <div id="province-progress-bars"></div>
+        </div>
+
+        <!-- Low Stock Table -->
+        <div class="bg-white p-4 rounded-lg shadow">
+            <h2 class="text-xl font-bold mb-4">Low Stock Items</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full table-auto">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2">Inventory ID</th>
+                            <th class="px-4 py-2">Current Quantity</th>
+                            <th class="px-4 py-2">Retail Price</th>
+                            <th class="px-4 py-2">Restock Threshold</th>
+                        </tr>
+                    </thead>
+                    <tbody id="low-stock-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-
-
-
-  </div>
-</div>
-
-<script>
-  // Call the function to populate years when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-      const yearDropdown = document.getElementById('year'); // Assuming you have an element with id='year'
-      fetchAndPopulateYears(yearDropdown); // Pass the dropdown element to the function
-  });
-
-  // Function to reset all dropdowns to default
-  function resetDropdowns() {
-      document.getElementById('year').selectedIndex = 0; // Reset year dropdown
-      document.getElementById('province').selectedIndex = 0; // Reset province dropdown
-      document.getElementById('city').selectedIndex = 0; // Reset city dropdown
-      renderTotalTransactionsLineGraph(null); // Reset chart
-  }
-
-  document.getElementById('year').addEventListener('change', function () {
-      const selectedYear = this.value; // Get the selected year
-      console.log('Selected Year:', selectedYear); // Log the selected year
-      
-      // Reset all dropdowns if the default option is selected
-      if (selectedYear === '') { // Assuming empty string is the default
-          resetDropdowns();
-          return;
-      }
-
-      renderTotalTransactionsLineGraph(selectedYear); // Call your graph rendering function
-  });
-
-  document.getElementById('province').addEventListener('change', function () {
-      const selectedProvince = this.value; // Get the selected province
-      
-      // Reset year dropdown to default option whenever a province is selected
-      document.getElementById('year').selectedIndex = 0; // Reset year dropdown
-
-      // Reset all dropdowns if the default option is selected
-      if (selectedProvince === '') { // Assuming empty string is the default
-          resetDropdowns();
-          return;
-      }
-
-      const selectedYear = document.getElementById('year').value; // Get the selected year
-      renderTotalTransactionsLineGraph(selectedYear); // Update chart based on new province selection
-  });
-
-</script>
-
-
+    <script src="../modules/geographic_information_system/dashboard/dashboard.js"></script>
 </body>
 </html>

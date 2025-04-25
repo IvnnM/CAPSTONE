@@ -1,12 +1,13 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the admin is logged in and has an admin ID in the session
 if (!isset($_SESSION['AdminID'])) {
-    echo "<script>alert('You must be logged in to access this page.'); 
-    window.location.href = '../../../../login.php';</script>";
+    $_SESSION['alert'] = 'You must be logged in to access this page.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../login.php");
     exit;
 }
 
@@ -16,12 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $locationID = trim($_POST['location_id']);
     $empEmail = trim($_POST['emp_email']);
     $empPassword = trim($_POST['emp_password']);
-    $errorMessage = '';
-    $successMessage = '';
 
     // Input validation
     if (empty($empName) || empty($locationID) || empty($empEmail) || empty($empPassword)) {
-        $errorMessage = "All fields are required.";
+        $_SESSION['alert'] = 'All fields are required.';
+        $_SESSION['alert_type'] = 'danger';
     } else {
         // Prepare the insert query
         $insert_query = "INSERT INTO EmpTb (EmpName, LocationID, EmpEmail, EmpPassword) VALUES (:emp_name, :location_id, :emp_email, :emp_password)";
@@ -38,19 +38,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Execute the insert query
         if ($insert_stmt->execute()) {
-            $successMessage = "Employee created successfully.";
+            $_SESSION['alert'] = 'Employee Account created successfully.';
+            $_SESSION['alert_type'] = 'success';
         } else {
-            $errorMessage = "Error: Could not create employee.";
+            $_SESSION['alert'] = 'Error: Could not create employee.';
+            $_SESSION['alert_type'] = 'danger';
         }
     }
+
+    // Redirect to the relevant page after handling form submission
+    header("Location: employee_read.php");
+    exit;
 }
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Employee</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             // Fetch and populate province and city data
@@ -97,51 +103,97 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $("#location_id").val($(this).val());
             });
         });
+    </script>
 
-        function confirmCreation(event) {
-            if (!confirm('Are you sure you want to create this employee?')) {
-                event.preventDefault();
+    <script>
+        function confirmUpdate(event) {
+            const empPassword = document.getElementById('emp_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+
+            if (empPassword !== confirmPassword) {
+                alert('Passwords do not match.');
+                event.preventDefault(); // Prevent form submission if passwords do not match
+                return;
+            }
+
+            if (!confirm('Are you sure you want to create this account?')) {
+                event.preventDefault(); // Prevent form submission if user cancels confirmation
             }
         }
     </script>
 </head>
 <body>
-    <h3>Create Employee</h3>
+    <div class="container relative">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Add New Employee</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/personnel_view.php#Employee">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Employee</li>
+                </ol>
+            </nav>
+            <hr>
+        </div>
 
-    <?php if (isset($errorMessage) && !empty($errorMessage)): ?>
-        <div style="color: red;"><?= htmlspecialchars($errorMessage) ?></div>
-    <?php endif; ?>
-    <?php if (isset($successMessage) && !empty($successMessage)): ?>
-        <div style="color: green;"><?= htmlspecialchars($successMessage) ?></div>
-    <?php endif; ?>
+        <form method="POST" action="" onsubmit="confirmUpdate(event)">
+            <!-- Personal Information Section -->
+            <h6>Personal Information</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="emp_name" name="emp_name" placeholder="Employee Name" required>
+                        <label for="emp_name">Employee Name</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select id="province" name="province" class="form-control" required>
+                            <option value="">Select Province</option>
+                            <!-- Add provinces dynamically here -->
+                        </select>
+                        <label for="province">Province</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <select id="city" name="city" class="form-control" required>
+                            <option value="">Select City</option>
+                            <!-- Add cities dynamically here -->
+                        </select>
+                        <label for="city">City</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Set Up Account Section -->
+            <h6>Set Up Account</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="emp_email" name="emp_email" placeholder="Employee Email" required>
+                        <label for="emp_email">Employee Email</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="emp_password" name="emp_password" placeholder="Password" required>
+                        <label for="emp_password">Password</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                        <label for="confirm_password">Confirm Password</label>
+                    </div>
+                </div>
+                <input type="hidden" name="location_id" id="location_id" required>
+            </div>
 
-    <form method="POST" action="" onsubmit="confirmCreation(event)">
-        <label for="emp_name">Employee Name:</label>
-        <input type="text" name="emp_name" required><br>
-
-        <label for="province">Province:</label>
-        <select id="province" name="province" required>
-            <option value="">Select Province</option>
-        </select><br>
-
-        <label for="city">City:</label>
-        <select id="city" name="city" required>
-            <option value="">Select City</option>
-        </select><br>
-
-        <!-- Hidden field to store the selected LocationID -->
-        <input type="hidden" name="location_id" id="location_id" required>
-
-        <label for="emp_email">Employee Email:</label>
-        <input type="email" name="emp_email" required><br>
-
-        <label for="emp_password">Password:</label>
-        <input type="password" name="emp_password" required><br>
-
-        <button type="submit">Create</button>
-    </form>
-
-    <br>
-    <a href="employee_read.php">Go to Employee List</a>
+            <!-- Submit Button -->
+            <button class="btn btn-success w-100 mb-2" type="submit">Create</button>
+            <a class="btn btn-secondary w-100 mb-2" href="employee_read.php">Cancel</a>
+        </form>
+    </div>
 </body>
+
 </html>

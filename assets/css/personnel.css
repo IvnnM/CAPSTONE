@@ -1,0 +1,137 @@
+body {
+  overflow-x: hidden;
+  position: relative;
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  line-height: 28px;
+  color: #6a6a6a;
+  font-size: 14px;
+  background-color: #eff2f1; 
+}
+
+.fade-element {
+  opacity: 0; /* Start hidden */
+  visibility: hidden; /* Ensure the element is hidden but still takes up space */
+  transform: translateY(20px); /* Move down slightly */
+  transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out, visibility 0.6s;
+  height: 0; /* Initially no height to prevent it from blocking other elements */
+  overflow: hidden; /* Ensure no content is shown when it's hidden */
+}
+
+.fade-element.show {
+  opacity: 1; /* Fully visible */
+  visibility: visible; /* Make the element visible */
+  transform: translateY(0); /* Reset position */
+  height: auto; /* Restore original height */
+}
+
+.card {
+    transition: transform 0.3s;
+    border-radius: 10px; 
+    color: #023a4a;
+    border-color: #023a4a;
+}.card:hover {
+    color: #056174;
+    border-color: #056174;
+    transform: translateY(-5px);
+}.hover-shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
+}
+
+.icon {
+    display: block;
+    margin: 0 auto;
+}.card-title {
+    font-weight: bold; 
+}.card-text {
+    font-size: 0.9rem; 
+}
+
+
+
+  .footer-section {
+    padding: 80px 0;
+    background: #ffffff; }
+    .footer-section .relative {
+      position: relative; }
+    .footer-section a {
+      text-decoration: none;
+      color: #023a4a;
+      -webkit-transition: .3s all ease;
+      -o-transition: .3s all ease;
+      transition: .3s all ease; }
+      .footer-section a:hover {
+        color: rgba(47, 47, 47, 0.5); }
+    .footer-section .subscription-form {
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 2;
+      margin-top: 100px; }
+      @media (min-width: 992px) {
+        .footer-section .subscription-form {
+          margin-top: 0px;
+          margin-bottom: 80px; } }
+      .footer-section .subscription-form h3 {
+        font-size: 18px;
+        font-weight: 500;
+        color: #056174; }
+      .footer-section .subscription-form .form-control {
+        height: 50px;
+        border-radius: 10px;
+        font-family: "Inter", sans-serif; }
+        .footer-section .subscription-form .form-control:active, .footer-section .subscription-form .form-control:focus {
+          outline: none;
+          -webkit-box-shadow: none;
+          box-shadow: none;
+          border-color: #056174;
+          -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2); }
+        .footer-section .subscription-form .form-control::-webkit-input-placeholder {
+          font-size: 14px; }
+        .footer-section .subscription-form .form-control::-moz-placeholder {
+          font-size: 14px; }
+        .footer-section .subscription-form .form-control:-ms-input-placeholder {
+          font-size: 14px; }
+        .footer-section .subscription-form .form-control:-moz-placeholder {
+          font-size: 14px; }
+      .footer-section .subscription-form .btn {
+        border-radius: 10px !important; }
+    .footer-section .sofa-img {
+      position: absolute;
+      top: -200px;
+      z-index: 1;
+      right: 0; }
+      .footer-section .sofa-img img {
+        max-width: 380px; }
+    .footer-section .links-wrap {
+      margin-top: 0px; }
+      @media (min-width: 992px) {
+        .footer-section .links-wrap {
+          margin-top: 54px; } }
+      .footer-section .links-wrap ul li {
+        margin-bottom: 10px; }
+    .footer-section .footer-logo-wrap .footer-logo {
+      font-size: 32px;
+      font-weight: 500;
+      text-decoration: none;
+      color: #056174; }
+    .footer-section .custom-social li {
+      margin: 2px;
+      display: inline-block; }
+      .footer-section .custom-social li a {
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        display: inline-block;
+        background: #dce5e4;
+        color: #056174;
+        border-radius: 50%; }
+        .footer-section .custom-social li a:hover {
+          background: #056174;
+          color: #ffffff; }
+    .footer-section .border-top {
+      border-color: #dce5e4; }
+      .footer-section .border-top.copyright {
+        font-size: 14px !important; }
+  

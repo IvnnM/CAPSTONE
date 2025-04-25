@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DKAT Chlorine - Footer and Modals</title>
+    <style>
+        /* Modal Overlay */
+        .modal {
+            display: none;  /* Hidden by default */
+            position: fixed;
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+            padding-top: 60px;
+            transition: all 0.3s ease;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Close Button */
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Modal Header */
+        .modal h2 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Modal Text */
+        .modal p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* Modal Footer Links */
+        .footer-links {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .footer-links a {
+            color: #1E90FF;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Animation (Optional) */
+        .modal.fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Modal Body Text Styling */
+        .modal p {
+            color: #333;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        /* Adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 90%;
+            }
+
+            .modal h2 {
+                font-size: 20px;
+            }
+
+            .modal p {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Footer Section -->
+    <footer class="footer-section container-fluid text-light text-center mt-auto">
+        <div class="container relative">
+            <hr class="bg-dark">
+            <div class="row g-6 mb-5 d-flex text-start">
+                <div class="col-8">
+                    <div class="row links-wrap">
+                        <div class="col-6 col-sm-6 col-md-3">
+                            <ul class="list-unstyled">
+                                <li><a href="content.html#about-us">About us</a></li>
+                                <li><a href="content.html#services">Services</a></li>
+                                <li><a href="content.html#blog">Blog</a></li>
+                                <li><a href="content.html#developers">The Developers</a></li>
+                                <li><a href="content.html#contact-us">Contact us</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 DKAT Chlorine. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#" id="terms-link">Terms and Conditions</a> | 
+                <a href="#" id="privacy-link">Privacy Policy</a>
+            </div>
+        </footer>
+    </footer>
+
+    <!-- Modal for Terms and Conditions -->
+    <div id="terms-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-terms">&times;</span>
+            <h2>Terms and Conditions</h2>
+            <p>
+                1. Acceptance of Terms<br>
+                By accessing or using the DKAT Chlorine and Swimming Pool Supply Trading System ("System"), users agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use the System.
+                <br><br>
+                2. User Accounts<br>
+                - Users are required to register an account to access certain features of the System.<br>
+                - Users must provide accurate, complete, and updated information during registration.<br>
+                - Users are responsible for maintaining the confidentiality of their account credentials.
+                <br><br>
+                3. Permitted Use<br>
+                - The System is intended for authorized users for managing inventory, sales, and logistics processes.<br>
+                - Any misuse of the System, including unauthorized access or actions, is strictly prohibited.
+                <br><br>
+                4. System Access and Availability<br>
+                - The System is provided on an "as-is" and "as-available" basis.<br>
+                - We reserve the right to modify, suspend, or discontinue the System at any time without notice.
+                <br><br>
+                5. Limitation of Liability<br>
+                - DKAT and its developers are not liable for any loss or damages resulting from the use of the System.<br>
+                - Users are solely responsible for ensuring the accuracy of data entered into the System.
+                <br><br>
+                6. Intellectual Property<br>
+                - The System and its content are the intellectual property of DKAT Chlorine and Swimming Pool Supply Trading.<br>
+                - Users may not copy, distribute, or reproduce any part of the System without prior authorization.
+                <br><br>
+                7. Updates and Modifications<br>
+                - These Terms and Conditions may be updated periodically. Continued use of the System constitutes acceptance of the updated terms.
+            </p>
+        </div>
+    </div>
+
+    <!-- Modal for Privacy Policy -->
+    <div id="privacy-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="close-privacy">&times;</span>
+            <h2>Privacy Policy</h2>
+            <p>
+                1. Usage Policy<br>
+                - Users must use the System responsibly, adhering to all applicable laws and regulations.<br>
+                - Any attempts to exploit, manipulate, or disrupt the System are strictly prohibited.
+                <br><br>
+                2. Security Policy<br>
+                - Users are required to use strong, unique passwords for their accounts.<br>
+                - Sharing account credentials or granting unauthorized access to the System is prohibited.
+                <br><br>
+                3. Confidentiality Policy<br>
+                - All business-related data, including inventory and transaction records, are considered confidential.<br>
+                - Users are expected to maintain the confidentiality of sensitive information accessed through the System.
+                <br><br>
+                4. Feedback and Support Policy<br>
+                - Users are encouraged to provide feedback to improve the System.<br>
+                - For technical assistance or inquiries, users should contact the System support team.
+                <br><br>
+                5. Compliance Policy<br>
+                - Users must comply with these Terms and Conditions, Data Privacy Policy, and applicable laws.<br>
+                - Non-compliance may result in account suspension or termination.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Get modal elements
+        var termsModal = document.getElementById("terms-modal");
+        var privacyModal = document.getElementById("privacy-modal");
+
+        // Get the links that open the modals
+        var termsLink = document.getElementById("terms-link");
+        var privacyLink = document.getElementById("privacy-link");
+
+        // Get the <span> elements that close the modals
+        var closeTerms = document.getElementById("close-terms");
+        var closePrivacy = document.getElementById("close-privacy");
+
+        // Get the body element to toggle the no-hover class
+        var body = document.body;
+
+        // Function to open the Terms modal with fade-in effect
+        termsLink.onclick = function() {
+            // Close the privacy modal if it's open
+            if (privacyModal.style.display === "block") {
+                privacyModal.style.display = "none";
+            }
+            // Open the terms modal with fade-in effect
+            termsModal.style.display = "block";
+            termsModal.classList.add('fade-in'); // Add fade-in effect
+
+            // Disable hover effects on the homepage
+            body.classList.add("no-hover");
+        }
+
+        // Function to open the Privacy modal with fade-in effect
+        privacyLink.onclick = function() {
+            // Close the terms modal if it's open
+            if (termsModal.style.display === "block") {
+                termsModal.style.display = "none";
+            }
+            // Open the privacy modal with fade-in effect
+            privacyModal.style.display = "block";
+            privacyModal.classList.add('fade-in'); // Add fade-in effect
+
+            // Disable hover effects on the homepage
+            body.classList.add("no-hover");
+        }
+
+        // When the user clicks on <span> (x), close the respective modal
+        closeTerms.onclick = function() {
+            termsModal.style.display = "none";
+            termsModal.classList.remove('fade-in'); // Remove fade-in effect
+            body.classList.remove("no-hover");
+        }
+
+        closePrivacy.onclick = function() {
+            privacyModal.style.display = "none";
+            privacyModal.classList.remove('fade-in'); // Remove fade-in effect
+            body.classList.remove("no-hover");
+        }
+    </script>
+
+</body>
+</html>

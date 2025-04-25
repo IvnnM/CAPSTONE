@@ -1,21 +1,30 @@
 <?php
 include("../config/database.php");
 
-// Fetch all unique provinces
-$province_query = "SELECT DISTINCT Province FROM LocationTb ORDER BY Province";
-$province_stmt = $conn->prepare($province_query);
-$province_stmt->execute();
-$provinces = $province_stmt->fetchAll(PDO::FETCH_ASSOC);
+header('Content-Type: application/json');
 
-// Fetch all cities with LatLng for dropdowns
-$city_query = "SELECT LocationID, Province, City, LatLng FROM LocationTb ORDER BY Province, City"; // Include LatLng
-$city_stmt = $conn->prepare($city_query);
-$city_stmt->execute();
-$cities = $city_stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+    // Query for provinces
+    $provinceQuery = "SELECT DISTINCT Province FROM LocationTb";
+    $provinceStmt = $conn->prepare($provinceQuery);
+    $provinceStmt->execute();
+    $provinces = $provinceStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Return the data in JSON format
-echo json_encode([
-    'provinces' => $provinces,
-    'cities' => $cities
-]);
+    // Query for cities
+    $cityQuery = "SELECT City, Province, LocationID FROM LocationTb";
+    $cityStmt = $conn->prepare($cityQuery);
+    $cityStmt->execute();
+    $cities = $cityStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Prepare data to return
+    $data = [
+        'provinces' => $provinces,
+        'cities' => $cities
+    ];
+
+    echo json_encode($data);
+} catch (Exception $e) {
+    // Return error message in case of failure
+    echo json_encode(['error' => 'Failed to retrieve location data.']);
+}
 ?>

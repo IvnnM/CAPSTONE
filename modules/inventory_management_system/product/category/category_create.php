@@ -1,6 +1,6 @@
 <?php
 session_start();
-include("../../../../includes/cdn.php"); 
+include("../../../../includes/cdn.html"); 
 include("../../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
@@ -23,27 +23,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($stmt->execute()) {
             // Success alert
-            echo "<script>alert('Product Category Created Successfully');</script>";
+            $_SESSION['alert'] = 'Product Category Created Successfully';
+            $_SESSION['alert_type'] = 'success';
         } else {
             // Error alert
-            echo "<script>alert('Error: Could not create product category');</script>";
+            $_SESSION['alert'] = 'Error: Could not create product category';
+            $_SESSION['alert_type'] = 'danger';
         }
+    } else {
+        // Empty category name alert
+        $_SESSION['alert'] = 'Category name cannot be empty.';
+        $_SESSION['alert_type'] = 'danger';
     }
+
+    header("Location: category_read.php");
+    exit();
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product Category</title>
 </head>
 <body>
-    <h3>Create Product Category</h3>
-    <form method="POST" action="">
-        <label for="category_name">Category Name:</label>
-        <input type="text" name="category_name" required><br>
-        <button type="submit">Create</button>
-    </form>
-    <br>
-    <a href="category_read.php">Back to Category List</a>
+    <div class="container relative">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Create Product Category</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/personnel_view.php#Products">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Product Category</li>
+                    <li class="breadcrumb-item"><a href="../product_create.php">Create Product</a></li>
+                </ol>
+            </nav><hr>
+        </div>
+        <form method="POST" action="">
+            <h6>Input Category</h6>
+
+            <div class="form-floating">
+                <input type="text" class="form-control" name="category_name" placeholder="Category" required>
+                <label for="category_name">Category</label>
+            </div>
+            <br>
+ 
+            <button class="btn btn-success w-100 mb-2" type="submit">Create</button>
+            <a class="btn btn-secondary w-100 mb-2" href="category_read.php">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>

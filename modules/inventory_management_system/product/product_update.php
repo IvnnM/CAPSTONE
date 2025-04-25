@@ -1,12 +1,13 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
-    echo "<script>alert('You must be logged in to access this page.'); 
-    window.location.href = './../../../login.php';</script>";
+    $_SESSION['alert'] = 'You must be logged in to access this page.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ./../../../login.php");
     exit;
 }
 
@@ -30,11 +31,15 @@ if (isset($_GET['id'])) {
         $category_stmt->execute();
         $categories = $category_stmt->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        echo "<script>alert('Product not found.'); window.history.back();</script>";
+        $_SESSION['alert'] = 'Product not found.';
+        $_SESSION['alert_type'] = 'danger';
+        header("Location: product_read.php");
         exit;
     }
 } else {
-    echo "<script>alert('Invalid product ID.'); window.history.back();</script>";
+    $_SESSION['alert'] = 'Invalid product ID.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: product_read.php");
     exit;
 }
 
@@ -54,7 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Move the uploaded file
         if (!move_uploaded_file($tmp_name, $product_image)) {
-            echo "<script>alert('Error: Could not upload the image.');</script>";
+            $_SESSION['alert'] = 'Error: Could not upload the image.';
+            $_SESSION['alert_type'] = 'danger';
             $product_image = $product['ProductImage']; // Reset to the existing image if upload fails
         }
     }
@@ -69,42 +75,82 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $update_stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
 
     if ($update_stmt->execute()) {
-        echo "<script>alert('Product updated successfully!');</script>";
-        echo "<script>window.history.back();</script>";
+        $_SESSION['alert'] = 'Product updated successfully!';
+        $_SESSION['alert_type'] = 'success';
+        header("Location: product_read.php");
+        exit;
     } else {
-        echo "<script>alert('Error: Could not update the product.');</script>";
+        $_SESSION['alert'] = 'Error: Could not update the product.';
+        $_SESSION['alert_type'] = 'danger';
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Product</title>
 </head>
 <body>
-    <h3>Update Product</h3>
-    <form method="POST" action="" enctype="multipart/form-data">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" required><br>
+    <div class="container relative">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Update Product</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../views/personnel_view.php#Products">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Update Product</li>
+                </ol>
+            </nav>
+            <hr>
+        </div>
 
-        <label for="product_desc">Product Description:</label>
-        <input type="text" name="product_desc" value="<?= htmlspecialchars($product['ProductDesc']) ?>"><br>
+        <form method="POST" action="" enctype="multipart/form-data">
+            <h6>Update Product Information</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" name="product_name" value="<?= htmlspecialchars($product['ProductName']) ?>" placeholder="Product Name" required>
+                        <label for="product_name">Product Name</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <select name="category_id" class="form-control" required>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?= htmlspecialchars($category['CategoryID']) ?>" <?= $category['CategoryID'] == $product['CategoryID'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($category['CategoryName']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <label for="category_id">Product Category</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" name="product_desc" value="<?= htmlspecialchars($product['ProductDesc']) ?>" placeholder="Product Description">
+                        <label for="product_desc">Product Description</label>
+                    </div>
+                </div>
+            </div>
 
-        <label for="category_id">Product Category:</label>
-        <select name="category_id" required>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category['CategoryID']) ?>" <?= $category['CategoryID'] == $product['CategoryID'] ? 'selected' : '' ?>><?= htmlspecialchars($category['CategoryName']) ?></option>
-            <?php endforeach; ?>
-        </select><br>
-
-        <label for="product_image">Product Image:</label>
-        <input type="file" name="product_image" accept="image/*"><br>
-        <small>Leave blank if you do not want to change the image.</small><br>
-
-        <button type="submit">Update</button>
-    </form>
-    <br>
-    <a href="product_read.php">Back to Product List</a>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="product_image">Product Image</label>
+                    <input type="file" class="form-control" name="product_image" accept="image/*">
+                    <small>Leave blank if you do not want to change the image.</small>
+                </div>
+            </div>
+            
+            <button class="btn btn-success w-100 mb-2" type="submit">Update</button>
+            <a class="btn btn-secondary w-100 mb-2" href="product_read.php">Cancel</a>
+        </form>
+    </div>
 </body>
+
 </html>

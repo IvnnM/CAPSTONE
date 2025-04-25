@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("../../../../config/database.php");
 
 // Check if an Employee ID is provided in the URL
@@ -12,15 +13,18 @@ if (isset($_GET['id'])) {
 
     // Execute the delete query
     if ($delete_stmt->execute()) {
-        echo "<script>alert('Employee deleted successfully!');</script>";
+        $_SESSION['alert'] = 'Employee deleted successfully!';
+        $_SESSION['alert_type'] = 'success';
     } else {
-        echo "<script>alert('Error: Could not delete the employee.');</script>";
+        $_SESSION['alert'] = 'Error: Could not delete the employee.';
+        $_SESSION['alert_type'] = 'danger';
     }
 } else {
-    echo "<script>alert('Invalid employee ID.');</script>";
+    $_SESSION['alert'] = 'Invalid employee ID.';
+    $_SESSION['alert_type'] = 'danger';
 }
 
 // Redirect back to the previous page or employee list
-echo "<script>window.history.back();</script>";
+header("Location: employee_read.php");
 exit;
 ?>

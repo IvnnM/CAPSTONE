@@ -1,25 +1,25 @@
 <?php
+// store_read.php
 session_start();
-include("./../../../includes/cdn.php");
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
-// Fetch store details
-$store_query = "
-    SELECT s.StoreInfoID, s.StoreGcashNum, s.StoreGcashQR, s.StoreDeliveryFee, CONCAT(l.Province, ', ', l.City) AS Location 
-    FROM StoreInfoTb s
-    JOIN LocationTb l ON s.LocationID = l.LocationID
-";
-
-$store_stmt = $conn->prepare($store_query);
-$store_stmt->execute();
-$store = $store_stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$store) {
-    echo "<script>alert('Store not found.'); window.history.back();</script>";
+// Check if user is logged in
+if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
+    echo "<script>alert('You must be logged in to access this page.'); 
+    window.location.href = './../../../login.php';</script>";
     exit;
 }
 
-// Display the store information
+// Fetch store information
+$store_query = "
+    SELECT s.*, l.Province, l.City 
+    FROM StoreInfoTb s
+    JOIN LocationTb l ON s.LocationID = l.LocationID
+";
+$store_stmt = $conn->prepare($store_query);
+$store_stmt->execute();
+$stores = $store_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -28,50 +28,93 @@ if (!$store) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Store Information</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            max-width: 600px;
-        }
-        h3 {
-            text-align: center;
-        }
-        .store-info {
-            margin-bottom: 20px;
-        }
-        .store-info label {
-            font-weight: bold;
-        }
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 </head>
 <body>
-    <center>
-        <h3>Store Information</h3>
-        <div class="store-info">
-            <p><label>Store GCash Number:</label> <?= htmlspecialchars($store['StoreGcashNum']) ?></p>
-            <p><label>Store Location:</label> <?= htmlspecialchars($store['Location']) ?></p>
-            <p><label>Store Delivery Fee:</label> <?= htmlspecialchars($store['StoreDeliveryFee']) ?></p>
-            <p>
-                <label>Store GCash QR Code:</label><br>
-                <?php if ($store['StoreGcashQR']): ?>
-                    <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" alt="GCash QR Code" style="max-width: 100%; height: auto;">
-                <?php else: ?>
-                    <p>No QR Code available.</p>
-                <?php endif; ?>
-            </p>
+<?php include("../../../includes/personnel/header.php"); ?>
+<?php include("../../../includes/personnel/navbar.php"); ?>
+    <div class="container-fluid"><hr>
+        <div class="sticky-top bg-light pb-2">
+            <h3>Store Information</h3>
+            <!--<nav aria-label="breadcrumb">-->
+            <!--    <ol class="breadcrumb">-->
+            <!--        <li class="breadcrumb-item"><a href="../../../views/personnel_view.php#Store">Home</a></li>-->
+            <!--        <li class="breadcrumb-item active" aria-current="page">Store Information</li>-->
+            <!--    </ol>-->
+            <!--</nav>-->
+            <!--<hr>-->
+            
+            <?php if (isset($_SESSION['AdminID'])): ?>
+                <div class="text-end mb-3">
+                    <a href="store_create.php" class="btn btn-success">Create Store</a>
+                </div>
+            <?php endif; ?>
         </div>
 
-        <div class="back-link">
-            <a href="../transaction/available_product.php">Back to Products</a>
+        <div class="table-responsive">
+            <table id="storeTable" class="table table-light table-hover border-secondary">
+                <thead class="table-info">
+                    <tr>
+                        <th>ID</th>
+                        <th>Province</th>
+                        <th>City</th>
+                        <th>GCash Number</th>
+                        <th>GCash QR</th>
+                        <th>Delivery Fee</th>
+                        <th>Coordinates</th>
+                        <?php if (isset($_SESSION['AdminID'])): ?>
+                            <th>Actions</th>
+                        <?php endif; ?>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($stores as $store): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($store['StoreInfoID']) ?></td>
+                            <td><?= htmlspecialchars($store['Province']) ?></td>
+                            <td><?= htmlspecialchars($store['City']) ?></td>
+                            <td><?= htmlspecialchars($store['StoreGcashNum']) ?></td>
+                            <td>
+                                <?php if ($store['StoreGcashQR']): ?>
+                                    <img src="data:image/png;base64,<?= base64_encode($store['StoreGcashQR']) ?>" 
+                                         alt="GCash QR" style="max-width: 100px;">
+                                <?php endif; ?>
+                            </td>
+                            <td><?= htmlspecialchars($store['StoreDeliveryFee']) ?></td>
+                            <td><?= htmlspecialchars($store['StoreExactCoordinates']) ?></td>
+                            <?php if (isset($_SESSION['AdminID'])): ?>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        <a href="store_update.php?store_id=<?= $store['StoreInfoID'] ?>" 
+                                           class="btn btn-warning btn-sm me-2">Update</a>
+                                        <a href="store_delete.php?store_id=<?= $store['StoreInfoID'] ?>" 
+                                           class="btn btn-danger btn-sm"
+                                           onclick="return confirm('Are you sure you want to delete this store?');">Delete</a>
+                                    </div>
+                                </td>
+                            <?php endif; ?>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
-    </center>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#storeTable').DataTable({
+                "paging": true,
+                "lengthChange": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "pageLength": 5,
+                "lengthMenu": [5, 10, 25, 50, 100]
+            });
+        });
+    </script>
 </body>
 </html>

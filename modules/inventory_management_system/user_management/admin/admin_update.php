@@ -1,11 +1,13 @@
 <?php
 session_start();
+include("../../../../includes/cdn.html");
 include("../../../../config/database.php");
 
 // Check if the admin is logged in and has an admin ID in the session
 if (!isset($_SESSION['AdminID'])) {
-    echo "<script>alert('You must be logged in as admin to access this page.'); 
-    window.location.href = '../../../../login.php';</script>";
+    $_SESSION['alert'] = 'You must be logged in as admin to access this page.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../login.php");
     exit;
 }
 
@@ -20,7 +22,9 @@ $admin_stmt->execute();
 $admin = $admin_stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$admin) {
-    echo "<script>alert('Admin not found.'); window.history.back();</script>";
+    $_SESSION['alert'] = 'Admin not found.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ../../../../views/admin_view.php");
     exit;
 }
 
@@ -30,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     // Verify the old password using password_verify
     if (!password_verify($old_password, $admin['AdminPassword'])) {
-        echo "<script>alert('Old password is incorrect.');</script>";
+        $_SESSION['alert'] = 'Old password is incorrect.';
+        $_SESSION['alert_type'] = 'danger';
     } else {
         $admin_name = $_POST['admin_name'];
         $admin_email = $_POST['admin_email'];
@@ -43,8 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Hash the new password
                 $admin_password = password_hash($new_password, PASSWORD_DEFAULT);
             } else {
-                // If passwords don't match, show alert and exit
-                echo "<script>alert('New passwords do not match.'); window.history.back();</script>";
+                $_SESSION['alert'] = 'New passwords do not match.';
+                $_SESSION['alert_type'] = 'danger';
+                header("Location: admin_read.php");
                 exit;
             }
         } else {
@@ -62,19 +68,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Execute the update query
         if ($update_stmt->execute()) {
-            echo "<script>alert('Admin details updated successfully!'); window.location.href = 'admin_read.php';</script>";
-            exit;
+            $_SESSION['alert'] = 'Admin details updated successfully!';
+            $_SESSION['alert_type'] = 'success';
         } else {
-            echo "<script>alert('Error: Could not update admin details.');</script>";
+            $_SESSION['alert'] = 'Error: Could not update admin details.';
+            $_SESSION['alert_type'] = 'danger';
         }
+        // Redirect back to the personnel view page
+        header("Location: ../../../../views/personnel_view.php");
+        exit;
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Update Admin</title>
+    <link href="../../../../assets/css/form.css" rel="stylesheet">
     <script>
         function confirmUpdate(event) {
             const newPassword = document.getElementById('new_password').value;
@@ -93,24 +106,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </script>
 </head>
 <body>
-    <h3>Update Admin</h3>
-    <form method="POST" action="" onsubmit="confirmUpdate(event)">
-        <label for="old_password">Old Password:</label>
-        <input type="password" name="old_password" id="old_password" required><br>
+    <div class="container relative">
+        <div class="sticky-top pb-2">
+            <h3>Manage Account</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../../views/personnel_view.php#Overview">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Update Admin</li>
+                </ol>
+            </nav>
+            <hr>
+        </div>
 
-        <label for="admin_name">Admin Name:</label>
-        <input type="text" name="admin_name" id="admin_name" value="<?= htmlspecialchars($admin['AdminName']) ?>" required><br>
+        <form method="POST" action="" onsubmit="confirmUpdate(event)">
+            <!-- Identification Section -->
+            <h6>Identification</h6>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="admin_name" name="admin_name" placeholder="Admin Name" value="<?= htmlspecialchars($admin['AdminName']) ?>" required>
+                <label for="admin_name">Admin Name</label>
+            </div>
 
-        <label for="admin_email">Admin Email:</label>
-        <input type="email" name="admin_email" id="admin_email" value="<?= htmlspecialchars($admin['AdminEmail']) ?>" required><br>
+            <!-- Account Information Section -->
+            <h6>Account Information</h6>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="admin_email" name="admin_email" placeholder="Admin Email" value="<?= htmlspecialchars($admin['AdminEmail']) ?>" required>
+                        <label for="admin_email">Admin Email</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="old_password" name="old_password" placeholder="Old Password" required>
+                        <label for="old_password">Old Password</label>
+                    </div>
+                </div>
+            </div>
 
-        <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" id="new_password"><br>
+            <!-- Password Update Section -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="new_password" name="new_password" placeholder="New Password">
+                        <label for="new_password">New Password</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm New Password">
+                        <label for="confirm_password">Confirm New Password</label>
+                    </div>
+                </div>
+                <small>Leave blank to keep your old password.</small>
+            </div>
 
-        <label for="confirm_password">Confirm New Password:</label>
-        <input type="password" name="confirm_password" id="confirm_password"><br>
-
-        <button type="submit">Update</button>
-    </form>
+            <!-- Submit Button -->
+            <button class="btn btn-success w-100 mb-2" type="submit">Update</button>
+            <a class="btn btn-secondary w-100 mb-2" href="../../../../views/personnel_view.php#Overview">Cancel</a>
+        </form>
+    </div>
 </body>
+
 </html>

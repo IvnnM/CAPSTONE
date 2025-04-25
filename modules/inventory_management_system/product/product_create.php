@@ -1,12 +1,13 @@
 <?php
 session_start();
-include("./../../../includes/cdn.php"); 
+include("./../../../includes/cdn.html"); 
 include("./../../../config/database.php");
 
 // Check if the user is logged in and has either an Employee ID or an Admin ID in the session
 if (!isset($_SESSION['EmpID']) && !isset($_SESSION['AdminID'])) {
-    echo "<script>alert('You must be logged in to access this page.'); 
-    window.location.href = './../../../login.php';</script>";
+    $_SESSION['alert'] = 'You must be logged in to access this page.';
+    $_SESSION['alert_type'] = 'danger';
+    header("Location: ./../../../login.php");
     exit;
 }
 
@@ -37,11 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Move the uploaded file
         if (!move_uploaded_file($tmp_name, $product_image)) {
-            echo "<script>alert('Error: Could not upload the image.');</script>";
-            $product_image = null; // Reset in case of failure
+            $_SESSION['alert'] = 'Error: Could not upload the image.';
+            $_SESSION['alert_type'] = 'danger';
         }
     } else {
-        echo "<script>alert('Error: No image uploaded or an upload error occurred.');</script>";
+        $_SESSION['alert'] = 'Error: No image uploaded or an upload error occurred.';
+        $_SESSION['alert_type'] = 'danger';
     }
 
     // Insert the new product into the database if the image upload was successful
@@ -54,42 +56,75 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $insert_stmt->bindParam(':product_image', $product_image);
 
         if ($insert_stmt->execute()) {
-            echo "<script>alert('Product created successfully!');</script>";
+            $_SESSION['alert'] = 'Product created successfully!';
+            $_SESSION['alert_type'] = 'success';
         } else {
-            echo "<script>alert('Error: Could not create the product.');</script>";
+            $_SESSION['alert'] = 'Error: Could not create the product.';
+            $_SESSION['alert_type'] = 'danger';
         }
+
+        // Redirect to the product read page
+        header("Location: product_read.php");
+        exit;
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Product</title>
 </head>
 <body>
-    <h3>Create Product</h3>
-    <form method="POST" action="" enctype="multipart/form-data">
-        <label for="product_name">Product Name:</label>
-        <input type="text" name="product_name" required><br>
+    <div class="container relative">
+        <div class="sticky-top bg-light pb-2">
+            <h3>Create New Product</h3>
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="../../../views/personnel_view.php#Products">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Create Product</li>
+                    <li class="breadcrumb-item"><a href="../product/category/category_create.php">Create Product Category</a></li>
+                </ol>
+            </nav><hr>
+        </div>
 
-        <label for="product_desc">Product Description:</label>
-        <input type="text" name="product_desc"><br>
-
-        <label for="category_id">Product Category:</label>
-        <select name="category_id" required>
-            <option value="">Select a category</option>
-            <?php foreach ($categories as $category): ?>
-                <option value="<?= htmlspecialchars($category['CategoryID']) ?>"><?= htmlspecialchars($category['CategoryName']) ?></option>
-            <?php endforeach; ?>
-        </select><br>
-
-        <label for="product_image">Product Image:</label>
-        <input type="file" name="product_image" accept="image/*" required><br>
-
-        <button type="submit">Create</button>
-    </form>
-    <br>
-    <a href="product_read.php">Back to Product List</a>
+        <form method="POST" action="" enctype="multipart/form-data">
+            <h6>Input Product Details</h6>
+            <div class="row mb-3">
+                <!-- Product Name -->
+                <div class="col-md-12 form-floating mb-3">
+                    <input type="text" class="form-control" name="product_name" id="product_name" placeholder="Product Name" required>
+                    <label for="product_name">Product Name</label>
+                </div>
+                <!-- Product Category -->
+                <div class="col-md-6 form-floating mb-3">
+                    <select name="category_id" id="category_id" class="form-select" required>
+                        <option value="">Select a category</option>
+                        <?php foreach ($categories as $category): ?>
+                            <option value="<?= htmlspecialchars($category['CategoryID']) ?>"><?= htmlspecialchars($category['CategoryName']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <label for="category_id">Product Category</label>
+                </div>
+                <!-- Product Image -->
+                <div class="col-md-6 form-floating mb-3">
+                    <input type="file" class="form-control" name="product_image" id="product_image" accept="image/*" required>
+                    <label for="product_image">Product Image</label>
+                </div>
+                <!-- Product Description -->
+                <div class="col-md-12 form-floating mb-3">
+                    <input type="text" class="form-control" name="product_desc" id="product_desc" placeholder="Product Description">
+                    <label for="product_desc">Product Description</label>
+                </div>
+            </div>
+            
+            <button class="btn btn-success w-100 mb-2" type="submit">Create</button>
+            <a class="btn btn-secondary w-100 mb-2" href="product_read.php">Cancel</a>
+        </form>
+    </div>
 </body>
+
 </html>
