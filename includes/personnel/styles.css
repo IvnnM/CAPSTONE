@@ -1,0 +1,247 @@
+/* General Reset */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    line-height: 1.6;
+    background-color: #f5f5f5;
+}
+
+/* Hero Section */
+.hero {
+    background: url('homepage.jpg') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    color: #fff;
+    padding: 0 20px;
+    padding-top: 50px;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.5rem;
+    max-width: 600px;
+}
+
+/* Content Block */
+.content-block {
+    display: flex;
+    align-items: flex-start;
+    padding: 50px 20px;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.reverse {
+    flex-direction: row-reverse;
+}
+
+.text-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.text-block h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #007BFF;
+}
+
+.text-block p, .text-block ul {
+    font-size: 1rem;
+}
+
+.text-block ul {
+    list-style: none;
+    padding: 0;
+}
+
+.text-block ul li {
+    margin-bottom: 10px;
+}
+
+.image-block {
+    flex: 1;
+    text-align: center;
+}
+
+.image-block img {
+    width: 80%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Developers Section */
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    color: #007BFF;
+    margin-bottom: 30px; /* Ensure space below the title */
+    margin-top: 50px; /* Ensure space above the title */
+}
+
+.developer-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px; /* Adjust the spacing */
+}
+
+.developer-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    text-align: center;
+    padding: 20px;
+    max-width: 300px;
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Add space between cards */
+}
+
+.developer-card h3 {
+    margin-top: 15px;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.developer-card p {
+    font-size: 1rem;
+    margin: 10px 0;
+    color: #666;
+}
+
+.developer-card a {
+    color: #007BFF;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.developer-card a:hover {
+    text-decoration: underline;
+}
+
+.developer-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 15px;
+}
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed position (stay in place) */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scrolling if needed */
+    background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto; /* Centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Adjust width */
+    max-width: 600px;
+    border-radius: 8px;
+}
+
+/* Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #333; /* Original dark background */
+    color: #fff; /* White text color */
+    text-align: center; /* Center the text */
+    padding: 20px 0; /* Add padding for top and bottom */
+    margin-top: 50px; /* Add space above the footer */
+}
+
+.footer p {
+    margin: 0; /* Remove margin */
+    font-size: 1rem; /* Font size for the copyright text */
+}
+
+.footer-links {
+    margin-top: 10px; /* Add margin for spacing between the copyright and links */
+    font-size: 1rem; /* Font size for the links */
+}
+
+.footer-links a {
+    color: #fff; /* White links */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make the links bold */
+    margin: 0 10px; /* Space between the links */
+}
+
+.footer-links a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+/* Disable hover effect when modal is open */
+.no-hover * {
+    pointer-events: none;
+}
+
+/* Back Button Styles */
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black background */
+    color: white; /* White text color */
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border-radius: 30px; /* Round corners */
+    text-decoration: none; /* Remove underline */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Slight shadow to make it stand out */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions for hover effects */
+}
+
+.back-button:hover {
+    background-color: rgba(0, 0, 0, 0.6); /* Darken the background on hover */
+    transform: scale(1.05); /* Slight scale-up effect on hover */
+}
+
+/* Arrow Style */
+.back-button::before {
+    content: '\2190'; /* Left arrow symbol */
+    margin-right: 10px; /* Space between the arrow and the text */
+    font-size: 1.5rem; /* Make the arrow bigger */
+}
+
